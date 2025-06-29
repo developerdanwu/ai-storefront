@@ -1,5 +1,5 @@
 import { Table } from "convex-helpers/server";
-import { Infer, v } from "convex/values";
+import { type Infer, v } from "convex/values";
 
 export type User = Infer<typeof Users.doc>;
 

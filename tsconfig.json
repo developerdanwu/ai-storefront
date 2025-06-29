@@ -1,5 +1,6 @@
 {
   "include": [
+    ".react-router/types/**/*",
     "**/*.ts",
     "**/*.tsx",
     "**/.server/**/*.ts",
@@ -8,8 +9,10 @@
     "**/.client/**/*.tsx"
   ],
   "compilerOptions": {
+    "rootDirs": [".", "./.react-router/types"],
+    "verbatimModuleSyntax": true,
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
-    "types": ["@remix-run/node", "vite/client"],
+    "types": ["vite/client"],
     "isolatedModules": true,
     "esModuleInterop": true,
     "jsx": "react-jsx",

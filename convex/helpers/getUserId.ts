@@ -7,10 +7,16 @@ export function getUserId(ctx: { auth: Auth }) {
   return ResultAsync.fromPromise(
     getAuthUserId(ctx).then((r) => {
       if (!r) {
-        throw Errors.notAuthenticated("User not authenticated");
+        throw Errors.notAuthenticated({
+          message: "User not authenticated",
+        });
       }
       return r;
     }),
-    () => Errors.notAuthenticated("User not authenticated")
+    (e) =>
+      Errors.notAuthenticated({
+        message: "User not authenticated",
+        error: e,
+      })
   );
 }

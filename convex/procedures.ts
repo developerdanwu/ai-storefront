@@ -7,13 +7,13 @@ import {
 import { ConvexError } from "convex/values";
 import { internal } from "./_generated/api";
 import { action, mutation, query, QueryCtx } from "./_generated/server";
-import { unsafe_getUser } from "./helpers/getUser";
+import { getUser as getUserHelper } from "./helpers/getUser";
 import { getUserId } from "./helpers/getUserId";
 import { User } from "./schema/users.schema";
 
 const getUser = (ctx: QueryCtx) => {
   return getUserId(ctx).andThen((userId) => {
-    return unsafe_getUser(ctx, {
+    return getUserHelper(ctx, {
       args: {
         userId,
       },

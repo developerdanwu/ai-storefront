@@ -3,27 +3,33 @@ import { ResultAsync } from "neverthrow";
 import { QueryCtx } from "../_generated/server";
 import * as Errors from "../errors";
 
-export const unsafe_VGetUser = v.object({
+export const VGetUserArgs = v.object({
   userId: v.id("users"),
 });
 
-export type unsafe_TGetUser = Infer<typeof unsafe_VGetUser>;
+export type TGetUserArgs = Infer<typeof VGetUserArgs>;
 
-export function unsafe_getUser(
+export function getUser(
   ctx: QueryCtx,
   {
     args,
   }: {
-    args: unsafe_TGetUser;
+    args: TGetUserArgs;
   }
 ) {
   return ResultAsync.fromPromise(
     ctx.db.get(args.userId).then((r) => {
       if (!r) {
-        throw Errors.userNotFound(`User with id: ${args.userId} not found`);
+        throw Errors.userNotFound({
+          message: `User with id: ${args.userId} not found`,
+        });
       }
       return r;
     }),
-    () => Errors.userNotFound(`User with id: ${args.userId} not found`)
+    (e) =>
+      Errors.userNotFound({
+        message: `User with id: ${args.userId} not found`,
+        error: e,
+      })
   );
 }

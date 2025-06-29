@@ -1,14 +1,14 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useConvexAction } from "@convex-dev/react-query";
-import type { MetaFunction } from "@remix-run/node";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "convex/_generated/api";
 import { Camera, Github, Upload } from "lucide-react";
+import * as React from "react";
 import { useCallback } from "react";
+import type { MetaFunction } from "react-router";
 import { z } from "zod";
 import { Button } from "~/components/ui/button";
-import { useAppForm } from "~/components/ui/tanstack-form";
-import { Textarea } from "~/components/ui/textarea";
+import { MessageInputField } from "~/components/ui/message-input-field";
 
 export const meta: MetaFunction = () => {
   return [{ title: "New Remix App" }, { name: "description", content: "Welcome to Remix!" }];
@@ -22,38 +22,32 @@ const FormSchema = z.object({
 
 export default function Index() {
   const { signIn, signOut } = useAuthActions();
+  const [suggestionValue, setSuggestionValue] = React.useState<string | undefined>();
   const createThread = useMutation({
     mutationFn: useConvexAction(api.ai.createThread),
-  });
-  const form = useAppForm({
-    validators: { onChange: FormSchema },
-    defaultValues: {
-      message: "",
-    },
-    onSubmit: async ({ value }) => {
-      console.log("Form submitted with:", value.message);
-      // signIn("anonymous");
-      createThread.mutate({
-        prompt: value.message,
-      });
-      form.reset();
-      // TODO: Add actual submit logic here
-    },
+    onSuccess: (x) => {},
   });
 
-  const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      form.handleSubmit();
+  const handleMessageSubmit = useCallback(
+    async (message: string) => {
+      console.log("Form submitted with:", message);
+      // signIn("anonymous");
+      createThread.mutate({
+        prompt: message,
+      });
+      // TODO: Add actual submit logic here
     },
-    [form]
+    [createThread]
   );
 
   const handleSuggestionClick = (suggestion: string) => {
     console.log("Suggestion clicked:", suggestion);
-    form.setFieldValue("message", suggestion);
+    setSuggestionValue(suggestion);
   };
+
+  const handleExternalValueChange = useCallback(() => {
+    setSuggestionValue(undefined);
+  }, []);
 
   const suggestions = [
     {
@@ -78,43 +72,15 @@ export default function Index() {
             How can I help you?
           </h1>
         </div>
-        <form.AppForm>
-          <form onSubmit={handleSubmit}>
-            <form.AppField
-              name="message"
-              children={(field) => (
-                <field.FormItem>
-                  <div className="flex flex-col items-end border border-input rounded-md bg-transparent shadow-xs focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 transition-[color,box-shadow]">
-                    <field.FormControl>
-                      <Textarea
-                        variant="ghost"
-                        placeholder="Ask me anything..."
-                        className="resize-none flex-1 border-none shadow-none focus-visible:ring-0"
-                        value={field.state.value}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        onBlur={field.handleBlur}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" && !e.shiftKey) {
-                            e.preventDefault();
-                            handleSubmit(e);
-                          }
-                        }}
-                      />
-                    </field.FormControl>
-                    <Button
-                      type="submit"
-                      size="sm"
-                      className="m-3"
-                      disabled={!field.state.value.trim() || form.state.isSubmitting}
-                    >
-                      Send
-                    </Button>
-                  </div>
-                </field.FormItem>
-              )}
-            />
-          </form>
-        </form.AppForm>
+        <MessageInputField
+          name="message"
+          placeholder="Ask me anything..."
+          onSubmit={handleMessageSubmit}
+          schema={FormSchema.shape.message}
+          isSubmitting={createThread.isPending}
+          externalValue={suggestionValue}
+          onExternalValueChange={handleExternalValueChange}
+        />
         <div className="flex flex-wrap justify-center gap-2">
           {suggestions.map((suggestion, index) => (
             <Button

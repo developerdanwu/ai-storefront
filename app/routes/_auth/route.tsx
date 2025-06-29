@@ -1,5 +1,10 @@
-import { Outlet } from "@remix-run/react";
+import { Outlet } from "react-router";
+import { Authenticated } from "~/components/auth/auth-provider";
 
 export default function AuthRoute() {
-  return <Outlet />;
+  return (
+    <Authenticated>
+      <Outlet />
+    </Authenticated>
+  );
 }

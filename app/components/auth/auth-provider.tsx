@@ -1,25 +1,22 @@
 import {
-  Authenticated as ConvexAuthenticated,
   AuthLoading,
+  Authenticated as ConvexAuthenticated,
   Unauthenticated as ConvexUnauthenticated,
 } from "convex/react";
 import React from "react";
-import { Navigate } from "react-router";
-import { LoadingSpinner } from "../ui/loading-spinner.tsx";
-import { PageLoadingSpinner } from "../ui/page-loading-spinner.tsx";
-import { ROUTES } from "@/lib/routes.ts";
-import { useLocale } from "@/lib/useLocale.ts";
+import { generatePath, Navigate } from "react-router";
+import { ROUTES } from "~/lib/routes";
+import { LoadingSpinner } from "../ui/loading-spinner";
+import { PageLoadingSpinner } from "../ui/page-loading-spinner";
 
 export function Authenticated({ children }: { children: React.ReactNode }) {
-  const { generatePath } = useLocale();
-
   return (
     <>
       <AuthLoading>
         <PageLoadingSpinner />
       </AuthLoading>
       <ConvexUnauthenticated>
-        <Navigate to={generatePath(ROUTES.signIn)} />
+        <Navigate to={generatePath(ROUTES.home)} />
       </ConvexUnauthenticated>
       <ConvexAuthenticated>{children}</ConvexAuthenticated>
     </>
@@ -27,7 +24,6 @@ export function Authenticated({ children }: { children: React.ReactNode }) {
 }
 
 export function Unauthenticated({ children }: { children: React.ReactNode }) {
-  const { generatePath } = useLocale();
   return (
     <>
       <AuthLoading>
@@ -36,7 +32,7 @@ export function Unauthenticated({ children }: { children: React.ReactNode }) {
         </div>
       </AuthLoading>
       <ConvexAuthenticated>
-        <Navigate to={generatePath(ROUTES.inbox)} />
+        <Navigate to={generatePath(ROUTES.chat)} />
       </ConvexAuthenticated>
       <ConvexUnauthenticated>{children}</ConvexUnauthenticated>
     </>
@@ -44,17 +40,16 @@ export function Unauthenticated({ children }: { children: React.ReactNode }) {
 }
 
 export function CatchAll() {
-  const { generatePath } = useLocale();
   return (
     <>
       <AuthLoading>
         <PageLoadingSpinner />
       </AuthLoading>
       <ConvexAuthenticated>
-        <Navigate to={generatePath(ROUTES.inbox)} />
+        <Navigate to={generatePath(ROUTES.chat)} />
       </ConvexAuthenticated>
       <ConvexUnauthenticated>
-        <Navigate to={generatePath(ROUTES.signIn)} />
+        <Navigate to={generatePath(ROUTES.home)} />
       </ConvexUnauthenticated>
     </>
   );
