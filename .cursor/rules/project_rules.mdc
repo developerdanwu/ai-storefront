@@ -1,0 +1,14 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+The default configuration for this project:
+
+## general
+- this project is using pnpm as its package manager
+- The convex app and react share a package.json file
+
+## React app
+
+## Convex (Backend)
