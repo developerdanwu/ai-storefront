@@ -1,22 +1,36 @@
-import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority";
+import * as React from "react";
 
-import { cn } from "~/lib/utils"
+import { cn } from "~/lib/utils";
 
-const Textarea = React.forwardRef<
-  HTMLTextAreaElement,
-  React.ComponentProps<"textarea">
->(({ className, ...props }, ref) => {
+const textareaVariants = cva(
+  "placeholder:text-muted-foreground focus-visible:ring-ring/50 flex field-sizing-content min-h-16 w-full text-base shadow-xs transition-[color,box-shadow] outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+  {
+    variants: {
+      variant: {
+        default:
+          "border-input focus-visible:border-ring aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 rounded-md border bg-transparent px-3 py-2 focus-visible:ring-[3px]",
+        ghost: "border-none bg-transparent px-3 py-2 focus-visible:ring-0",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+);
+
+export interface TextareaProps
+  extends React.ComponentProps<"textarea">,
+    VariantProps<typeof textareaVariants> {}
+
+function Textarea({ className, variant, ...props }: TextareaProps) {
   return (
     <textarea
-      className={cn(
-        "flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-        className
-      )}
-      ref={ref}
+      data-slot="textarea"
+      className={cn(textareaVariants({ variant }), className)}
       {...props}
     />
-  )
-})
-Textarea.displayName = "Textarea"
+  );
+}
 
-export { Textarea }
+export { Textarea };

@@ -11,6 +11,13 @@
 import type * as agents_storeAgent from "../agents/storeAgent.js";
 import type * as agents_summaryAgent from "../agents/summaryAgent.js";
 import type * as ai from "../ai.js";
+import type * as auth from "../auth.js";
+import type * as errors from "../errors.js";
+import type * as helpers_getUser from "../helpers/getUser.js";
+import type * as helpers_getUserId from "../helpers/getUserId.js";
+import type * as http from "../http.js";
+import type * as procedures from "../procedures.js";
+import type * as users from "../users.js";
 
 import type {
   ApiFromModules,
@@ -30,6 +37,13 @@ declare const fullApi: ApiFromModules<{
   "agents/storeAgent": typeof agents_storeAgent;
   "agents/summaryAgent": typeof agents_summaryAgent;
   ai: typeof ai;
+  auth: typeof auth;
+  errors: typeof errors;
+  "helpers/getUser": typeof helpers_getUser;
+  "helpers/getUserId": typeof helpers_getUserId;
+  http: typeof http;
+  procedures: typeof procedures;
+  users: typeof users;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 

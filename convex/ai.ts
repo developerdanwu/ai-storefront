@@ -1,9 +1,9 @@
-import { actionGeneric } from "convex/server";
 import { v } from "convex/values";
 import { storeAgent } from "./agents/storeAgent";
 import { summaryAgent } from "./agents/summaryAgent";
+import { authedAction } from "./procedures";
 
-export const createThread = actionGeneric({
+export const createThread = authedAction({
   args: v.object({
     prompt: v.string(),
   }),
@@ -11,7 +11,7 @@ export const createThread = actionGeneric({
     const title = await summaryAgent.generateText(
       ctx,
       {
-        userId: "xxx",
+        userId: ctx.user._id,
       },
       {
         prompt: `
@@ -25,7 +25,7 @@ ${args.prompt}
 
     const { threadId } = await storeAgent.createThread(ctx, {
       title: title.text,
-      userId: "xxx",
+      userId: ctx.user._id,
     });
 
     return { threadId };
