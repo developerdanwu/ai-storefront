@@ -121,8 +121,6 @@ export default function ChatThreadRoute() {
           </div>
         ))}
       </div>
-
-      {/* Message Input */}
       <div className="p-4 border-t border-border">
         <MessageInputField
           name="message"
