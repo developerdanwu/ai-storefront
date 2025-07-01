@@ -95,3 +95,17 @@ export function failedToCreateUser(context: ErrorContext) {
     context,
   } as const satisfies BackendError;
 }
+
+export function threadMigrationFailed(context: ErrorContext) {
+  return {
+    _tag: "ThreadMigrationFailed",
+    context,
+  } as const satisfies BackendError;
+}
+
+export function continueThreadFailed(context: ErrorContext) {
+  return {
+    _tag: "ContinueThreadFailed",
+    context,
+  } as const satisfies BackendError;
+}

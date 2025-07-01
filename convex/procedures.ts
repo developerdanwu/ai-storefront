@@ -104,14 +104,14 @@ export const anonymousQuery = customQuery(query, {
 
 export const anonymousAction = customAction(action, {
   args: {
-    anonymousUserId: v.optional(v.string()),
+    anonymousUserId: v.optional(v.union(v.id("users"), v.null())),
   },
   input: async (
     ctx,
     args
   ): Promise<{
     ctx: ActionCtx & { anonymousUserId: Id<"users"> };
-    args: { anonymousUserId?: string };
+    args: { anonymousUserId?: Id<"users"> | null };
   }> => {
     const userIdentity = await getUserId(ctx).match(
       (userId) => userId,

@@ -27,6 +27,7 @@ import type * as procedures from "../procedures.js";
 import type * as users_mutation from "../users/mutation.js";
 import type * as users_nodeAction from "../users/nodeAction.js";
 import type * as users_query from "../users/query.js";
+import type * as workflowManager from "../workflowManager.js";
 import type * as workos from "../workos.js";
 
 import type {
@@ -63,6 +64,7 @@ declare const fullApi: ApiFromModules<{
   "users/mutation": typeof users_mutation;
   "users/nodeAction": typeof users_nodeAction;
   "users/query": typeof users_query;
+  workflowManager: typeof workflowManager;
   workos: typeof workos;
 }>;
 declare const fullApiWithMounts: typeof fullApi;

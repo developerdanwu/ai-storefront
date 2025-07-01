@@ -2,7 +2,7 @@ import { useConvexAction } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { authkitLoader } from "@workos-inc/authkit-react-router";
 import { api } from "convex/_generated/api";
-import { Form, Outlet, useLoaderData, useParams } from "react-router";
+import { Link, Outlet, useLoaderData, useParams } from "react-router";
 import { AnonymousThreads } from "~/components/ui/anonymous-threads";
 import { AuthenticatedThreads } from "~/components/ui/authenticated-threads";
 import { Button } from "~/components/ui/button";
@@ -13,6 +13,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "~/components/ui/sidebar";
+import { NavUser } from "~/routes/_shell/_components/nav-user";
 import type { Route } from "./+types/route";
 
 export const loader = async (args: Route.LoaderArgs) => authkitLoader(args);
@@ -33,18 +34,11 @@ export default function ShellRoute() {
         {!user ? <AnonymousThreads activeThreadId={threadId} /> : null}
         <SidebarFooter>
           {user ? (
-            <Form action="/logout" method="post">
-              <Button
-                variant="outline"
-                size="sm"
-                type="submit"
-                className="w-full"
-              >
-                Sign Out
-              </Button>
-            </Form>
+            <NavUser user={user} />
           ) : (
-            <Button>Logged in</Button>
+            <Button asChild>
+              <Link to="/login">Sign In</Link>
+            </Button>
           )}
         </SidebarFooter>
       </Sidebar>

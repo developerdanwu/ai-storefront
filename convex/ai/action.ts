@@ -1,5 +1,6 @@
 import { ConvexError, v } from "convex/values";
 import { ok, ResultAsync } from "neverthrow";
+import { storeAgent } from "../agents/storeAgent";
 import * as Errors from "../errors";
 import { createThread as createThreadHelper } from "../helpers/createThread";
 import { generateSummaryTitle } from "../helpers/generateSummaryTitle";
@@ -11,6 +12,7 @@ export const createThread = authedAction({
   },
   handler: async (ctx, args) => {
     const { threadId } = await generateSummaryTitle(ctx, {
+      userId: ctx.user._id,
       prompt: `
             summarise the prompt below to create a title
   \`\`\`
@@ -91,5 +93,48 @@ export const createAnonymousThread = anonymousAction({
       threadId: threadId,
       userId: ctx.anonymousUserId,
     };
+  },
+});
+
+export const continueThread = authedAction({
+  args: {
+    threadId: v.string(),
+    prompt: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const { thread } = await ResultAsync.fromPromise(
+      storeAgent.continueThread(ctx, {
+        threadId: args.threadId,
+        userId: ctx.user._id,
+      }),
+      (e) =>
+        Errors.continueThreadFailed({
+          message: "Failed to continue thread",
+          error: e,
+        })
+    )
+      .andThen((x) => {
+        return ResultAsync.fromPromise(
+          x.thread.generateText({
+            prompt: args.prompt,
+          }),
+          (e) =>
+            Errors.generateAiTextFailed({
+              message: "Failed to generate AI text",
+              error: e,
+            })
+        ).andThen((messageId) => {
+          return ok({
+            ...x,
+            messageId,
+          });
+        });
+      })
+      .match(
+        (x) => x,
+        (e) => {
+          throw new ConvexError(e);
+        }
+      );
   },
 });

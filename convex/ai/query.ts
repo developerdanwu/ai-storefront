@@ -1,9 +1,10 @@
 import { vStreamArgs } from "@convex-dev/agent";
 import { paginationOptsValidator } from "convex/server";
 import { ConvexError, v } from "convex/values";
+import { storeAgent } from "../agents/storeAgent";
 import { getAiThreadMessages } from "../helpers/getAiThreadMessages";
 import { getAiThreads } from "../helpers/getAiThreads";
-import { anonymousQuery, authedQuery } from "../procedures";
+import { anonymousQuery, authedMutation, authedQuery } from "../procedures";
 
 export const getThreads = authedQuery({
   args: {
@@ -56,6 +57,42 @@ export const getMessages = authedQuery({
       streamArgs: args.streamArgs,
     }).match(
       (x) => x,
+      (e) => {
+        throw new ConvexError(e);
+      }
+    );
+  },
+});
+
+export const test = authedMutation({
+  args: {},
+  handler: async (ctx) => {
+    const test = await storeAgent.updateThreadMetadata(ctx, {
+      threadId: "test",
+      patch: {
+        userId: "s",
+      },
+    });
+  },
+});
+
+export const needMigration = authedQuery({
+  args: {
+    anonymousUserId: v.optional(v.union(v.id("users"), v.null())),
+  },
+  handler: async (ctx, args) => {
+    if (!args.anonymousUserId) {
+      return false;
+    }
+
+    return await getAiThreads(ctx, {
+      userId: args.anonymousUserId,
+      paginationOpts: {
+        numItems: 1,
+        cursor: null,
+      },
+    }).match(
+      (x) => !!x,
       (e) => {
         throw new ConvexError(e);
       }
