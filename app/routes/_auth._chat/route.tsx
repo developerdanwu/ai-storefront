@@ -45,7 +45,12 @@ export default function ChatLayoutRoute() {
         <div className="p-4 border-b border-border">
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-semibold">Chats</h1>
-            <Button variant="ghost" size="sm" onClick={handleNewChat} className="gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleNewChat}
+              className="gap-2"
+            >
               <Plus size={16} />
               New Chat
             </Button>
@@ -69,9 +74,14 @@ export default function ChatLayoutRoute() {
               }`}
             >
               <div className="flex items-start gap-3">
-                <MessageSquare size={16} className="mt-1 text-muted-foreground" />
+                <MessageSquare
+                  size={16}
+                  className="mt-1 text-muted-foreground"
+                />
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm truncate">{thread.title || "New Chat"}</p>
+                  <p className="font-medium text-sm truncate">
+                    {thread.title || "New Chat"}
+                  </p>
                   <p className="text-xs text-muted-foreground mt-1">
                     {new Date(thread._creationTime).toLocaleDateString()}
                   </p>
@@ -91,14 +101,19 @@ export default function ChatLayoutRoute() {
 
         {/* Sidebar Footer */}
         <div className="p-4 border-t border-border">
-          <Button variant="outline" size="sm" onClick={() => signOut()} className="w-full">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => signOut()}
+            className="w-full"
+          >
             Sign Out
           </Button>
         </div>
       </div>
 
       {/* Main Chat Area - Outlet for nested routes */}
-      <div className="flex-1">
+      <div className="flex-1 overflow-hidden">
         <Outlet context={{ createThread }} />
       </div>
     </div>
