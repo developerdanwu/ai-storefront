@@ -1,8 +1,50 @@
 import { httpRouter } from "convex/server";
-import { auth } from "./auth";
+import { ConvexError } from "convex/values";
+import { internal } from "./_generated/api";
+import { httpAction } from "./_generated/server";
 
 const http = httpRouter();
 
-auth.addHttpRoutes(http);
+http.route({
+  path: "/workos-webhook",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    const bodyText = await request.text();
+    const sigHeader = String(request.headers.get("workos-signature"));
+
+    try {
+      const { data, event } = JSON.parse(bodyText);
+
+      switch (event) {
+        case "user.created":
+        case "user.updated":
+          await ctx.runMutation(internal.users.upsertFromWorkos, {
+            externalId: data.id,
+            email: data.email,
+            emailVerified: data.email_verified,
+            firstName: data.first_name,
+            lastName: data.last_name,
+            profilePictureUrl: data.profile_picture_url,
+          });
+          break;
+        case "user.deleted": {
+          await ctx.runMutation(internal.users.deleteFromWorkos, {
+            externalId: data.id,
+          });
+          break;
+        }
+        default:
+          throw new ConvexError("Unsupported Clerk webhook event");
+      }
+
+      return new Response(null, { status: 200 });
+    } catch (error) {
+      console.error("Error occured", error);
+      return new Response("Auth Webhook Error", {
+        status: 400,
+      });
+    }
+  }),
+});
 
 export default http;

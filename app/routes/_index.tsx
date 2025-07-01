@@ -1,4 +1,3 @@
-import { useAuthActions } from "@convex-dev/auth/react";
 import { useConvexAction } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "convex/_generated/api";
@@ -11,7 +10,10 @@ import { Button } from "~/components/ui/button";
 import { MessageInputField } from "~/components/ui/message-input-field";
 
 export const meta: MetaFunction = () => {
-  return [{ title: "New Remix App" }, { name: "description", content: "Welcome to Remix!" }];
+  return [
+    { title: "New Remix App" },
+    { name: "description", content: "Welcome to Remix!" },
+  ];
 };
 
 const FormSchema = z.object({
@@ -21,8 +23,9 @@ const FormSchema = z.object({
 });
 
 export default function Index() {
-  const { signIn, signOut } = useAuthActions();
-  const [suggestionValue, setSuggestionValue] = React.useState<string | undefined>();
+  const [suggestionValue, setSuggestionValue] = React.useState<
+    string | undefined
+  >();
   const createThread = useMutation({
     mutationFn: useConvexAction(api.ai.createThread),
     onSuccess: (x) => {},

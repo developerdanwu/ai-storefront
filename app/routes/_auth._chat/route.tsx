@@ -1,4 +1,3 @@
-import { useAuthActions } from "@convex-dev/auth/react";
 import { useConvexAction, useConvexQuery } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "convex/_generated/api";
@@ -7,7 +6,6 @@ import { Outlet, useNavigate, useParams } from "react-router";
 import { Button } from "~/components/ui/button";
 
 export default function ChatLayoutRoute() {
-  const { signOut } = useAuthActions();
   const navigate = useNavigate();
   const { threadId } = useParams();
 
@@ -104,7 +102,7 @@ export default function ChatLayoutRoute() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => signOut()}
+            onClick={() => {}}
             className="w-full"
           >
             Sign Out

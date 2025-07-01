@@ -4,11 +4,11 @@ import {
   Unauthenticated as ConvexUnauthenticated,
 } from "convex/react";
 import React from "react";
-import { generatePath, Navigate } from "react-router";
+import { generatePath, Navigate, useLoaderData } from "react-router";
 import { ROUTES } from "~/lib/routes";
+import type { loader } from "~/root";
 import { LoadingSpinner } from "../ui/loading-spinner";
 import { PageLoadingSpinner } from "../ui/page-loading-spinner";
-
 export function Authenticated({ children }: { children: React.ReactNode }) {
   return (
     <>
@@ -53,4 +53,23 @@ export function CatchAll() {
       </ConvexUnauthenticated>
     </>
   );
+}
+
+export function useWorkosConvexAuth() {
+  const { user, accessToken } = useLoaderData<typeof loader>();
+  const fetchAccessToken = React.useCallback(async () => {
+    if (!accessToken) {
+      return null;
+    }
+
+    return accessToken ?? null;
+  }, [accessToken]);
+
+  return React.useMemo(() => {
+    return {
+      isLoading: false,
+      isAuthenticated: true,
+      fetchAccessToken,
+    };
+  }, [user, fetchAccessToken]);
 }

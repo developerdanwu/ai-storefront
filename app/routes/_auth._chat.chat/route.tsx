@@ -49,7 +49,10 @@ export default function ChatWelcomeRoute() {
   return (
     <div className="flex-1 flex items-center justify-center">
       <div className="text-center">
-        <MessageSquare size={64} className="mx-auto mb-4 text-muted-foreground" />
+        <MessageSquare
+          size={64}
+          className="mx-auto mb-4 text-muted-foreground"
+        />
         <h2 className="text-2xl font-semibold mb-2">Welcome to Chat</h2>
         <p className="text-muted-foreground mb-6">
           Select a chat from the sidebar or start a new conversation

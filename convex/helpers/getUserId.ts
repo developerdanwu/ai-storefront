@@ -13,10 +13,9 @@ export function getUserId(ctx: { auth: Auth }) {
       }
       return r;
     }),
-    (e) =>
+    () =>
       Errors.notAuthenticated({
         message: "User not authenticated",
-        error: e,
       })
   );
 }

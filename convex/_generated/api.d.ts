@@ -11,7 +11,6 @@
 import type * as agents_storeAgent from "../agents/storeAgent.js";
 import type * as agents_summaryAgent from "../agents/summaryAgent.js";
 import type * as ai from "../ai.js";
-import type * as auth from "../auth.js";
 import type * as errors from "../errors.js";
 import type * as helpers_createThread from "../helpers/createThread.js";
 import type * as helpers_generateSummaryTitle from "../helpers/generateSummaryTitle.js";
@@ -22,7 +21,9 @@ import type * as helpers_getUserId from "../helpers/getUserId.js";
 import type * as helpers_sendAiMessage from "../helpers/sendAiMessage.js";
 import type * as http from "../http.js";
 import type * as procedures from "../procedures.js";
+import type * as users_nodeAction from "../users/nodeAction.js";
 import type * as users from "../users.js";
+import type * as workos from "../workos.js";
 
 import type {
   ApiFromModules,
@@ -42,7 +43,6 @@ declare const fullApi: ApiFromModules<{
   "agents/storeAgent": typeof agents_storeAgent;
   "agents/summaryAgent": typeof agents_summaryAgent;
   ai: typeof ai;
-  auth: typeof auth;
   errors: typeof errors;
   "helpers/createThread": typeof helpers_createThread;
   "helpers/generateSummaryTitle": typeof helpers_generateSummaryTitle;
@@ -53,7 +53,9 @@ declare const fullApi: ApiFromModules<{
   "helpers/sendAiMessage": typeof helpers_sendAiMessage;
   http: typeof http;
   procedures: typeof procedures;
+  "users/nodeAction": typeof users_nodeAction;
   users: typeof users;
+  workos: typeof workos;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 
