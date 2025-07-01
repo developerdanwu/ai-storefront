@@ -10,19 +10,23 @@
 
 import type * as agents_storeAgent from "../agents/storeAgent.js";
 import type * as agents_summaryAgent from "../agents/summaryAgent.js";
-import type * as ai from "../ai.js";
+import type * as ai_action from "../ai/action.js";
+import type * as ai_query from "../ai/query.js";
 import type * as errors from "../errors.js";
 import type * as helpers_createThread from "../helpers/createThread.js";
 import type * as helpers_generateSummaryTitle from "../helpers/generateSummaryTitle.js";
 import type * as helpers_getAiThreadMessages from "../helpers/getAiThreadMessages.js";
 import type * as helpers_getAiThreads from "../helpers/getAiThreads.js";
+import type * as helpers_getAnonymousUser from "../helpers/getAnonymousUser.js";
 import type * as helpers_getUser from "../helpers/getUser.js";
 import type * as helpers_getUserId from "../helpers/getUserId.js";
+import type * as helpers_normalizeId from "../helpers/normalizeId.js";
 import type * as helpers_sendAiMessage from "../helpers/sendAiMessage.js";
 import type * as http from "../http.js";
 import type * as procedures from "../procedures.js";
+import type * as users_mutation from "../users/mutation.js";
 import type * as users_nodeAction from "../users/nodeAction.js";
-import type * as users from "../users.js";
+import type * as users_query from "../users/query.js";
 import type * as workos from "../workos.js";
 
 import type {
@@ -42,19 +46,23 @@ import type {
 declare const fullApi: ApiFromModules<{
   "agents/storeAgent": typeof agents_storeAgent;
   "agents/summaryAgent": typeof agents_summaryAgent;
-  ai: typeof ai;
+  "ai/action": typeof ai_action;
+  "ai/query": typeof ai_query;
   errors: typeof errors;
   "helpers/createThread": typeof helpers_createThread;
   "helpers/generateSummaryTitle": typeof helpers_generateSummaryTitle;
   "helpers/getAiThreadMessages": typeof helpers_getAiThreadMessages;
   "helpers/getAiThreads": typeof helpers_getAiThreads;
+  "helpers/getAnonymousUser": typeof helpers_getAnonymousUser;
   "helpers/getUser": typeof helpers_getUser;
   "helpers/getUserId": typeof helpers_getUserId;
+  "helpers/normalizeId": typeof helpers_normalizeId;
   "helpers/sendAiMessage": typeof helpers_sendAiMessage;
   http: typeof http;
   procedures: typeof procedures;
+  "users/mutation": typeof users_mutation;
   "users/nodeAction": typeof users_nodeAction;
-  users: typeof users;
+  "users/query": typeof users_query;
   workos: typeof workos;
 }>;
 declare const fullApiWithMounts: typeof fullApi;

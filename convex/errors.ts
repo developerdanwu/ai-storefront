@@ -9,6 +9,16 @@ type ErrorContext = {
   [key: string]: any;
 };
 
+export type NotAuthenticated = ReturnType<typeof notAuthenticated>;
+
+export type UserNotFound = ReturnType<typeof userNotFound>;
+
+export type SummaryGenerationFailed = ReturnType<
+  typeof summaryGenerationFailed
+>;
+
+export type CreateThreadFailed = ReturnType<typeof createThreadFailed>;
+
 export function notAuthenticated(context: ErrorContext) {
   return {
     _tag: "NotAuthenticated",
@@ -61,6 +71,27 @@ export function getAiThreadsFailed(context: ErrorContext) {
 export function getAiThreadMessagesFailed(context: ErrorContext) {
   return {
     _tag: "GetAiThreadMessagesFailed",
+    context,
+  } as const satisfies BackendError;
+}
+
+export function userAlreadyAuthenticated(context: ErrorContext) {
+  return {
+    _tag: "UserAlreadyAuthenticated",
+    context,
+  } as const satisfies BackendError;
+}
+
+export function accessingAuthedMaterialAsAnonymousUser(context: ErrorContext) {
+  return {
+    _tag: "AccessingAuthedMaterialAsAnonymousUser",
+    context,
+  } as const satisfies BackendError;
+}
+
+export function failedToCreateUser(context: ErrorContext) {
+  return {
+    _tag: "FailedToCreateUser",
     context,
   } as const satisfies BackendError;
 }

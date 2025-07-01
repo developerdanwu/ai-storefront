@@ -12,20 +12,19 @@ export const upsertFromWorkos = internalAction({
   async handler(ctx, { externalId }) {
     const workos = new WorkOS(process.env.WORKOS_API_KEY);
     const workosUser = await workos.userManagement.getUser(externalId);
-    workos.userManagement.createUser({
-      email: "hello",
-    });
+
     if (!workosUser) {
       throw new ConvexError("workosUser not found");
     }
 
-    await ctx.runMutation(internal.users.upsertFromWorkos, {
+    await ctx.runMutation(internal.users.mutation._upsertFromWorkos, {
       externalId: workosUser.id,
       email: workosUser.email,
       emailVerified: workosUser.emailVerified,
       firstName: workosUser.firstName,
       lastName: workosUser.lastName,
       profilePictureUrl: workosUser.profilePictureUrl,
+      isAnonymous: false,
     });
   },
 });

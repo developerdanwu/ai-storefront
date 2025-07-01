@@ -6,7 +6,7 @@ import * as Errors from "../errors";
 
 export const VCreateThreadArgs = v.object({
   title: v.string(),
-  userId: v.id("users"),
+  userId: v.string(),
 });
 
 export type TCreateThreadArgs = Infer<typeof VCreateThreadArgs>;

@@ -6,23 +6,32 @@ import * as Errors from "../errors";
 
 export const VGenerateSummaryTitle = v.object({
   prompt: v.string(),
+  userId: v.optional(v.string()),
+  threadId: v.optional(v.string()),
 });
 
 export type TGenerateSummaryTitle = Infer<typeof VGenerateSummaryTitle>;
 
-export function generateSummaryTitle(ctx: ActionCtx, args: TGenerateSummaryTitle) {
+export function generateSummaryTitle(
+  ctx: ActionCtx,
+  args: TGenerateSummaryTitle
+) {
   return ResultAsync.fromPromise(
     summaryAgent.generateText(
       ctx,
-      {},
+      {
+        userId: args.userId,
+        threadId: args.threadId,
+      },
       {
         prompt: args.prompt,
       }
     ),
-    (e) =>
-      Errors.summaryGenerationFailed({
+    (e) => {
+      console.error("ERRORRR", e);
+      return Errors.summaryGenerationFailed({
         message: "Failed to generate summary title",
-        error: e,
-      })
+      });
+    }
   );
 }

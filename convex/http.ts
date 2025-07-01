@@ -18,17 +18,18 @@ http.route({
       switch (event) {
         case "user.created":
         case "user.updated":
-          await ctx.runMutation(internal.users.upsertFromWorkos, {
+          await ctx.runMutation(internal.users.mutation._upsertFromWorkos, {
             externalId: data.id,
             email: data.email,
             emailVerified: data.email_verified,
             firstName: data.first_name,
             lastName: data.last_name,
             profilePictureUrl: data.profile_picture_url,
+            isAnonymous: false,
           });
           break;
         case "user.deleted": {
-          await ctx.runMutation(internal.users.deleteFromWorkos, {
+          await ctx.runMutation(internal.users.mutation._deleteFromWorkos, {
             externalId: data.id,
           });
           break;

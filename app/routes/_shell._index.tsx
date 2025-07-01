@@ -8,6 +8,7 @@ import type { MetaFunction } from "react-router";
 import { z } from "zod";
 import { Button } from "~/components/ui/button";
 import { MessageInputField } from "~/components/ui/message-input-field";
+import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
 
 export const meta: MetaFunction = () => {
   return [
@@ -26,16 +27,20 @@ export default function Index() {
   const [suggestionValue, setSuggestionValue] = React.useState<
     string | undefined
   >();
+
+  const [anonymousUserId, setAnonymousUserId] = useAnonymousUserId();
   const createThread = useMutation({
-    mutationFn: useConvexAction(api.ai.createThread),
-    onSuccess: (x) => {},
+    mutationFn: useConvexAction(api.ai.action.createAnonymousThread),
+    onSuccess: (x: { userId: string; threadId: string }) => {
+      setAnonymousUserId(x.userId);
+    },
   });
 
   const handleMessageSubmit = useCallback(
     async (message: string) => {
       console.log("Form submitted with:", message);
       // signIn("anonymous");
-      createThread.mutate({
+      await createThread.mutateAsync({
         prompt: message,
       });
       // TODO: Add actual submit logic here
