@@ -15,8 +15,8 @@ importers:
         specifier: 0.37.0
         version: 0.37.0
       '@convex-dev/agent':
-        specifier: ^0.1.11
-        version: 0.1.11(ai@4.3.16(react@18.3.1)(zod@3.25.67))(convex-helpers@0.1.95(convex@1.25.0(react@18.3.1))(react@18.3.1)(typescript@5.8.3)(zod@3.25.67))(convex@1.25.0(react@18.3.1))(react@18.3.1)
+        specifier: ^0.1.13-alpha.0
+        version: 0.1.13-alpha.1(ai@4.3.16(react@18.3.1)(zod@3.25.67))(convex-helpers@0.1.95(convex@1.25.0(react@18.3.1))(react@18.3.1)(typescript@5.8.3)(zod@3.25.67))(convex@1.25.0(react@18.3.1))(react@18.3.1)
       '@convex-dev/auth':
         specifier: ^0.0.87
         version: 0.0.87(@auth/core@0.37.0)(convex@1.25.0(react@18.3.1))(react@18.3.1)
@@ -424,8 +424,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@convex-dev/agent@0.1.11':
-    resolution: {integrity: sha512-7pfl/3G2XVum1WVZAZjgvqP7ocLQkGzkXYr01BGu/lONb6GSI6K1TUuV50JKJFWIyM3ytz2mQeG1de12cMKAWQ==}
+  '@convex-dev/agent@0.1.13-alpha.1':
+    resolution: {integrity: sha512-5i5wawGVTabzAPHcJ4jRKbFmJHl8siGJJMaOXoi10SMFyBj+/wCyj3XfpIifFwGqmtI1vbX+bRo2oU4w+D7Xpw==}
     peerDependencies:
       ai: ^4.3.16
       convex: ^1.23.0
@@ -3924,7 +3924,7 @@ snapshots:
   '@biomejs/cli-win32-x64@2.0.6':
     optional: true
 
-  '@convex-dev/agent@0.1.11(ai@4.3.16(react@18.3.1)(zod@3.25.67))(convex-helpers@0.1.95(convex@1.25.0(react@18.3.1))(react@18.3.1)(typescript@5.8.3)(zod@3.25.67))(convex@1.25.0(react@18.3.1))(react@18.3.1)':
+  '@convex-dev/agent@0.1.13-alpha.1(ai@4.3.16(react@18.3.1)(zod@3.25.67))(convex-helpers@0.1.95(convex@1.25.0(react@18.3.1))(react@18.3.1)(typescript@5.8.3)(zod@3.25.67))(convex@1.25.0(react@18.3.1))(react@18.3.1)':
     dependencies:
       ai: 4.3.16(react@18.3.1)(zod@3.25.67)
       convex: 1.25.0(react@18.3.1)

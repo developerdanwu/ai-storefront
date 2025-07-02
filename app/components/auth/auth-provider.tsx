@@ -9,6 +9,7 @@ import {
   Navigate,
   useFetcher,
   useLoaderData,
+  useRevalidator,
 } from "react-router";
 import { ROUTES } from "~/lib/routes";
 import type { loader } from "~/root";
@@ -63,7 +64,8 @@ export function CatchAll() {
 
 export function useWorkosConvexAuth() {
   const { user, accessToken } = useLoaderData<typeof loader>();
-  const fetcher = useFetcher();
+  const { submit } = useFetcher();
+  const { revalidate } = useRevalidator();
   const fetchAccessToken = React.useCallback(
     async ({ forceRefreshToken }: { forceRefreshToken: boolean }) => {
       if (!accessToken) {
@@ -71,15 +73,17 @@ export function useWorkosConvexAuth() {
       }
 
       if (forceRefreshToken) {
-        await fetcher.submit(null, {
+        console.log("access token expired, refreshing");
+        await submit(null, {
           method: "post",
           action: "/refresh-session",
         });
+        await revalidate();
       }
 
       return accessToken ?? null;
     },
-    [accessToken]
+    [accessToken, revalidate, submit]
   );
 
   return React.useMemo(() => {

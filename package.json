@@ -15,7 +15,7 @@
   "dependencies": {
     "@ai-sdk/xai": "^1.2.16",
     "@auth/core": "0.37.0",
-    "@convex-dev/agent": "^0.1.11",
+    "@convex-dev/agent": "^0.1.13-alpha.0",
     "@convex-dev/auth": "^0.0.87",
     "@convex-dev/react-query": "0.0.0-alpha.11",
     "@convex-dev/workflow": "^0.2.4",

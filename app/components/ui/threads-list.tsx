@@ -1,5 +1,6 @@
-import { MessageSquare, Plus } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import { Button } from "./button";
+import { Input } from "./input";
 import {
   SidebarContent,
   SidebarGroup,
@@ -36,24 +37,14 @@ export function ThreadsList({
   return (
     <>
       <SidebarHeader>
-        <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold">{title}</h1>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onNewChat}
-            className="gap-2"
-          >
-            <Plus size={16} />
-            New Chat
-          </Button>
-        </div>
+        <Button className="mb-2">New chat</Button>
+        <Input className="mb-2" />
       </SidebarHeader>
 
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-2">
               {isLoading && (
                 <div className="p-4 text-center text-muted-foreground">
                   <p className="text-sm">Loading chats...</p>
@@ -61,19 +52,15 @@ export function ThreadsList({
               )}
 
               {threads.map((thread) => (
-                <SidebarMenuItem key={thread._id}>
+                <SidebarMenuItem key={thread._id} className="">
                   <SidebarMenuButton
                     onClick={() => onThreadSelect(thread._id)}
                     isActive={activeThreadId === thread._id}
-                    className="w-full justify-start"
+                    className="justify-start h-auto py-3"
                   >
-                    <MessageSquare size={16} />
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-sm truncate">
                         {thread.title || "New Chat"}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {new Date(thread._creationTime).toLocaleDateString()}
                       </p>
                     </div>
                   </SidebarMenuButton>

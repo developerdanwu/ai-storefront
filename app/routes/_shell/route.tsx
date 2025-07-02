@@ -2,6 +2,7 @@ import { useConvexAction } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { authkitLoader } from "@workos-inc/authkit-react-router";
 import { api } from "convex/_generated/api";
+import { Authenticated, Unauthenticated } from "convex/react";
 import { Link, Outlet, useLoaderData, useParams } from "react-router";
 import { AnonymousThreads } from "~/components/ui/anonymous-threads";
 import { AuthenticatedThreads } from "~/components/ui/authenticated-threads";
@@ -30,19 +31,23 @@ export default function ShellRoute() {
   return (
     <SidebarProvider>
       <Sidebar>
-        {user ? <AuthenticatedThreads activeThreadId={threadId} /> : null}
-        {!user ? <AnonymousThreads activeThreadId={threadId} /> : null}
+        <Authenticated>
+          <AuthenticatedThreads activeThreadId={threadId} />
+        </Authenticated>
+        <Unauthenticated>
+          <AnonymousThreads activeThreadId={threadId} />
+        </Unauthenticated>
         <SidebarFooter>
-          {user ? (
+          <Authenticated>
             <NavUser user={user} />
-          ) : (
+          </Authenticated>
+          <Unauthenticated>
             <Button asChild>
               <Link to="/login">Sign In</Link>
             </Button>
-          )}
+          </Unauthenticated>
         </SidebarFooter>
       </Sidebar>
-
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">

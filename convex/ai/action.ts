@@ -138,3 +138,46 @@ export const continueThread = authedAction({
       );
   },
 });
+
+export const continueAnonymousThread = anonymousAction({
+  args: {
+    threadId: v.string(),
+    prompt: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const { thread } = await ResultAsync.fromPromise(
+      storeAgent.continueThread(ctx, {
+        threadId: args.threadId,
+        userId: ctx.anonymousUserId,
+      }),
+      (e) =>
+        Errors.continueThreadFailed({
+          message: "Failed to continue thread",
+          error: e,
+        })
+    )
+      .andThen((x) => {
+        return ResultAsync.fromPromise(
+          x.thread.generateText({
+            prompt: args.prompt,
+          }),
+          (e) =>
+            Errors.generateAiTextFailed({
+              message: "Failed to generate AI text",
+              error: e,
+            })
+        ).andThen((messageId) => {
+          return ok({
+            ...x,
+            messageId,
+          });
+        });
+      })
+      .match(
+        (x) => x,
+        (e) => {
+          throw new ConvexError(e);
+        }
+      );
+  },
+});

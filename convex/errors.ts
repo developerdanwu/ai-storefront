@@ -109,3 +109,10 @@ export function continueThreadFailed(context: ErrorContext) {
     context,
   } as const satisfies BackendError;
 }
+
+export function aiThreadNotFound(context: ErrorContext) {
+  return {
+    _tag: "AiThreadNotFound",
+    context,
+  } as const satisfies BackendError;
+}
