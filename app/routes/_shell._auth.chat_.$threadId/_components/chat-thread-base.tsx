@@ -1,12 +1,15 @@
+import type { MessageDoc } from "@convex-dev/agent";
 import { toUIMessages } from "@convex-dev/agent/react";
+import type { UsePaginatedQueryResult } from "convex/react";
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router";
 import { VList, type VListHandle } from "virtua";
 import { z } from "zod";
+import { Button } from "~/components/ui/button";
 import { MessageInputField } from "~/components/ui/message-input-field";
 import { VirtuaScrollWrapper } from "~/components/ui/virtua-scroll-wrapper";
 import { cn } from "~/lib/utils";
-import { MessageWrapper } from "./message-wrapper";
+import { Message } from "~/routes/_shell._auth.chat_.$threadId/_components/message";
 
 const MessageSchema = z.object({
   message: z.string().min(1, {
@@ -15,10 +18,7 @@ const MessageSchema = z.object({
 });
 
 interface ChatThreadBaseProps {
-  messages: {
-    status: "LoadingFirstPage" | "CanLoadMore" | "LoadingMore" | "Exhausted";
-    results: any[];
-  };
+  messages: UsePaginatedQueryResult<MessageDoc>;
   onMessageSubmit: (message: string) => Promise<void>;
   isSubmitting: boolean;
 }
@@ -125,29 +125,34 @@ export function ChatThreadBase({
             }}
           >
             {uiMessages.map((message, index) => {
+              const nextMessage = uiMessages[index + 1];
+
               if (message === "load-more") {
-                return <div key={`load-more-${index}`}>Load more</div>;
+                return (
+                  <Button
+                    variant="ghost"
+                    className="w-full"
+                    key="load-more"
+                    onClick={() => {
+                      messages.loadMore(20);
+                    }}
+                    disabled={messages.status !== "CanLoadMore"}
+                  >
+                    Load older messages
+                  </Button>
+                );
               }
 
               return (
-                <MessageWrapper
-                  key={message.id}
-                  direction={message.role === "user" ? "outgoing" : "incoming"}
-                >
-                  <div className="text-sm whitespace-pre-wrap">
-                    {typeof message.content === "string"
-                      ? message.content
-                      : Array.isArray(message.content)
-                      ? (message.content as any[])
-                          .filter((item: any) => item.type === "text")
-                          .map((item: any) => item.text)
-                          .join("")
-                      : "Message content unavailable"}
-                  </div>
-                  <p className="text-xs opacity-70 mt-2">
-                    {new Date(message.createdAt!).toLocaleTimeString()}
-                  </p>
-                </MessageWrapper>
+                <div key={message.key} className="mb-4 text-sm">
+                  <Message
+                    message={message}
+                    key={message.key}
+                    nextMessage={
+                      nextMessage === "load-more" ? undefined : nextMessage
+                    }
+                  />
+                </div>
               );
             })}
           </VList>

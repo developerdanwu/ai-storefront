@@ -9,7 +9,6 @@ import { ChatThreadBase } from "./chat-thread-base";
 export function AuthenticatedChatThread() {
   const { threadId } = useParams<{ threadId: string }>();
 
-  // Get messages for the current thread
   const messages = useThreadMessages(
     api.ai.query.getThreadMessages,
     {
@@ -21,15 +20,11 @@ export function AuthenticatedChatThread() {
     }
   );
 
-  // Send message
   const continueThreadMutation = useMutation({
     mutationFn: useConvexAction(api.ai.action.continueThread),
-    onSuccess: () => {
-      // The query will automatically refetch due to reactivity
-    },
+    onSuccess: () => {},
   });
 
-  // Handle message submission
   const handleMessageSubmit = useCallback(
     async (message: string) => {
       await continueThreadMutation.mutateAsync({

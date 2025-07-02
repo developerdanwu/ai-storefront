@@ -6,6 +6,7 @@ import * as Errors from "../errors";
 import { getAiThreadMessages } from "../helpers/getAiThreadMessages";
 import { getAiThreads } from "../helpers/getAiThreads";
 import { anonymousQuery, authedMutation, authedQuery } from "../procedures";
+
 export const getThreads = authedQuery({
   args: {
     paginationOpts: paginationOptsValidator,

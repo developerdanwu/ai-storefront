@@ -1,5 +1,4 @@
 import { cva, type VariantProps } from "class-variance-authority";
-import { Send } from "lucide-react";
 import * as React from "react";
 import { cn } from "~/lib/utils";
 import { Button } from "./button";
@@ -46,7 +45,6 @@ const MessageInput = React.forwardRef<HTMLTextAreaElement, MessageInputProps>(
       disabled = false,
       isSubmitting = false,
       buttonText = "Send",
-      showIcon = true,
       rows = 1,
       placeholder = "Type your message...",
       ...props
@@ -88,8 +86,7 @@ const MessageInput = React.forwardRef<HTMLTextAreaElement, MessageInputProps>(
           disabled={!value.trim() || isSubmitting || disabled}
           onClick={handleSubmit}
         >
-          {showIcon && <Send size={16} />}
-          {!showIcon && buttonText}
+          Send
         </Button>
       </div>
     );
