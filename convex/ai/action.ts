@@ -103,7 +103,7 @@ export const continueThread = authedAction({
     promptMessageId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    await ResultAsync.fromPromise(
+    return await ResultAsync.fromPromise(
       storeAgent.continueThread(ctx, {
         threadId: args.threadId,
         userId: ctx.user._id,
@@ -164,9 +164,10 @@ export const continueAnonymousThread = anonymousAction({
   args: {
     threadId: v.string(),
     prompt: v.string(),
+    promptMessageId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const { thread } = await ResultAsync.fromPromise(
+    return await ResultAsync.fromPromise(
       storeAgent.continueThread(ctx, {
         threadId: args.threadId,
         userId: ctx.anonymousUserId,
@@ -179,20 +180,40 @@ export const continueAnonymousThread = anonymousAction({
     )
       .andThen((x) => {
         return ResultAsync.fromPromise(
-          x.thread.generateText({
-            prompt: args.prompt,
-          }),
+          x.thread.streamText(
+            {
+              prompt: args.prompt,
+              promptMessageId: args.promptMessageId,
+              temperature: 0.3,
+              onFinish: async (x) => {},
+            },
+            {
+              saveStreamDeltas: { chunking: "word", throttleMs: 800 },
+            }
+          ),
           (e) =>
             Errors.generateAiTextFailed({
               message: "Failed to generate AI text",
-              error: e,
             })
-        ).andThen((messageId) => {
-          return ok({
-            ...x,
-            messageId,
+        )
+          .andThen((streamResult) => {
+            return ResultAsync.fromPromise(
+              (async () => {
+                let fullText = "";
+                for await (const chunk of streamResult.textStream) {
+                  fullText += chunk;
+                }
+                return fullText;
+              })(),
+              () =>
+                Errors.generateAiTextFailed({
+                  message: "Failed to generate AI text",
+                })
+            );
+          })
+          .andThen((text) => {
+            return ok(text);
           });
-        });
       })
       .match(
         (x) => x,
