@@ -4,18 +4,11 @@ import type { UsePaginatedQueryResult } from "convex/react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router";
 import { Virtualizer, type VirtualizerHandle } from "virtua";
-import { z } from "zod";
 import { Button } from "~/components/ui/button";
 import { MessageInputField } from "~/components/ui/message-input-field";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { cn } from "~/lib/utils";
 import { Message } from "~/routes/_shell._auth.chat_.$threadId/_components/message";
-
-const MessageSchema = z.object({
-  message: z.string().min(1, {
-    message: "Message cannot be empty.",
-  }),
-});
 
 interface ChatThreadBaseProps {
   messages: UsePaginatedQueryResult<MessageDoc>;
@@ -98,7 +91,7 @@ export function ChatThreadBase({
           viewportRef={viewportRef}
           className="flex-[1_1_0px] h-0 w-full"
           viewportClassName={cn(
-            "w-full relative max-w-7xl mx-auto",
+            "w-full relative max-w-3xl mx-auto",
             !isInitialized && "opacity-0"
           )}
         >
@@ -158,7 +151,7 @@ export function ChatThreadBase({
             shouldStickToBottom.current = true;
             await onMessageSubmit(value.message);
           }}
-          className="w-full max-w-7xl mx-auto"
+          className="w-full max-w-3xl mx-auto"
           isSubmitting={isSubmitting}
           rows={1}
         />

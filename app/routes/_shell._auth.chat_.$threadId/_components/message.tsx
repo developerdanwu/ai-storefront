@@ -18,7 +18,7 @@ function TextPart({
 
 function UserMessageWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-col border rounded-md">
+    <div className="flex self-end w-max flex-col border rounded-md bg-muted">
       <div className="p-2">{children}</div>
     </div>
   );
