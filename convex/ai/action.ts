@@ -26,18 +26,6 @@ export const createThread = authedAction({
           userId: ctx.user._id,
         });
       })
-      .andThen((x) => {
-        return ResultAsync.fromPromise(
-          x.thread.generateText({
-            prompt: args.prompt,
-          }),
-          (e) =>
-            Errors.generateAiTextFailed({
-              message: "Failed to generate AI text",
-              error: e,
-            })
-        ).andThen(() => ok(x));
-      })
       .match(
         (x) => x,
         (e) => {
@@ -68,19 +56,6 @@ export const createAnonymousThread = anonymousAction({
           title: x.text,
           userId: ctx.anonymousUserId,
         });
-      })
-      .andThen((x) => {
-        return ResultAsync.fromPromise(
-          x.thread.generateText({
-            prompt: args.prompt,
-          }),
-          (e) => {
-            console.error("ERRORRR", e);
-            return Errors.generateAiTextFailed({
-              message: "Failed to generate AI text",
-            });
-          }
-        ).andThen(() => ok(x));
       })
       .match(
         (x) => x,

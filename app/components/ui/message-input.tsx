@@ -116,6 +116,7 @@ const MessageInput = React.forwardRef<HTMLTextAreaElement, MessageInputProps>(
         <Button
           type="submit"
           size="sm"
+          loading={isSubmitting}
           className="m-3"
           disabled={!value.trim() || isSubmitting || disabled}
           onClick={handleSubmit}

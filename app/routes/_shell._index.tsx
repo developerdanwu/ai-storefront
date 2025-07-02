@@ -76,9 +76,17 @@ export default function Index() {
     }) => {
       setSubmittingSource(x.submittingSource);
     },
-    onSuccess: async (x: { userId: Id<"users">; threadId: string }) => {
+    onSuccess: async (
+      x: { userId: Id<"users">; threadId: string },
+      { prompt }
+    ) => {
       setAnonymousUserId(x.userId);
       await navigate(generatePath(ROUTES.chatThread, { threadId: x.threadId }));
+      continueAnonymousThreadMutation.mutate({
+        threadId: x.threadId,
+        prompt,
+        anonymousUserId: x.userId,
+      });
     },
     onSettled: () => {
       setSubmittingSource(undefined);
@@ -99,14 +107,36 @@ export default function Index() {
     onMutate: (x: { prompt: string; submittingSource: SubmittingSource }) => {
       setSubmittingSource(x.submittingSource);
     },
-    onSuccess: async (x: { threadId: string }) => {
+    onSuccess: async (x: { threadId: string }, { prompt }) => {
       await navigate(generatePath(ROUTES.chatThread, { threadId: x.threadId }));
+      continueAuthenticatedThreadMutation.mutate({
+        threadId: x.threadId,
+        prompt,
+      });
     },
     onSettled: () => {
       setSubmittingSource(undefined);
     },
     onError: (error) => {
       toast.error("Failed to create thread");
+      console.error(error);
+    },
+  });
+
+  const continueAnonymousThreadMutation = useMutation({
+    mutationFn: useConvexAction(api.ai.action.continueAnonymousThread),
+    onSuccess: () => {},
+    onError: (error) => {
+      toast.error("Failed to continue thread");
+      console.error(error);
+    },
+  });
+
+  const continueAuthenticatedThreadMutation = useMutation({
+    mutationFn: useConvexAction(api.ai.action.continueThread),
+    onSuccess: () => {},
+    onError: (error) => {
+      toast.error("Failed to continue thread");
       console.error(error);
     },
   });
@@ -184,8 +214,8 @@ export default function Index() {
       </div>
       <MessageInputField
         name="message"
-        className="w-full max-w-2xl mx-auto"
-        placeholder="Ask me anything..."
+        className="w-full max-w-3xl mx-auto"
+        placeholder="Type your message..."
         onSubmit={(value) => {
           handleMessageSubmit(value.message, {
             submittingSource: "message-input",

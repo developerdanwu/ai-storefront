@@ -29,6 +29,10 @@ export function AnonymousChatThread() {
     },
   });
 
+  const isStreaming =
+    continueThreadMutation.isPending ||
+    messages.results.some((x) => x.streaming);
+
   // Handle message submission
   const handleMessageSubmit = useCallback(
     async (message: string) => {
@@ -42,6 +46,7 @@ export function AnonymousChatThread() {
 
   return (
     <ChatThreadBase
+      isStreaming={isStreaming}
       messages={messages}
       onMessageSubmit={handleMessageSubmit}
       isSubmitting={continueThreadMutation.isPending}
