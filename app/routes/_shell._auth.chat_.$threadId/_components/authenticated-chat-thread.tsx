@@ -15,10 +15,12 @@ export function AuthenticatedChatThread() {
       threadId: threadId!,
     },
     {
-      initialNumItems: 20,
+      initialNumItems: 10,
       stream: true,
     }
   );
+
+  const isStreaming = messages.results.some((x) => x.streaming);
 
   const continueThreadMutation = useMutation({
     mutationFn: useConvexAction(api.ai.action.continueThread),
@@ -36,10 +38,13 @@ export function AuthenticatedChatThread() {
   );
 
   return (
-    <ChatThreadBase
-      messages={messages}
-      onMessageSubmit={handleMessageSubmit}
-      isSubmitting={continueThreadMutation.isPending}
-    />
+    <>
+      <ChatThreadBase
+        isStreaming={continueThreadMutation.isPending || isStreaming}
+        messages={messages}
+        onMessageSubmit={handleMessageSubmit}
+        isSubmitting={continueThreadMutation.isPending}
+      />
+    </>
   );
 }

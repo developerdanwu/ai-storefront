@@ -1,4 +1,5 @@
 import { MessageSquare } from "lucide-react";
+import { Link } from "react-router";
 import { Button } from "./button";
 import { Input } from "./input";
 import {
@@ -37,7 +38,9 @@ export function ThreadsList({
   return (
     <>
       <SidebarHeader>
-        <Button className="mb-2">New chat</Button>
+        <Button asChild className="mb-2">
+          <Link to="/">New chat</Link>
+        </Button>
         <Input className="mb-2" />
       </SidebarHeader>
 
@@ -60,7 +63,7 @@ export function ThreadsList({
                   >
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-sm truncate">
-                        {thread.title || "New Chat"}
+                        {thread.title}
                       </p>
                     </div>
                   </SidebarMenuButton>

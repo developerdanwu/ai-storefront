@@ -1,4 +1,5 @@
 import { cva, type VariantProps } from "class-variance-authority";
+import { motion } from "motion/react";
 import * as React from "react";
 import { cn } from "~/lib/utils";
 import { Button } from "./button";
@@ -31,6 +32,7 @@ export interface MessageInputProps
   buttonText?: string;
   showIcon?: boolean;
   rows?: number;
+  isGenerating?: boolean;
 }
 
 const MessageInput = React.forwardRef<HTMLTextAreaElement, MessageInputProps>(
@@ -47,6 +49,7 @@ const MessageInput = React.forwardRef<HTMLTextAreaElement, MessageInputProps>(
       buttonText = "Send",
       rows = 1,
       placeholder = "Type your message...",
+      isGenerating,
       ...props
     },
     ref
@@ -67,6 +70,37 @@ const MessageInput = React.forwardRef<HTMLTextAreaElement, MessageInputProps>(
 
     return (
       <div className={cn(messageInputVariants({ variant }), className)}>
+        {isGenerating ? (
+          <div
+            className={
+              "text-sm gap-2 px-3 flex items-center justify-between bg-muted w-full h-8 rounded-t-md"
+            }
+          >
+            <p className={cn("text-primary text-xs font-semibold")}>
+              Generating
+              <span className="inline-flex ml-1">
+                {[0, 1, 2].map((index) => (
+                  <motion.span
+                    key={index}
+                    animate={{
+                      opacity: [0, 0, 1, 1, 0],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      delay: index * 0.3,
+                      ease: "linear",
+                      times: [0, index * 0.15, (index + 1) * 0.15, 0.8, 1],
+                    }}
+                    className="text-primary"
+                  >
+                    .
+                  </motion.span>
+                ))}
+              </span>
+            </p>
+          </div>
+        ) : null}
         <Textarea
           ref={ref}
           variant="ghost"

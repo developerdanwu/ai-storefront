@@ -7,11 +7,15 @@ import { StepStartMessage } from "./step-start-message";
 
 function TextPart({
   part,
+  needToStream,
 }: {
   part: Extract<UIMessage["parts"][number], { type: "text" }>;
+  needToStream?: boolean;
 }) {
-  const [visibleText, { isStreaming }] = useSmoothText(part.text);
-  const text = isStreaming ? visibleText : part.text;
+  const [visibleText, { isStreaming }] = useSmoothText(part.text, {
+    charsPerSec: 400,
+  });
+  const text = isStreaming && needToStream ? visibleText : part.text;
 
   return <MemoizedMarkdown content={text} id={part.text} />;
 }
@@ -31,7 +35,9 @@ function AssistantMessageWrapper({ children }: { children: React.ReactNode }) {
 export function Message({
   message,
   nextMessage,
+  isStreaming,
 }: {
+  isStreaming: boolean;
   message: UIMessage & {
     originalMessage?: MessageDoc;
   };
@@ -74,7 +80,7 @@ export function Message({
       <MessageWrapper>
         {message.parts.map((x, index) => {
           if (x.type === "text") {
-            return <TextPart key={index} part={x} />;
+            return <TextPart key={index} part={x} needToStream={isStreaming} />;
           }
 
           if (x.type === "step-start") {

@@ -14,18 +14,22 @@ interface ChatThreadBaseProps {
   messages: UsePaginatedQueryResult<MessageDoc>;
   onMessageSubmit: (message: string) => Promise<void>;
   isSubmitting: boolean;
+  isStreaming: boolean;
 }
 
 export function ChatThreadBase({
+  isStreaming,
   messages,
   onMessageSubmit,
   isSubmitting,
 }: ChatThreadBaseProps) {
+  console.log("TESTINGGGG", messages.status, messages.isLoading);
   const { threadId } = useParams<{ threadId: string }>();
   const virtualizerRef = useRef<VirtualizerHandle>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const shouldStickToBottom = useRef(true);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isLoadingOlderMessages, setIsLoadingOlderMessages] = useState(false);
 
   const loadingFirstPage = messages.status === "LoadingFirstPage";
 
@@ -43,6 +47,22 @@ export function ChatThreadBase({
       }),
     ];
   }, [messages.results]);
+
+  // Track when we're loading older messages to maintain scroll position
+  useEffect(() => {
+    if (messages.status === "LoadingMore") {
+      setIsLoadingOlderMessages(true);
+    } else if (
+      messages.status === "CanLoadMore" ||
+      messages.status === "Exhausted"
+    ) {
+      // Keep shift=true for one more render cycle after loading completes
+      const timer = setTimeout(() => {
+        setIsLoadingOlderMessages(false);
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [messages.status]);
 
   // Initialize scroll position to bottom
   useLayoutEffect(() => {
@@ -96,6 +116,7 @@ export function ChatThreadBase({
           )}
         >
           <Virtualizer
+            shift={isLoadingOlderMessages}
             ref={virtualizerRef}
             scrollRef={viewportRef}
             overscan={5}
@@ -117,7 +138,7 @@ export function ChatThreadBase({
                 return (
                   <Button
                     variant="ghost"
-                    className="w-full"
+                    className="w-full mb-3"
                     key="load-more"
                     onClick={() => {
                       messages.loadMore(20);
@@ -132,6 +153,7 @@ export function ChatThreadBase({
               return (
                 <div key={message.key} className="mb-4 text-sm">
                   <Message
+                    isStreaming={isStreaming}
                     message={message}
                     key={message.key}
                     nextMessage={
@@ -145,6 +167,7 @@ export function ChatThreadBase({
         </ScrollArea>
         <MessageInputField
           name="message"
+          isGenerating={isStreaming}
           placeholder="Type your message..."
           onSubmit={async (value) => {
             // Ensure we stick to bottom when sending a message

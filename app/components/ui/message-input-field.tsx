@@ -7,7 +7,7 @@ interface MessageInputFieldProps
   name: string;
   onSubmit: (value: TFormSchema) => void | Promise<void>;
   resetOnSubmit?: boolean;
-  externalValue?: string;
+  isGenerating?: boolean;
 }
 
 export const ZFormSchema = z.object({
@@ -20,7 +20,7 @@ export function MessageInputField({
   name,
   onSubmit,
   resetOnSubmit = true,
-  externalValue,
+  isGenerating,
   ...messageInputProps
 }: MessageInputFieldProps) {
   const form = useAppForm({
@@ -29,10 +29,10 @@ export function MessageInputField({
       message: "",
     },
     onSubmit: async ({ value }) => {
-      await onSubmit(value);
       if (resetOnSubmit) {
         form.reset();
       }
+      await onSubmit(value);
     },
   });
 
@@ -44,6 +44,7 @@ export function MessageInputField({
           <field.FormItem>
             <field.FormControl>
               <MessageInput
+                isGenerating={isGenerating}
                 value={field.state.value}
                 onChange={field.handleChange}
                 onSubmit={form.handleSubmit}

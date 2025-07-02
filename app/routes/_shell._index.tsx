@@ -13,7 +13,6 @@ import {
   useNavigate,
 } from "react-router";
 import { toast } from "sonner";
-import { z } from "zod";
 import { Button } from "~/components/ui/button";
 import { MessageInputField } from "~/components/ui/message-input-field";
 import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
@@ -27,83 +26,130 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-const FormSchema = z.object({
-  message: z.string().min(1, {
-    message: "Message cannot be empty.",
-  }),
-});
+const suggestions = [
+  {
+    icon: <Camera size={16} />,
+    text: "Buy something",
+    value: "buy-something",
+    prompt: "I want to buy something",
+  },
+  {
+    icon: <Github size={16} />,
+    text: "About me",
+    value: "about-me",
+    prompt: "Tell me about yourself",
+  },
+  {
+    icon: <Upload size={16} />,
+    text: "Projects",
+    value: "projects",
+    prompt: "Tell me about your projects",
+  },
+] as const;
+
+type SubmittingSource = "message-input" | (typeof suggestions)[number]["value"];
 
 export const loader = async (args: Route.LoaderArgs) => authkitLoader(args);
 
 export default function Index() {
   const { user } = useLoaderData<typeof loader>();
-  const [suggestionValue, setSuggestionValue] = React.useState<
-    string | undefined
-  >();
+
+  const [submittingSource, setSubmittingSource] = React.useState<
+    SubmittingSource | undefined
+  >(undefined);
   const navigate = useNavigate();
   const [anonymousUserId, setAnonymousUserId] = useAnonymousUserId();
+  const anonymousThreadAction = useConvexAction(
+    api.ai.action.createAnonymousThread
+  );
   const createAnonymousThread = useMutation({
-    mutationFn: useConvexAction(api.ai.action.createAnonymousThread),
+    mutationFn: ({ prompt, anonymousUserId }) => {
+      return anonymousThreadAction({
+        prompt,
+        anonymousUserId,
+      });
+    },
+    onMutate: (x: {
+      prompt: string;
+      submittingSource: SubmittingSource;
+      anonymousUserId: Id<"users"> | null;
+    }) => {
+      setSubmittingSource(x.submittingSource);
+    },
     onSuccess: async (x: { userId: Id<"users">; threadId: string }) => {
       setAnonymousUserId(x.userId);
       await navigate(generatePath(ROUTES.chatThread, { threadId: x.threadId }));
     },
+    onSettled: () => {
+      setSubmittingSource(undefined);
+    },
     onError: (error) => {
       toast.error("Failed to create thread");
       console.error(error);
     },
   });
 
+  const authenticatedThreadAction = useConvexAction(api.ai.action.createThread);
   const createAuthenticatedThread = useMutation({
-    mutationFn: useConvexAction(api.ai.action.createThread),
+    mutationFn: ({ prompt }) => {
+      return authenticatedThreadAction({
+        prompt,
+      });
+    },
+    onMutate: (x: { prompt: string; submittingSource: SubmittingSource }) => {
+      setSubmittingSource(x.submittingSource);
+    },
     onSuccess: async (x: { threadId: string }) => {
       await navigate(generatePath(ROUTES.chatThread, { threadId: x.threadId }));
     },
+    onSettled: () => {
+      setSubmittingSource(undefined);
+    },
     onError: (error) => {
       toast.error("Failed to create thread");
       console.error(error);
     },
   });
 
+  const disabled =
+    createAnonymousThread.isPending || createAuthenticatedThread.isPending;
+
   const handleMessageSubmit = useCallback(
-    async (message: string) => {
+    async (
+      message: string,
+      {
+        submittingSource,
+      }: {
+        submittingSource: SubmittingSource;
+      }
+    ) => {
+      setSubmittingSource(submittingSource);
       if (user) {
         await createAuthenticatedThread.mutateAsync({
           prompt: message,
+          submittingSource,
         });
       } else {
         await createAnonymousThread.mutateAsync({
           prompt: message,
           anonymousUserId: anonymousUserId,
+          submittingSource,
         });
       }
     },
     [createAnonymousThread, anonymousUserId, createAuthenticatedThread, user]
   );
 
-  const handleSuggestionClick = (suggestion: string) => {
-    console.log("Suggestion clicked:", suggestion);
-    setSuggestionValue(suggestion);
+  const handleSuggestionClick = (
+    prompt: string,
+    {
+      submittingSource,
+    }: {
+      submittingSource: SubmittingSource;
+    }
+  ) => {
+    handleMessageSubmit(prompt, { submittingSource });
   };
-
-  const handleExternalValueChange = useCallback(() => {
-    setSuggestionValue(undefined);
-  }, []);
-
-  const suggestions = [
-    {
-      icon: <Camera size={16} />,
-      text: "Buy something",
-    },
-    {
-      icon: <Github size={16} />,
-      text: "About me",
-    },
-    {
-      icon: <Upload size={16} />,
-      text: "Projects",
-    },
-  ];
 
   return (
     <div className="h-full flex flex-col">
@@ -117,11 +163,17 @@ export default function Index() {
           <div className="flex flex-wrap justify-center gap-2">
             {suggestions.map((suggestion, index) => (
               <Button
+                disabled={disabled}
                 key={index}
                 variant="outline"
                 size="sm"
+                loading={submittingSource === suggestion.value}
                 className="gap-2"
-                onClick={() => handleSuggestionClick(suggestion.text)}
+                onClick={() =>
+                  handleSuggestionClick(suggestion.prompt, {
+                    submittingSource: suggestion.value,
+                  })
+                }
               >
                 {suggestion.icon}
                 {suggestion.text}
@@ -132,12 +184,15 @@ export default function Index() {
       </div>
       <MessageInputField
         name="message"
+        className="w-full max-w-2xl mx-auto"
         placeholder="Ask me anything..."
-        onSubmit={handleMessageSubmit}
-        schema={FormSchema.shape.message}
-        isSubmitting={createAnonymousThread.isPending}
-        externalValue={suggestionValue}
-        onExternalValueChange={handleExternalValueChange}
+        onSubmit={(value) => {
+          handleMessageSubmit(value.message, {
+            submittingSource: "message-input",
+          });
+        }}
+        disabled={disabled}
+        isSubmitting={submittingSource === "message-input"}
       />
     </div>
   );
