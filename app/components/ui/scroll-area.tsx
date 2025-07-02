@@ -23,7 +23,7 @@ function ScrollArea({
         ref={viewportRef}
         data-slot="scroll-area-viewport"
         className={cn(
-          "focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1",
+          "focus-visible:ring-ring/50 pr-2 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1",
           viewportClassName
         )}
       >
@@ -46,8 +46,7 @@ function ScrollBar({
       orientation={orientation}
       className={cn(
         "flex touch-none p-px transition-colors select-none",
-        orientation === "vertical" &&
-          "h-full w-2.5 border-l border-l-transparent",
+        orientation === "vertical" && "h-full w-2.5 border-l-transparent",
         orientation === "horizontal" &&
           "h-2.5 flex-col border-t border-t-transparent",
         className

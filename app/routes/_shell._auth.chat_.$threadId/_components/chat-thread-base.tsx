@@ -96,9 +96,9 @@ export function ChatThreadBase({
       <div className="h-full w-full flex flex-col">
         <ScrollArea
           viewportRef={viewportRef}
-          className="flex-[1_1_0px] h-0"
+          className="flex-[1_1_0px] h-0 w-full"
           viewportClassName={cn(
-            "max-w-7xl w-full relative",
+            "w-full relative max-w-7xl mx-auto",
             !isInitialized && "opacity-0"
           )}
         >
@@ -158,6 +158,7 @@ export function ChatThreadBase({
             shouldStickToBottom.current = true;
             await onMessageSubmit(value.message);
           }}
+          className="w-full max-w-7xl mx-auto"
           isSubmitting={isSubmitting}
           rows={1}
         />
