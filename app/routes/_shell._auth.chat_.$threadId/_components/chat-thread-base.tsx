@@ -23,7 +23,6 @@ export function ChatThreadBase({
   onMessageSubmit,
   isSubmitting,
 }: ChatThreadBaseProps) {
-  console.log("TESTINGGGG", messages.status, messages.isLoading);
   const { threadId } = useParams<{ threadId: string }>();
   const virtualizerRef = useRef<VirtualizerHandle>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -94,6 +93,8 @@ export function ChatThreadBase({
     });
   }, [uiMessages]);
 
+  console.log("MESSAGES", messages.status);
+
   if (!threadId) {
     return (
       <div className="flex-1 flex items-center justify-center">
@@ -109,9 +110,9 @@ export function ChatThreadBase({
       <div className="h-full w-full flex flex-col">
         <ScrollArea
           viewportRef={viewportRef}
-          className="flex-[1_1_0px] h-0 w-full"
+          className="flex-[1_1_0px] h-0 w-full overscroll-none"
           viewportClassName={cn(
-            "w-full relative max-w-3xl mx-auto",
+            "w-full relative overscroll-none",
             !isInitialized && "opacity-0"
           )}
         >
@@ -138,7 +139,7 @@ export function ChatThreadBase({
                 return (
                   <Button
                     variant="ghost"
-                    className="w-full mb-3"
+                    className="mx-auto flex max-w-3xl mb-4 w-full"
                     key="load-more"
                     onClick={() => {
                       messages.loadMore(20);
@@ -151,7 +152,10 @@ export function ChatThreadBase({
               }
 
               return (
-                <div key={message.key} className="mb-4 text-sm">
+                <div
+                  key={message.key}
+                  className="mb-4 max-w-3xl mx-auto text-sm"
+                >
                   <Message
                     isStreaming={isStreaming}
                     message={message}

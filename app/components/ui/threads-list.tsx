@@ -23,17 +23,17 @@ interface ThreadsListProps {
   isLoading: boolean;
   activeThreadId?: string;
   onThreadSelect: (threadId: string) => void;
-  onNewChat: () => void;
-  title?: string;
+  query: string;
+  onQueryChange: (query: string) => void;
 }
 
 export function ThreadsList({
   threads,
   isLoading,
   activeThreadId,
+  query,
+  onQueryChange,
   onThreadSelect,
-  onNewChat,
-  title = "Chats",
 }: ThreadsListProps) {
   return (
     <>
@@ -41,9 +41,12 @@ export function ThreadsList({
         <Button asChild className="mb-2">
           <Link to="/">New chat</Link>
         </Button>
-        <Input className="mb-2" />
+        <Input
+          value={query}
+          onChange={(e) => onQueryChange(e.target.value)}
+          className="mb-2"
+        />
       </SidebarHeader>
-
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>

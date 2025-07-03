@@ -21,6 +21,7 @@ import type * as helpers_getAnonymousUser from "../helpers/getAnonymousUser.js";
 import type * as helpers_getUser from "../helpers/getUser.js";
 import type * as helpers_getUserId from "../helpers/getUserId.js";
 import type * as helpers_normalizeId from "../helpers/normalizeId.js";
+import type * as helpers_searchAiThreads from "../helpers/searchAiThreads.js";
 import type * as helpers_sendAiMessage from "../helpers/sendAiMessage.js";
 import type * as http from "../http.js";
 import type * as procedures from "../procedures.js";
@@ -58,6 +59,7 @@ declare const fullApi: ApiFromModules<{
   "helpers/getUser": typeof helpers_getUser;
   "helpers/getUserId": typeof helpers_getUserId;
   "helpers/normalizeId": typeof helpers_normalizeId;
+  "helpers/searchAiThreads": typeof helpers_searchAiThreads;
   "helpers/sendAiMessage": typeof helpers_sendAiMessage;
   http: typeof http;
   procedures: typeof procedures;
@@ -1901,6 +1903,36 @@ export declare const components: {
             numItems: number;
           };
           userId?: string;
+        },
+        {
+          continueCursor: string;
+          isDone: boolean;
+          page: Array<{
+            _creationTime: number;
+            _id: string;
+            status: "active" | "archived";
+            summary?: string;
+            title?: string;
+            userId?: string;
+          }>;
+          pageStatus?: "SplitRecommended" | "SplitRequired" | null;
+          splitCursor?: string | null;
+        }
+      >;
+      searchThreadTitles: FunctionReference<
+        "query",
+        "internal",
+        {
+          paginationOpts?: {
+            cursor: string | null;
+            endCursor?: string | null;
+            id?: number;
+            maximumBytesRead?: number;
+            maximumRowsRead?: number;
+            numItems: number;
+          };
+          query: string;
+          userId?: string | null;
         },
         {
           continueCursor: string;

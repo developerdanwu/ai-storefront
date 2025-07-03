@@ -1,6 +1,6 @@
-import { useConvexAction, useConvexQuery } from "@convex-dev/react-query";
-import { useMutation } from "@tanstack/react-query";
+import { usePaginatedQuery } from "convex-helpers/react";
 import { api } from "convex/_generated/api";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import { type Thread, ThreadsList } from "./threads-list";
 
@@ -12,28 +12,29 @@ export function AuthenticatedThreads({
   activeThreadId,
 }: AuthenticatedThreadsProps) {
   const navigate = useNavigate();
+  const [query, setQuery] = useState("");
 
   // Get threads from API
-  const threadsResult = useConvexQuery(api.ai.query.getThreads, {
-    paginationOpts: { numItems: 50, cursor: null },
-  });
+  const threadsResult = usePaginatedQuery(
+    api.ai.query.getThreads,
+    {},
+    {
+      initialNumItems: 20,
+    }
+  );
 
-  const threads: Thread[] = threadsResult?.page || [];
-  const threadsLoading = threadsResult === undefined;
-
-  // Create new thread
-  const createThread = useMutation({
-    mutationFn: useConvexAction(api.ai.action.createThread),
-    onSuccess: (result) => {
-      if (result && typeof result === "object" && "threadId" in result) {
-        navigate(`/chat/${result.threadId}`);
-      }
+  const searchThreadsResult = usePaginatedQuery(
+    api.ai.query.searchThreads,
+    {
+      query: "124",
     },
-  });
+    {
+      initialNumItems: 20,
+    }
+  );
 
-  const handleNewChat = () => {
-    navigate("/chat");
-  };
+  const threads: Thread[] = query.length > 0 ? [] : threadsResult.results || [];
+  const threadsLoading = threadsResult === undefined;
 
   const handleThreadSelect = (selectedThreadId: string) => {
     navigate(`/chat/${selectedThreadId}`);
@@ -45,8 +46,8 @@ export function AuthenticatedThreads({
       isLoading={threadsLoading}
       activeThreadId={activeThreadId}
       onThreadSelect={handleThreadSelect}
-      onNewChat={handleNewChat}
-      title="Chats"
+      query={query}
+      onQueryChange={setQuery}
     />
   );
 }

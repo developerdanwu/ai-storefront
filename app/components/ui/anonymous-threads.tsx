@@ -1,8 +1,9 @@
-import { useConvexQuery } from "@convex-dev/react-query";
 import { api } from "convex/_generated/api";
+import { usePaginatedQuery } from "convex/react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
-import { type Thread, ThreadsList } from "./threads-list";
+import { ThreadsList } from "./threads-list";
 
 interface AnonymousThreadsProps {
   activeThreadId?: string;
@@ -10,20 +11,34 @@ interface AnonymousThreadsProps {
 
 export function AnonymousThreads({ activeThreadId }: AnonymousThreadsProps) {
   const navigate = useNavigate();
-  const [anonymousUserId, setAnonymousUserId] = useAnonymousUserId();
-
+  const [anonymousUserId] = useAnonymousUserId();
+  const [query, setQuery] = useState("");
   // Get threads from API
-  const threadsResult = useConvexQuery(api.ai.query.getAnonymousThreads, {
-    paginationOpts: { numItems: 50, cursor: null },
-    anonymousUserId: anonymousUserId || undefined,
-  });
+  const threadsResult = usePaginatedQuery(
+    api.ai.query.getAnonymousThreads,
+    {
+      anonymousUserId: anonymousUserId || undefined,
+    },
+    {
+      initialNumItems: 20,
+    }
+  );
 
-  const threads: Thread[] = threadsResult?.page || [];
+  const searchThreadsResult = usePaginatedQuery(
+    api.ai.query.searchAnonymousThreads,
+    {
+      anonymousUserId: anonymousUserId || undefined,
+      query: query,
+    },
+    {
+      initialNumItems: 20,
+    }
+  );
+  const threads =
+    query.length > 0
+      ? searchThreadsResult.results
+      : threadsResult.results || [];
   const threadsLoading = threadsResult === undefined;
-
-  const handleNewChat = () => {
-    navigate("/chat");
-  };
 
   const handleThreadSelect = (selectedThreadId: string) => {
     navigate(`/chat/${selectedThreadId}`);
@@ -31,12 +46,12 @@ export function AnonymousThreads({ activeThreadId }: AnonymousThreadsProps) {
 
   return (
     <ThreadsList
+      query={query}
+      onQueryChange={setQuery}
       threads={threads}
       isLoading={threadsLoading}
       activeThreadId={activeThreadId}
       onThreadSelect={handleThreadSelect}
-      onNewChat={handleNewChat}
-      title="Anonymous Chats"
     />
   );
 }

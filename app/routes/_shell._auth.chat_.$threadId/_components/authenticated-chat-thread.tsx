@@ -1,6 +1,7 @@
 import { useThreadMessages } from "@convex-dev/agent/react";
 import { useConvexAction } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
+import { usePaginatedQuery } from "convex-helpers/react";
 import { api } from "convex/_generated/api";
 import { useCallback } from "react";
 import { useParams } from "react-router";
@@ -19,6 +20,18 @@ export function AuthenticatedChatThread() {
       stream: true,
     }
   );
+
+  const messages2 = usePaginatedQuery(
+    api.ai.query.getThreadMessages,
+    {
+      threadId: threadId!,
+    },
+    {
+      initialNumItems: 10,
+    }
+  );
+
+  console.log("MESSAGES2", messages2.status);
 
   const continueThreadMutation = useMutation({
     mutationFn: useConvexAction(api.ai.action.continueThread),
@@ -41,6 +54,13 @@ export function AuthenticatedChatThread() {
 
   return (
     <>
+      <button
+        onClick={() => {
+          messages2.loadMore(10);
+        }}
+      >
+        Load more paginated
+      </button>
       <ChatThreadBase
         isStreaming={isStreaming}
         messages={messages}

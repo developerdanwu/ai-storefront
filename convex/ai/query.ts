@@ -1,11 +1,11 @@
 import { vStreamArgs } from "@convex-dev/agent";
 import { paginationOptsValidator } from "convex/server";
 import { ConvexError, v } from "convex/values";
-import { storeAgent } from "../agents/storeAgent";
 import * as Errors from "../errors";
 import { getAiThreadMessages } from "../helpers/getAiThreadMessages";
 import { getAiThreads } from "../helpers/getAiThreads";
-import { anonymousQuery, authedMutation, authedQuery } from "../procedures";
+import { searchAiThreads } from "../helpers/searchAiThreads";
+import { anonymousQuery, authedQuery } from "../procedures";
 
 export const getThreads = authedQuery({
   args: {
@@ -24,18 +24,74 @@ export const getThreads = authedQuery({
   },
 });
 
+export const searchThreads = authedQuery({
+  args: {
+    paginationOpts: paginationOptsValidator,
+    query: v.string(),
+  },
+  handler: async (ctx, args) => {
+    return searchAiThreads(ctx, {
+      userId: ctx.user._id,
+      paginationOpts: args.paginationOpts,
+      query: args.query,
+    }).match(
+      (x) => x,
+      (e) => {
+        throw new ConvexError(e);
+      }
+    );
+  },
+});
+
 export const getAnonymousThreads = anonymousQuery({
   args: {
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
     if (!ctx.user) {
-      return null;
+      return {
+        continueCursor: "",
+        page: [],
+        cursor: null,
+        isDone: true,
+        pageStatus: null,
+        splitCursor: null,
+      };
     }
 
     return getAiThreads(ctx, {
       userId: ctx.user._id,
       paginationOpts: args.paginationOpts,
+    }).match(
+      (x) => x,
+      (e) => {
+        throw new ConvexError(e);
+      }
+    );
+  },
+});
+
+export const searchAnonymousThreads = anonymousQuery({
+  args: {
+    paginationOpts: paginationOptsValidator,
+    query: v.string(),
+  },
+  handler: async (ctx, args) => {
+    if (!ctx.user) {
+      return {
+        continueCursor: "",
+        page: [],
+        cursor: null,
+        isDone: true,
+        pageStatus: null,
+        splitCursor: null,
+      };
+    }
+
+    return searchAiThreads(ctx, {
+      userId: ctx.user._id,
+      paginationOpts: args.paginationOpts,
+      query: args.query,
     }).match(
       (x) => x,
       (e) => {
@@ -91,18 +147,6 @@ export const getAnonymousThreadMessages = anonymousQuery({
         throw new ConvexError(e);
       }
     );
-  },
-});
-
-export const test = authedMutation({
-  args: {},
-  handler: async (ctx) => {
-    const test = await storeAgent.updateThreadMetadata(ctx, {
-      threadId: "test",
-      patch: {
-        userId: "s",
-      },
-    });
   },
 });
 
