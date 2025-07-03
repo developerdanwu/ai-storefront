@@ -8,7 +8,7 @@ import { Button } from "~/components/ui/button";
 import { MessageInputField } from "~/components/ui/message-input-field";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { cn } from "~/lib/utils";
-import { Message } from "~/routes/_shell._auth.chat_.$threadId/_components/message";
+import { Message } from "~/routes/_shell.chat.$threadId/_components/message";
 
 interface ChatThreadBaseProps {
   messages: UsePaginatedQueryResult<MessageDoc>;
@@ -92,8 +92,6 @@ export function ChatThreadBase({
       align: "end",
     });
   }, [uiMessages]);
-
-  console.log("MESSAGES", messages.status);
 
   if (!threadId) {
     return (

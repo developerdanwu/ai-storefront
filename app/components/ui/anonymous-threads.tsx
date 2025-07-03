@@ -24,20 +24,17 @@ export function AnonymousThreads({ activeThreadId }: AnonymousThreadsProps) {
     }
   );
 
-  const searchThreadsResult = usePaginatedQuery(
-    api.ai.query.searchAnonymousThreads,
-    {
-      anonymousUserId: anonymousUserId || undefined,
-      query: query,
-    },
-    {
-      initialNumItems: 20,
-    }
-  );
-  const threads =
-    query.length > 0
-      ? searchThreadsResult.results
-      : threadsResult.results || [];
+  // const searchThreadsResult = usePaginatedQuery(
+  //   api.ai.query.searchAnonymousThreads,
+  //   {
+  //     anonymousUserId: anonymousUserId || undefined,
+  //     query: query,
+  //   },
+  //   {
+  //     initialNumItems: 20,
+  //   }
+  // );
+  const threads = threadsResult.results || [];
   const threadsLoading = threadsResult === undefined;
 
   const handleThreadSelect = (selectedThreadId: string) => {

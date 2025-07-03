@@ -1,6 +1,17 @@
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Trash } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router";
+import { useDialogStore } from "~/lib/dialog-store";
+import { cn } from "~/lib/utils";
 import { Button } from "./button";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuGroup,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "./context-menu";
+import { IconButton } from "./icon-button";
 import { Input } from "./input";
 import {
   SidebarContent,
@@ -25,6 +36,76 @@ interface ThreadsListProps {
   onThreadSelect: (threadId: string) => void;
   query: string;
   onQueryChange: (query: string) => void;
+}
+
+function ThreadItem({
+  thread,
+  onThreadSelect,
+  activeThreadId,
+}: {
+  thread: Thread;
+  onThreadSelect: (threadId: string) => void;
+  activeThreadId: string | undefined;
+}) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const dialogStore = useDialogStore();
+
+  return (
+    <SidebarMenuItem key={thread._id} className="w-full flex">
+      <ContextMenu onOpenChange={setMenuOpen}>
+        <ContextMenuTrigger asChild>
+          <SidebarMenuButton
+            onClick={() => onThreadSelect(thread._id)}
+            isActive={activeThreadId === thread._id}
+            className={cn(
+              "justify-start group/item w-0 h-10 flex-[1_1_0px] flex text-sm truncate text-left",
+              menuOpen && "bg-muted"
+            )}
+          >
+            <span className="font-medium w-0 flex-[1_1_0px] text-sm truncate block text-left">
+              {thread.title}
+            </span>
+            <IconButton
+              onClick={(e) => {
+                e.stopPropagation();
+                dialogStore.trigger.openAlertDialog({
+                  title: "Delete thread",
+                  description: "Are you sure you want to delete this thread?",
+                  onConfirm: () => {
+                    console.log("delete");
+                  },
+                });
+              }}
+              className="group-hover/item:visible opacity-0 group-hover/item:opacity-100 transition-all duration-500 absolute group-hover/item:relative invisible"
+              asChild
+              variant="ghost"
+              size="sm"
+            >
+              <Trash />
+            </IconButton>
+          </SidebarMenuButton>
+        </ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuGroup>
+            <ContextMenuItem
+              onSelect={() => {
+                dialogStore.trigger.openAlertDialog({
+                  title: "Delete thread",
+                  description: "Are you sure you want to delete this thread?",
+                  onConfirm: () => {
+                    console.log("delete");
+                  },
+                });
+              }}
+              variant="destructive"
+            >
+              Delete thread
+            </ContextMenuItem>
+          </ContextMenuGroup>
+        </ContextMenuContent>
+      </ContextMenu>
+    </SidebarMenuItem>
+  );
 }
 
 export function ThreadsList({
@@ -58,19 +139,12 @@ export function ThreadsList({
               )}
 
               {threads.map((thread) => (
-                <SidebarMenuItem key={thread._id} className="">
-                  <SidebarMenuButton
-                    onClick={() => onThreadSelect(thread._id)}
-                    isActive={activeThreadId === thread._id}
-                    className="justify-start h-auto py-3"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm truncate">
-                        {thread.title}
-                      </p>
-                    </div>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                <ThreadItem
+                  key={thread._id}
+                  thread={thread}
+                  onThreadSelect={onThreadSelect}
+                  activeThreadId={activeThreadId}
+                />
               ))}
 
               {!isLoading && threads.length === 0 && (

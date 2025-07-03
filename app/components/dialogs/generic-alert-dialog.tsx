@@ -116,7 +116,6 @@ export function GenericAlertDialog() {
   return (
     <AlertDialog open={open}>
       <AlertDialogContent
-        open={open}
         onEscapeKeyDown={(e) => {
           e.stopPropagation();
         }}

@@ -3,7 +3,9 @@ import { useMutation } from "@tanstack/react-query";
 import { authkitLoader } from "@workos-inc/authkit-react-router";
 import { api } from "convex/_generated/api";
 import { Authenticated, Unauthenticated } from "convex/react";
+import { MessageSquare } from "lucide-react";
 import { Link, Outlet, useLoaderData, useParams } from "react-router";
+import { AnonymousUser } from "~/components/auth/auth-provider";
 import { AnonymousThreads } from "~/components/ui/anonymous-threads";
 import { AuthenticatedThreads } from "~/components/ui/authenticated-threads";
 import { Button } from "~/components/ui/button";
@@ -34,9 +36,17 @@ export default function ShellRoute() {
         <Authenticated>
           <AuthenticatedThreads activeThreadId={threadId} />
         </Authenticated>
-        <Unauthenticated>
+        <AnonymousUser
+          fallback={
+            <div className="p-4 text-center text-muted-foreground">
+              <MessageSquare size={48} className="mx-auto mb-2 opacity-50" />
+              <p className="text-sm">No chats yet</p>
+              <p className="text-xs">Start a new conversation</p>
+            </div>
+          }
+        >
           <AnonymousThreads activeThreadId={threadId} />
-        </Unauthenticated>
+        </AnonymousUser>
         <SidebarFooter>
           <Authenticated>
             <NavUser user={user} />

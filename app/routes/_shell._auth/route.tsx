@@ -1,6 +1,6 @@
 import { authkitLoader } from "@workos-inc/authkit-react-router";
 import { Outlet } from "react-router";
-import { Authenticated } from "~/components/auth/auth-provider";
+import { AuthenticatedWithRedirect } from "~/components/auth/auth-provider";
 import type { Route } from "../+types/_index";
 
 export const loader = (args: Route.LoaderArgs) =>
@@ -8,8 +8,8 @@ export const loader = (args: Route.LoaderArgs) =>
 
 export default function AuthRoute() {
   return (
-    <Authenticated>
+    <AuthenticatedWithRedirect>
       <Outlet />
-    </Authenticated>
+    </AuthenticatedWithRedirect>
   );
 }

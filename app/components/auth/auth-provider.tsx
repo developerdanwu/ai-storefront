@@ -2,6 +2,7 @@ import {
   AuthLoading,
   Authenticated as ConvexAuthenticated,
   Unauthenticated as ConvexUnauthenticated,
+  Unauthenticated,
 } from "convex/react";
 import React from "react";
 import {
@@ -11,12 +12,17 @@ import {
   useLoaderData,
   useRevalidator,
 } from "react-router";
+import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
 import { ROUTES } from "~/lib/routes";
 import type { loader } from "~/root";
 import { LoadingSpinner } from "../ui/loading-spinner";
 import { PageLoadingSpinner } from "../ui/page-loading-spinner";
 
-export function Authenticated({ children }: { children: React.ReactNode }) {
+export function AuthenticatedWithRedirect({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <>
       <AuthLoading>
@@ -30,7 +36,11 @@ export function Authenticated({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function Unauthenticated({ children }: { children: React.ReactNode }) {
+export function UnauthenticatedWithRedirect({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <>
       <AuthLoading>
@@ -43,6 +53,20 @@ export function Unauthenticated({ children }: { children: React.ReactNode }) {
       </ConvexAuthenticated>
       <ConvexUnauthenticated>{children}</ConvexUnauthenticated>
     </>
+  );
+}
+
+export function AnonymousUser({
+  children,
+  fallback = null,
+}: {
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+}) {
+  const [anonymousUserId] = useAnonymousUserId();
+
+  return (
+    <Unauthenticated>{anonymousUserId ? children : fallback}</Unauthenticated>
   );
 }
 

@@ -4,7 +4,7 @@ import {
   customMutation,
   customQuery,
 } from "convex-helpers/server/customFunctions";
-import { ConvexError, Infer, v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import { ResultAsync } from "neverthrow";
 import { internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
@@ -19,7 +19,7 @@ import * as Errors from "./errors";
 import { getAnonymousUser } from "./helpers/getAnonymousUser";
 import { getUser as getUserHelper } from "./helpers/getUser";
 import { getUserId } from "./helpers/getUserId";
-import { User, Users } from "./schema/users.schema";
+import { User } from "./schema/users.schema";
 
 const getUser = (ctx: QueryCtx) => {
   return getUserId(ctx).andThen((userId) => {
@@ -70,26 +70,30 @@ export const anonymousQuery = customQuery(query, {
     }
 
     if (!args.anonymousUserId) {
-      return {
-        ctx: { ...ctx, user: null as Infer<typeof Users.doc> | null },
-        args,
-      };
+      throw new ConvexError(
+        Errors.userNotFound({
+          message: "Anonymous user not found",
+        })
+      );
     }
 
     const normalizedId = ctx.db.normalizeId("users", args.anonymousUserId);
 
     if (!normalizedId) {
-      return {
-        ctx: { ...ctx, user: null as Infer<typeof Users.doc> | null },
-        args,
-      };
+      throw new ConvexError(
+        Errors.userNotFound({
+          message: "Anonymous user not found",
+        })
+      );
     }
 
     const user = await getAnonymousUser(ctx, {
       anonymousUserId: normalizedId,
     }).match(
       (user) => user,
-      (e) => null
+      (e) => {
+        throw new ConvexError(e);
+      }
     );
 
     return {

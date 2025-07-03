@@ -1,7 +1,6 @@
 import { vStreamArgs } from "@convex-dev/agent";
 import { paginationOptsValidator } from "convex/server";
 import { ConvexError, v } from "convex/values";
-import * as Errors from "../errors";
 import { getAiThreadMessages } from "../helpers/getAiThreadMessages";
 import { getAiThreads } from "../helpers/getAiThreads";
 import { searchAiThreads } from "../helpers/searchAiThreads";
@@ -129,13 +128,6 @@ export const getAnonymousThreadMessages = anonymousQuery({
     streamArgs: vStreamArgs,
   },
   handler: async (ctx, args) => {
-    if (!ctx.user) {
-      throw new ConvexError(
-        Errors.aiThreadNotFound({
-          message: "AI thread not found",
-        })
-      );
-    }
     return getAiThreadMessages(ctx, {
       threadId: args.threadId,
       paginationOpts: args.paginationOpts,
