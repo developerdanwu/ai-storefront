@@ -52,8 +52,10 @@ function ThreadItem({
   const navigate = useNavigate();
   const deleteAiThread = useMutation({
     mutationKey: ["archive-thread", thread._id],
-    onMutate: async () => {
-      await navigate(ROUTES.home);
+    onMutate: async ({ threadId }: { threadId: string }) => {
+      if (threadId === activeThreadId) {
+        await navigate(ROUTES.home);
+      }
     },
     onSuccess: async () => {
       toast.success("Thread deleted");
@@ -67,6 +69,18 @@ function ThreadItem({
 
   const deleteAnonymousAiThread = useMutation({
     mutationKey: ["delete-anonymous-thread", thread._id],
+    onMutate: async ({ threadId }: { threadId: string }) => {
+      if (threadId === activeThreadId) {
+        await navigate(ROUTES.home);
+      }
+    },
+    onSuccess: async () => {
+      toast.success("Thread deleted");
+      dialogStore.trigger.closeAlertDialog();
+    },
+    onError: () => {
+      toast.error("Failed to delete thread");
+    },
     mutationFn: useConvexAction(api.ai.action.deleteAnonymousAiThread),
   });
 
