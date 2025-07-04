@@ -25,14 +25,14 @@ export const getThreads = authedQuery({
 
 export const searchThreads = authedQuery({
   args: {
-    paginationOpts: paginationOptsValidator,
     query: v.string(),
+    limit: v.number(),
   },
   handler: async (ctx, args) => {
     return searchAiThreads(ctx, {
       userId: ctx.user._id,
-      paginationOpts: args.paginationOpts,
       query: args.query,
+      limit: args.limit,
     }).match(
       (x) => x,
       (e) => {
@@ -72,25 +72,14 @@ export const getAnonymousThreads = anonymousQuery({
 
 export const searchAnonymousThreads = anonymousQuery({
   args: {
-    paginationOpts: paginationOptsValidator,
     query: v.string(),
+    limit: v.number(),
   },
   handler: async (ctx, args) => {
-    if (!ctx.user) {
-      return {
-        continueCursor: "",
-        page: [],
-        cursor: null,
-        isDone: true,
-        pageStatus: null,
-        splitCursor: null,
-      };
-    }
-
     return searchAiThreads(ctx, {
       userId: ctx.user._id,
-      paginationOpts: args.paginationOpts,
       query: args.query,
+      limit: args.limit,
     }).match(
       (x) => x,
       (e) => {

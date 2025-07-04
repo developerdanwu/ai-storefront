@@ -1,3 +1,5 @@
+import { convexQuery } from "@convex-dev/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { api } from "convex/_generated/api";
 import { usePaginatedQuery } from "convex/react";
 import { useState } from "react";
@@ -14,7 +16,7 @@ export function AnonymousThreads({ activeThreadId }: AnonymousThreadsProps) {
   const [anonymousUserId] = useAnonymousUserId();
   const [query, setQuery] = useState("");
   // Get threads from API
-  const threadsResult = usePaginatedQuery(
+  const { results: threadsResult, status: threadsStatus } = usePaginatedQuery(
     api.ai.query.getAnonymousThreads,
     {
       anonymousUserId: anonymousUserId || undefined,
@@ -24,18 +26,16 @@ export function AnonymousThreads({ activeThreadId }: AnonymousThreadsProps) {
     }
   );
 
-  // const searchThreadsResult = usePaginatedQuery(
-  //   api.ai.query.searchAnonymousThreads,
-  //   {
-  //     anonymousUserId: anonymousUserId || undefined,
-  //     query: query,
-  //   },
-  //   {
-  //     initialNumItems: 20,
-  //   }
-  // );
-  const threads = threadsResult.results || [];
-  const threadsLoading = threadsResult === undefined;
+  const { data: searchThreadsResult } = useQuery(
+    convexQuery(api.ai.query.searchAnonymousThreads, {
+      query: query,
+      limit: 20,
+      anonymousUserId: anonymousUserId,
+    })
+  );
+
+  const threads = query ? searchThreadsResult || [] : threadsResult || [];
+  const threadsLoading = threadsStatus === "LoadingFirstPage";
 
   const handleThreadSelect = (selectedThreadId: string) => {
     navigate(`/chat/${selectedThreadId}`);

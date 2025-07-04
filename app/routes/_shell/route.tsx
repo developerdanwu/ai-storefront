@@ -21,8 +21,12 @@ import type { Route } from "./+types/route";
 
 export const loader = async (args: Route.LoaderArgs) => authkitLoader(args);
 
+export function useShellLoaderData() {
+  return useLoaderData<typeof loader>();
+}
+
 export default function ShellRoute() {
-  const { user } = useLoaderData<typeof loader>();
+  const { user } = useShellLoaderData();
   const { threadId } = useParams();
 
   // Create new thread

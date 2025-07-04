@@ -1,3 +1,5 @@
+import { convexQuery } from "@convex-dev/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { usePaginatedQuery } from "convex-helpers/react";
 import { api } from "convex/_generated/api";
 import { useState } from "react";
@@ -23,17 +25,16 @@ export function AuthenticatedThreads({
     }
   );
 
-  // const searchThreadsResult = usePaginatedQuery(
-  //   api.ai.query.searchThreads,
-  //   {
-  //     query: "124",
-  //   },
-  //   {
-  //     initialNumItems: 20,
-  //   }
-  // );
+  const searchThreadsResult = useQuery(
+    convexQuery(api.ai.query.searchThreads, {
+      query: query,
+      limit: 20,
+    })
+  );
 
-  const threads = threadsResult.results || [];
+  const threads = query
+    ? searchThreadsResult.data || []
+    : threadsResult.results || [];
   const threadsLoading = threadsResult === undefined;
 
   const handleThreadSelect = (selectedThreadId: string) => {

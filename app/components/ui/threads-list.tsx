@@ -1,8 +1,15 @@
+import { useConvexAction } from "@convex-dev/react-query";
+import { useMutation } from "@tanstack/react-query";
+import { api } from "convex/_generated/api";
 import { MessageSquare, Trash } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { toast } from "sonner";
 import { useDialogStore } from "~/lib/dialog-store";
+import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
+import { ROUTES } from "~/lib/routes";
 import { cn } from "~/lib/utils";
+import { useShellLoaderData } from "~/routes/_shell/route";
 import { Button } from "./button";
 import {
   ContextMenu,
@@ -29,15 +36,6 @@ export interface Thread {
   _creationTime: number;
 }
 
-interface ThreadsListProps {
-  threads: Thread[];
-  isLoading: boolean;
-  activeThreadId?: string;
-  onThreadSelect: (threadId: string) => void;
-  query: string;
-  onQueryChange: (query: string) => void;
-}
-
 function ThreadItem({
   thread,
   onThreadSelect,
@@ -47,8 +45,51 @@ function ThreadItem({
   onThreadSelect: (threadId: string) => void;
   activeThreadId: string | undefined;
 }) {
+  const { user } = useShellLoaderData();
+  const [anonymousUserId] = useAnonymousUserId();
   const [menuOpen, setMenuOpen] = useState(false);
   const dialogStore = useDialogStore();
+  const navigate = useNavigate();
+  const deleteAiThread = useMutation({
+    mutationKey: ["archive-thread", thread._id],
+    onMutate: async () => {
+      await navigate(ROUTES.home);
+    },
+    onSuccess: async () => {
+      toast.success("Thread deleted");
+      dialogStore.trigger.closeAlertDialog();
+    },
+    onError: () => {
+      toast.error("Failed to delete thread");
+    },
+    mutationFn: useConvexAction(api.ai.action.deleteAiThread),
+  });
+
+  const deleteAnonymousAiThread = useMutation({
+    mutationKey: ["delete-anonymous-thread", thread._id],
+    mutationFn: useConvexAction(api.ai.action.deleteAnonymousAiThread),
+  });
+
+  const handleDelete = () => {
+    dialogStore.trigger.openAlertDialog({
+      title: "Delete thread",
+      disableCloseOnConfirm: true,
+      description: "Are you sure you want to delete this thread?",
+      confirmButtonMutationKeys: [["archive-thread", thread._id]],
+      onConfirm: () => {
+        if (user) {
+          deleteAiThread.mutate({
+            threadId: thread._id,
+          });
+        } else {
+          deleteAnonymousAiThread.mutate({
+            threadId: thread._id,
+            anonymousUserId,
+          });
+        }
+      },
+    });
+  };
 
   return (
     <SidebarMenuItem key={thread._id} className="w-full flex">
@@ -68,13 +109,7 @@ function ThreadItem({
             <IconButton
               onClick={(e) => {
                 e.stopPropagation();
-                dialogStore.trigger.openAlertDialog({
-                  title: "Delete thread",
-                  description: "Are you sure you want to delete this thread?",
-                  onConfirm: () => {
-                    console.log("delete");
-                  },
-                });
+                handleDelete();
               }}
               className="group-hover/item:visible opacity-0 group-hover/item:opacity-100 transition-all duration-500 absolute group-hover/item:relative invisible"
               asChild
@@ -89,13 +124,7 @@ function ThreadItem({
           <ContextMenuGroup>
             <ContextMenuItem
               onSelect={() => {
-                dialogStore.trigger.openAlertDialog({
-                  title: "Delete thread",
-                  description: "Are you sure you want to delete this thread?",
-                  onConfirm: () => {
-                    console.log("delete");
-                  },
-                });
+                handleDelete();
               }}
               variant="destructive"
             >
@@ -115,7 +144,14 @@ export function ThreadsList({
   query,
   onQueryChange,
   onThreadSelect,
-}: ThreadsListProps) {
+}: {
+  threads: Thread[];
+  isLoading: boolean;
+  activeThreadId?: string;
+  onThreadSelect: (threadId: string) => void;
+  query: string;
+  onQueryChange: (query: string) => void;
+}) {
   return (
     <>
       <SidebarHeader>

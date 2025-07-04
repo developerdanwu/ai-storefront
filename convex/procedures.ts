@@ -53,7 +53,7 @@ export const authedQuery = customQuery(query, {
 
 export const anonymousQuery = customQuery(query, {
   args: {
-    anonymousUserId: v.optional(v.string()),
+    anonymousUserId: v.optional(v.union(v.string(), v.null())),
   },
   input: async (ctx, args) => {
     const userIdentity = await getUserId(ctx).match(

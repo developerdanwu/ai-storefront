@@ -1,5 +1,6 @@
 import { ConvexError, v } from "convex/values";
 import { ok, ResultAsync } from "neverthrow";
+import { components } from "../_generated/api";
 import { storeAgent } from "../agents/storeAgent";
 import * as Errors from "../errors";
 import { createThread as createThreadHelper } from "../helpers/createThread";
@@ -196,5 +197,37 @@ export const continueAnonymousThread = anonymousAction({
           throw new ConvexError(e);
         }
       );
+  },
+});
+
+export const deleteAiThread = authedAction({
+  args: {
+    threadId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.runAction(components.agent.threads.deleteAllForThreadIdSync, {
+      threadId: args.threadId,
+    });
+  },
+});
+
+export const deleteAnonymousAiThread = anonymousAction({
+  args: {
+    threadId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const thread = await ctx.runQuery(components.agent.threads.getThread, {
+      threadId: args.threadId,
+    });
+
+    if (thread?.userId !== ctx.anonymousUserId) {
+      throw new ConvexError(
+        Errors.aiThreadNotFound({ message: "Thread not found" })
+      );
+    }
+
+    await ctx.runAction(components.agent.threads.deleteAllForThreadIdSync, {
+      threadId: args.threadId,
+    });
   },
 });

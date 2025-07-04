@@ -7,6 +7,7 @@ import { Virtualizer, type VirtualizerHandle } from "virtua";
 import { Button } from "~/components/ui/button";
 import { MessageInputField } from "~/components/ui/message-input-field";
 import { ScrollArea } from "~/components/ui/scroll-area";
+import { Skeleton } from "~/components/ui/skeleton";
 import { cn } from "~/lib/utils";
 import { Message } from "~/routes/_shell.chat.$threadId/_components/message";
 
@@ -106,67 +107,78 @@ export function ChatThreadBase({
   return (
     <div className="h-full flex flex-col items-center w-full justify-center">
       <div className="h-full w-full flex flex-col">
-        <ScrollArea
-          viewportRef={viewportRef}
-          className="flex-[1_1_0px] h-0 w-full overscroll-none"
-          viewportClassName={cn(
-            "w-full relative overscroll-none",
-            !isInitialized && "opacity-0"
-          )}
-        >
-          <Virtualizer
-            shift={isLoadingOlderMessages}
-            ref={virtualizerRef}
-            scrollRef={viewportRef}
-            overscan={5}
-            onScroll={(offset) => {
-              if (!virtualizerRef.current) {
-                return;
-              }
-
-              // Check if user is near the bottom (within 150px)
-              const { scrollSize, viewportSize } = virtualizerRef.current;
-              const distanceFromBottom = scrollSize - (offset + viewportSize);
-              shouldStickToBottom.current = distanceFromBottom <= 150;
-            }}
+        {messages.status === "LoadingFirstPage" && (
+          <div className="flex-1 flex flex-col gap-4 p-4 ax-w-3xl mx-auto w-full">
+            <MessageSkeleton variant="user" lines={3} />
+            <MessageSkeleton variant="assistant" lines={2} />
+            <MessageSkeleton variant="user" lines={3} />
+            <MessageSkeleton variant="assistant" lines={4} />
+            <MessageSkeleton variant="user" lines={2} />
+          </div>
+        )}
+        {messages.status !== "LoadingFirstPage" && (
+          <ScrollArea
+            viewportRef={viewportRef}
+            className="flex-[1_1_0px] h-0 w-full overscroll-none"
+            viewportClassName={cn(
+              "w-full relative overscroll-none",
+              !isInitialized && "opacity-0"
+            )}
           >
-            {uiMessages.map((message, index) => {
-              const nextMessage = uiMessages[index + 1];
+            <Virtualizer
+              shift={isLoadingOlderMessages}
+              ref={virtualizerRef}
+              scrollRef={viewportRef}
+              overscan={5}
+              onScroll={(offset) => {
+                if (!virtualizerRef.current) {
+                  return;
+                }
 
-              if (message === "load-more") {
+                // Check if user is near the bottom (within 150px)
+                const { scrollSize, viewportSize } = virtualizerRef.current;
+                const distanceFromBottom = scrollSize - (offset + viewportSize);
+                shouldStickToBottom.current = distanceFromBottom <= 150;
+              }}
+            >
+              {uiMessages.map((message, index) => {
+                const nextMessage = uiMessages[index + 1];
+
+                if (message === "load-more") {
+                  return (
+                    <Button
+                      variant="ghost"
+                      className="mx-auto flex max-w-3xl mb-4 w-full"
+                      key="load-more"
+                      onClick={() => {
+                        messages.loadMore(20);
+                      }}
+                      disabled={messages.status === "LoadingMore"}
+                    >
+                      Load older messages
+                    </Button>
+                  );
+                }
+
                 return (
-                  <Button
-                    variant="ghost"
-                    className="mx-auto flex max-w-3xl mb-4 w-full"
-                    key="load-more"
-                    onClick={() => {
-                      messages.loadMore(20);
-                    }}
-                    disabled={messages.status !== "CanLoadMore"}
-                  >
-                    Load older messages
-                  </Button>
-                );
-              }
-
-              return (
-                <div
-                  key={message.key}
-                  className="mb-4 max-w-3xl mx-auto text-sm"
-                >
-                  <Message
-                    isStreaming={isStreaming}
-                    message={message}
+                  <div
                     key={message.key}
-                    nextMessage={
-                      nextMessage === "load-more" ? undefined : nextMessage
-                    }
-                  />
-                </div>
-              );
-            })}
-          </Virtualizer>
-        </ScrollArea>
+                    className="mb-4 max-w-3xl mx-auto text-sm"
+                  >
+                    <Message
+                      isStreaming={isStreaming}
+                      message={message}
+                      key={message.key}
+                      nextMessage={
+                        nextMessage === "load-more" ? undefined : nextMessage
+                      }
+                    />
+                  </div>
+                );
+              })}
+            </Virtualizer>
+          </ScrollArea>
+        )}
         <MessageInputField
           name="message"
           isGenerating={isStreaming}
@@ -180,6 +192,61 @@ export function ChatThreadBase({
           isSubmitting={isSubmitting}
           rows={1}
         />
+      </div>
+    </div>
+  );
+}
+
+function MessageSkeleton({
+  variant,
+  lines,
+}: {
+  variant: "user" | "assistant";
+  lines: number;
+}) {
+  const isUser = variant === "user";
+
+  // Generate more natural, varied line widths
+  const getLineWidths = (numLines: number) => {
+    const possibleWidths = [
+      "w-3/4",
+      "w-4/5",
+      "w-2/3",
+      "w-5/6",
+      "w-1/2",
+      "w-3/5",
+    ];
+    return Array.from({ length: numLines }, (_, i) => {
+      if (i === numLines - 1 && numLines > 1) {
+        // Last line is usually shorter
+        return possibleWidths[Math.floor(Math.random() * 3) + 3]; // shorter widths
+      }
+      return possibleWidths[Math.floor(Math.random() * possibleWidths.length)];
+    });
+  };
+
+  const lineWidths = getLineWidths(lines);
+
+  if (isUser) {
+    return (
+      <div className="mb-4 w-full max-w-3xl mx-auto text-sm flex justify-end">
+        <div className="space-y-2 rounded-md w-full flex flex-col items-end">
+          {lineWidths.map((width, i) => (
+            <Skeleton className={cn("h-4", width)} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mb-4 w-full max-w-3xl mx-auto text-sm flex flex-col space-y-2">
+      <div className="flex items-start gap-3">
+        <div className="flex-1 space-y-2 flex flex-col">
+          {lineWidths.map((width, i) => (
+            <Skeleton key={i} className={cn("h-4", width)} />
+          ))}
+        </div>
       </div>
     </div>
   );

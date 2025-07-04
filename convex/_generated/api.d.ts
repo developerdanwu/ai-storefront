@@ -11,6 +11,7 @@
 import type * as agents_storeAgent from "../agents/storeAgent.js";
 import type * as agents_summaryAgent from "../agents/summaryAgent.js";
 import type * as ai_action from "../ai/action.js";
+import type * as ai_actionsNode from "../ai/actionsNode.js";
 import type * as ai_query from "../ai/query.js";
 import type * as errors from "../errors.js";
 import type * as helpers_createThread from "../helpers/createThread.js";
@@ -25,6 +26,7 @@ import type * as helpers_searchAiThreads from "../helpers/searchAiThreads.js";
 import type * as helpers_sendAiMessage from "../helpers/sendAiMessage.js";
 import type * as http from "../http.js";
 import type * as procedures from "../procedures.js";
+import type * as rag from "../rag.js";
 import type * as users_mutation from "../users/mutation.js";
 import type * as users_nodeAction from "../users/nodeAction.js";
 import type * as users_query from "../users/query.js";
@@ -49,6 +51,7 @@ declare const fullApi: ApiFromModules<{
   "agents/storeAgent": typeof agents_storeAgent;
   "agents/summaryAgent": typeof agents_summaryAgent;
   "ai/action": typeof ai_action;
+  "ai/actionsNode": typeof ai_actionsNode;
   "ai/query": typeof ai_query;
   errors: typeof errors;
   "helpers/createThread": typeof helpers_createThread;
@@ -63,6 +66,7 @@ declare const fullApi: ApiFromModules<{
   "helpers/sendAiMessage": typeof helpers_sendAiMessage;
   http: typeof http;
   procedures: typeof procedures;
+  rag: typeof rag;
   "users/mutation": typeof users_mutation;
   "users/nodeAction": typeof users_nodeAction;
   "users/query": typeof users_query;
@@ -1922,32 +1926,15 @@ export declare const components: {
       searchThreadTitles: FunctionReference<
         "query",
         "internal",
-        {
-          paginationOpts?: {
-            cursor: string | null;
-            endCursor?: string | null;
-            id?: number;
-            maximumBytesRead?: number;
-            maximumRowsRead?: number;
-            numItems: number;
-          };
-          query: string;
-          userId?: string | null;
-        },
-        {
-          continueCursor: string;
-          isDone: boolean;
-          page: Array<{
-            _creationTime: number;
-            _id: string;
-            status: "active" | "archived";
-            summary?: string;
-            title?: string;
-            userId?: string;
-          }>;
-          pageStatus?: "SplitRecommended" | "SplitRequired" | null;
-          splitCursor?: string | null;
-        }
+        { limit: number; query: string; userId?: string | null },
+        Array<{
+          _creationTime: number;
+          _id: string;
+          status: "active" | "archived";
+          summary?: string;
+          title?: string;
+          userId?: string;
+        }>
       >;
       updateThread: FunctionReference<
         "mutation",
