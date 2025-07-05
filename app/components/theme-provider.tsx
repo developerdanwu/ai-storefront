@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { useMediaQuery as useMediaQueryOriginal } from "usehooks-ts";
 
 type Theme = "dark" | "light" | "system";
 
@@ -11,11 +12,13 @@ type ThemeProviderProps = {
 type ThemeProviderState = {
   theme: Theme;
   setTheme: (theme: Theme) => void;
+  currentTheme: Omit<Theme, "system">;
 };
 
 const initialState: ThemeProviderState = {
   theme: "system",
   setTheme: () => null,
+  currentTheme: "light",
 };
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
@@ -27,7 +30,17 @@ export function ThemeProvider({
   ...props
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(defaultTheme);
+  const preferredSystemColorScheme = useMediaQueryOriginal(
+    "(prefers-color-scheme: dark)",
+    {
+      defaultValue: false,
+      initializeWithValue: false,
+    }
+  )
+    ? "dark"
+    : "light";
 
+  const currentTheme = theme === "system" ? preferredSystemColorScheme : theme;
   useEffect(() => {
     // Hydrate theme from localStorage after component mounts
     const storedTheme = localStorage.getItem(storageKey) as Theme;
@@ -42,7 +55,8 @@ export function ThemeProvider({
     root.classList.remove("light", "dark");
 
     if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
+        .matches
         ? "dark"
         : "light";
 
@@ -55,6 +69,7 @@ export function ThemeProvider({
 
   const value = {
     theme,
+    currentTheme,
     setTheme: (theme: Theme) => {
       if (typeof window !== "undefined") {
         localStorage.setItem(storageKey, theme);
@@ -73,7 +88,8 @@ export function ThemeProvider({
 export const useTheme = () => {
   const context = useContext(ThemeProviderContext);
 
-  if (context === undefined) throw new Error("useTheme must be used within a ThemeProvider");
+  if (context === undefined)
+    throw new Error("useTheme must be used within a ThemeProvider");
 
   return context;
 };

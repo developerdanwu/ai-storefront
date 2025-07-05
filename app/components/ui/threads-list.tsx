@@ -10,6 +10,7 @@ import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
 import { ROUTES } from "~/lib/routes";
 import { cn } from "~/lib/utils";
 import { useShellLoaderData } from "~/routes/_shell/route";
+import { Button } from "./button";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -168,6 +169,7 @@ export function ThreadsList({
   return (
     <>
       <SidebarHeader>
+        <Button>New chat</Button>
         <Input
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}

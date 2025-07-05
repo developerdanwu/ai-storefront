@@ -33,8 +33,8 @@ export function useShellLoaderData() {
 export default function ShellRoute() {
   const { user } = useShellLoaderData();
   const { threadId } = useParams();
-  const { setTheme, theme } = useTheme();
-
+  const { setTheme, currentTheme, theme } = useTheme();
+  console.log("THEMING", currentTheme, theme);
   // Create new thread
   const createThread = useMutation({
     mutationFn: useConvexAction(api.ai.action.createThread),
@@ -68,13 +68,13 @@ export default function ShellRoute() {
           <AnonymousThreads activeThreadId={threadId} />
         </AnonymousUser>
         <SidebarFooter>
-          {theme === "dark" && (
+          {currentTheme === "dark" && (
             <SidebarMenuButton onClick={() => setTheme("light")}>
               <SunIcon />
               Lights on
             </SidebarMenuButton>
           )}
-          {theme === "light" && (
+          {currentTheme === "light" && (
             <SidebarMenuButton onClick={() => setTheme("dark")}>
               <MoonIcon />
               Lights off
