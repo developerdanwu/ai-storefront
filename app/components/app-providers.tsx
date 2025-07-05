@@ -4,7 +4,6 @@ import {
   useConvexMutation,
 } from "@convex-dev/react-query";
 import {
-  focusManager,
   QueryClient,
   QueryClientProvider,
   useMutation,
@@ -108,16 +107,16 @@ function BaseProviders({ children }: { children: React.ReactNode }) {
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   const { revalidate } = useRevalidator();
-  // revalidate login state on focus change
-  useEffect(() => {
-    const unsubscribe = focusManager.subscribe(async () => {
-      await revalidate();
-    });
+  // // revalidate login state on focus change
+  // useEffect(() => {
+  //   const unsubscribe = focusManager.subscribe(async () => {
+  //     await revalidate();
+  //   });
 
-    return () => {
-      unsubscribe();
-    };
-  }, [revalidate]);
+  //   return () => {
+  //     unsubscribe();
+  //   };
+  // }, [revalidate]);
 
   return (
     <CustomErrorBoundary
