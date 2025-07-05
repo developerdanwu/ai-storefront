@@ -104,8 +104,9 @@ function AuthenticatedProvider({ children }: { children: React.ReactNode }) {
 function BaseProviders({ children }: { children: React.ReactNode }) {
   const { user } = useLoaderData<typeof loader>();
   const { isLoading } = useConvexAuth();
+  const isClient = useIsClient();
 
-  if (isLoading) {
+  if (isLoading || !isClient) {
     return <PageLoadingSpinner />;
   }
 
@@ -117,18 +118,6 @@ function BaseProviders({ children }: { children: React.ReactNode }) {
 }
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
-  const isClient = useIsClient();
-  // // revalidate login state on focus change
-  // useEffect(() => {
-  //   const unsubscribe = focusManager.subscribe(async () => {
-  //     await revalidate();
-  //   });
-
-  //   return () => {
-  //     unsubscribe();
-  //   };
-  // }, [revalidate]);
-
   return (
     <CustomErrorBoundary
       wrapRenderFallback={(props) => (
@@ -142,7 +131,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
           <ThemeProvider>
             <DialogStoreContextProvider>
               <BaseProviders>
-                {isClient ? children : null}
+                {children}
                 <GenericAlertDialog />
                 <Toaster />
                 <ReactQueryDevtools initialIsOpen={false} />
