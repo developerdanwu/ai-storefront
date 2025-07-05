@@ -36,14 +36,15 @@ function UserMessageWrapper({ children }: { children: React.ReactNode }) {
 }
 
 function AssistantMessageWrapper({ children }: { children: React.ReactNode }) {
-  const { data: profilePictureUrl } = useQuery(
-    convexQuery(api.ai.query.getAiProfilePicture, {})
-  );
+  const { data: agentProfile } = useQuery({
+    ...convexQuery(api.ai.query.getAiAgentProfile, {}),
+    throwOnError: false,
+  });
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2">
         <Avatar className="size-7 rounded-lg">
-          <AvatarImage src={profilePictureUrl} />
+          <AvatarImage src={agentProfile?.url ?? undefined} />
           <AvatarFallback>DW</AvatarFallback>
         </Avatar>
         <p className="text-sm">Dan</p>

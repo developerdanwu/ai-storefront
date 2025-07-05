@@ -130,3 +130,10 @@ export function getAiProfilePictureFailed(context: ErrorContext) {
     context,
   } as const satisfies BackendError;
 }
+
+export function aiAgentPersonaNotFound(context: ErrorContext) {
+  return {
+    _tag: "AiAgentPersonaNotFound",
+    context,
+  } as const satisfies BackendError;
+}

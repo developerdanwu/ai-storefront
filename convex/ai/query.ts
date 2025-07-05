@@ -1,8 +1,7 @@
 import { vStreamArgs } from "@convex-dev/agent";
 import { paginationOptsValidator } from "convex/server";
 import { ConvexError, v } from "convex/values";
-import { errAsync, okAsync, ResultAsync } from "neverthrow";
-import { Id } from "../_generated/dataModel";
+import { ResultAsync } from "neverthrow";
 import { query } from "../_generated/server";
 import * as Errors from "../errors";
 import { getAiThreadMessages } from "../helpers/getAiThreadMessages";
@@ -159,33 +158,40 @@ export const needMigration = authedQuery({
   },
 });
 
-export const getAiProfilePicture = query({
+export const getAiAgentProfile = query({
   args: {},
   handler: async (ctx, args) => {
-    return ResultAsync.fromPromise(
-      ctx.storage.getUrl("kg25c2eqfgsc4rzrcgf0xc2kph7k4tb3" as Id<"_storage">),
+    const agentPersona = await ResultAsync.fromPromise(
+      ctx.db
+        .query("aiAgentPersona")
+        .withIndex("agentId", (q) => q.eq("agentId", "store_agent"))
+        .unique(),
       (e) =>
-        Errors.getAiProfilePictureFailed({
-          message: "Failed to get ai profile picture",
-          error: e,
+        Errors.aiAgentPersonaNotFound({
+          message: "Ai agent persona not found",
         })
-    )
-      .andThen((x) => {
-        if (!x) {
-          return errAsync(
-            Errors.getAiProfilePictureFailed({
-              message: "Failed to get ai profile picture",
-            })
-          );
-        }
-
-        return okAsync(x);
-      })
-      .match(
+    ).match(
+      (x) => x,
+      (e) => {
+        throw new ConvexError(e);
+      }
+    );
+    let profilePicUrl: null | string = null;
+    if (agentPersona?.profilePictureStorageId) {
+      profilePicUrl = await ResultAsync.fromPromise(
+        ctx.storage.getUrl(agentPersona.profilePictureStorageId),
+        () => null
+      ).match(
         (x) => x,
         (e) => {
           throw new ConvexError(e);
         }
       );
+    }
+
+    return {
+      ...agentPersona,
+      url: profilePicUrl,
+    };
   },
 });
