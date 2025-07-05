@@ -11,7 +11,11 @@ import {
 } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { api } from "convex/_generated/api";
-import { ConvexProviderWithAuth, ConvexReactClient } from "convex/react";
+import {
+  ConvexProviderWithAuth,
+  ConvexReactClient,
+  useConvexAuth,
+} from "convex/react";
 import React, { useEffect } from "react";
 import { useLoaderData } from "react-router";
 import { toast } from "sonner";
@@ -24,6 +28,7 @@ import type { loader } from "~/root";
 import { CustomErrorBoundary } from "./custom-error-boundary";
 import { GenericAlertDialog } from "./dialogs/generic-alert-dialog";
 import { ThemeProvider } from "./theme-provider";
+import { PageLoadingSpinner } from "./ui/page-loading-spinner";
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL);
 const convexQueryClient = new ConvexQueryClient(convex);
@@ -98,6 +103,11 @@ function AuthenticatedProvider({ children }: { children: React.ReactNode }) {
 
 function BaseProviders({ children }: { children: React.ReactNode }) {
   const { user } = useLoaderData<typeof loader>();
+  const { isLoading } = useConvexAuth();
+
+  if (isLoading) {
+    return <PageLoadingSpinner />;
+  }
 
   if (user) {
     return <AuthenticatedProvider>{children}</AuthenticatedProvider>;

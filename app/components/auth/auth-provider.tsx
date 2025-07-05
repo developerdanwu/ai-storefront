@@ -94,15 +94,13 @@ export function CatchAll() {
 
 export function useWorkosConvexAuth() {
   const { user, accessToken } = useLoaderData<typeof loader>();
-  const { submit, data } = useRefreshSession();
+  const { submit, data, state } = useRefreshSession();
   const refreshedToken = data?.accessToken;
-  console.log("dataaa", data, user);
   const fetchAccessToken = React.useCallback(
     async ({ forceRefreshToken }: { forceRefreshToken: boolean }) => {
       console.log("fetching access token", forceRefreshToken);
       if (forceRefreshToken) {
         await submit({ method: "post", action: "/refresh-session" });
-        console.log("test", data);
         return refreshedToken ?? accessToken ?? null;
       }
       return accessToken ?? null;
@@ -112,9 +110,9 @@ export function useWorkosConvexAuth() {
 
   return React.useMemo(() => {
     return {
-      isLoading: false,
+      isLoading: state === "submitting",
       isAuthenticated: !!user,
       fetchAccessToken,
     };
-  }, [user, fetchAccessToken]);
+  }, [user, fetchAccessToken, state]);
 }
