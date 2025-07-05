@@ -11,6 +11,7 @@
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
     "convex:dev": "convex dev",
+    "deploy": "pnpm dlx convex deploy --cmd 'pnpm run build' --yes",
     "convex:deploy": "pnpm dlx convex deploy --cmd 'pnpm run build'"
   },
   "dependencies": {
