@@ -115,6 +115,7 @@ export function useWorkosConvexAuth() {
           method: "post",
           action: "/refresh-session",
         });
+        await revalidate();
       }
 
       return accessToken ?? null;

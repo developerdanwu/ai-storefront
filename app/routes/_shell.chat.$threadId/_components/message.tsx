@@ -1,5 +1,8 @@
 import { type MessageDoc } from "@convex-dev/agent";
 import { type UIMessage, useSmoothText } from "@convex-dev/agent/react";
+import { convexQuery } from "@convex-dev/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "convex/_generated/api";
 import { AlertTriangleIcon } from "lucide-react";
 import { match, P } from "ts-pattern";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
@@ -33,11 +36,14 @@ function UserMessageWrapper({ children }: { children: React.ReactNode }) {
 }
 
 function AssistantMessageWrapper({ children }: { children: React.ReactNode }) {
+  const { data: profilePictureUrl } = useQuery(
+    convexQuery(api.ai.query.getAiProfilePicture, {})
+  );
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2">
-        <Avatar className="size-6">
-          <AvatarImage src="" />
+        <Avatar className="size-7 rounded-lg">
+          <AvatarImage src={profilePictureUrl} />
           <AvatarFallback>DW</AvatarFallback>
         </Avatar>
         <p className="text-sm">Dan</p>

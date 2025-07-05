@@ -35,7 +35,8 @@ export function AuthenticatedThreads({
   const threads = query
     ? searchThreadsResult.data || []
     : threadsResult.results || [];
-  const threadsLoading = threadsResult === undefined;
+  const threadsLoading =
+    threadsResult.isLoading || searchThreadsResult.isLoading;
 
   const handleThreadSelect = (selectedThreadId: string) => {
     navigate(`/chat/${selectedThreadId}`);

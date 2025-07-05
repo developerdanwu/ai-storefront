@@ -123,3 +123,10 @@ export function aiToolFailure(context: ErrorContext) {
     context,
   } as const satisfies BackendError;
 }
+
+export function getAiProfilePictureFailed(context: ErrorContext) {
+  return {
+    _tag: "GetAiProfilePictureFailed",
+    context,
+  } as const satisfies BackendError;
+}

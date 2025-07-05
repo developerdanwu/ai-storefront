@@ -1,18 +1,23 @@
 import { useConvexAction } from "@convex-dev/react-query";
+import { Slottable } from "@radix-ui/react-slot";
 import { useMutation } from "@tanstack/react-query";
 import { authkitLoader } from "@workos-inc/authkit-react-router";
 import { api } from "convex/_generated/api";
 import { Authenticated, Unauthenticated } from "convex/react";
-import { MessageSquare } from "lucide-react";
+import { LogInIcon, MessageSquare, MoonIcon, SunIcon } from "lucide-react";
 import { Link, Outlet, useLoaderData, useParams } from "react-router";
 import { AnonymousUser } from "~/components/auth/auth-provider";
+import { useTheme } from "~/components/theme-provider";
 import { AnonymousThreads } from "~/components/ui/anonymous-threads";
 import { AuthenticatedThreads } from "~/components/ui/authenticated-threads";
-import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
 import {
   Sidebar,
+  SidebarContent,
   SidebarFooter,
+  SidebarHeader,
   SidebarInset,
+  SidebarMenuButton,
   SidebarProvider,
   SidebarTrigger,
 } from "~/components/ui/sidebar";
@@ -28,6 +33,7 @@ export function useShellLoaderData() {
 export default function ShellRoute() {
   const { user } = useShellLoaderData();
   const { threadId } = useParams();
+  const { setTheme, theme } = useTheme();
 
   // Create new thread
   const createThread = useMutation({
@@ -42,23 +48,46 @@ export default function ShellRoute() {
         </Authenticated>
         <AnonymousUser
           fallback={
-            <div className="p-4 text-center text-muted-foreground">
-              <MessageSquare size={48} className="mx-auto mb-2 opacity-50" />
-              <p className="text-sm">No chats yet</p>
-              <p className="text-xs">Start a new conversation</p>
-            </div>
+            <>
+              <SidebarHeader>
+                <Input />
+              </SidebarHeader>
+              <SidebarContent>
+                <div className="p-4 text-center text-muted-foreground">
+                  <MessageSquare
+                    size={48}
+                    className="mx-auto mb-2 opacity-50"
+                  />
+                  <p className="text-sm">No chats yet</p>
+                  <p className="text-xs">Start a new conversation</p>
+                </div>
+              </SidebarContent>
+            </>
           }
         >
           <AnonymousThreads activeThreadId={threadId} />
         </AnonymousUser>
         <SidebarFooter>
-          <Authenticated>
-            <NavUser user={user} />
-          </Authenticated>
+          {theme === "dark" && (
+            <SidebarMenuButton onClick={() => setTheme("light")}>
+              <SunIcon />
+              Lights on
+            </SidebarMenuButton>
+          )}
+          {theme === "light" && (
+            <SidebarMenuButton onClick={() => setTheme("dark")}>
+              <MoonIcon />
+              Lights off
+            </SidebarMenuButton>
+          )}
+          <Authenticated>{user && <NavUser user={user} />}</Authenticated>
           <Unauthenticated>
-            <Button asChild>
-              <Link to="/login">Sign In</Link>
-            </Button>
+            <SidebarMenuButton asChild>
+              <LogInIcon />
+              <Slottable>
+                <Link to="/login">Sign In</Link>
+              </Slottable>
+            </SidebarMenuButton>
           </Unauthenticated>
         </SidebarFooter>
       </Sidebar>
