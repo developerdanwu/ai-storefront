@@ -10,7 +10,8 @@
     "lint": "oxlint",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
-    "convex:dev": "convex dev"
+    "convex:dev": "convex dev",
+    "convex:deploy": "pnpm dlx convex deploy --cmd 'pnpm run build'"
   },
   "dependencies": {
     "@ai-sdk/cohere": "^1.2.10",
