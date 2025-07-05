@@ -21,8 +21,12 @@ import type { Route } from "./+types/_shell._index";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "New Remix App" },
-    { name: "description", content: "Welcome to Remix!" },
+    { title: "Dan Wu's personal website | Home" },
+    {
+      name: "description",
+      content:
+        "This is Dan Wu's personal website and where he shares his thoughts and projects.",
+    },
   ];
 };
 

@@ -8,12 +8,12 @@ import {
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { CustomErrorBoundary } from "~/components/custom-error-boundary";
-import { Button } from "~/components/ui/button";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "~/components/ui/collapsible";
+import { IconButton } from "~/components/ui/icon-button";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { cn } from "~/lib/utils";
 
@@ -47,7 +47,7 @@ function ToolResultFallback({
   return (
     <>
       <div
-        ref={measureRef}
+        ref={measureRef as React.RefObject<HTMLDivElement>}
         className="absolute w-0 opacity-0 pointer-events-none -z-10"
         aria-hidden="true"
       >
@@ -181,9 +181,9 @@ export function ToolResultWrapper({
           <div className="p-2 border-t flex gap-2 justify-between">
             {jsonResponse ? (
               <CollapsibleTrigger asChild>
-                <Button variant={"ghost"} size={"iconXs"} isIcon>
+                <IconButton variant={"ghost"} size={"icon"}>
                   <CodeIcon />
-                </Button>
+                </IconButton>
               </CollapsibleTrigger>
             ) : null}
             <div className="flex gap-2">{actions}</div>
