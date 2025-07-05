@@ -1,6 +1,6 @@
 import {
-  convexQuery,
   ConvexQueryClient,
+  convexQuery,
   useConvexMutation,
 } from "@convex-dev/react-query";
 import {
@@ -13,7 +13,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { api } from "convex/_generated/api";
 import { ConvexProviderWithAuth, ConvexReactClient } from "convex/react";
 import React, { useEffect } from "react";
-import { useLoaderData, useRevalidator } from "react-router";
+import { useLoaderData } from "react-router";
 import { toast } from "sonner";
 import { useIsClient } from "usehooks-ts";
 import { useWorkosConvexAuth } from "~/components/auth/auth-provider";
@@ -108,7 +108,6 @@ function BaseProviders({ children }: { children: React.ReactNode }) {
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   const isClient = useIsClient();
-  const { revalidate } = useRevalidator();
   // // revalidate login state on focus change
   // useEffect(() => {
   //   const unsubscribe = focusManager.subscribe(async () => {

@@ -9,12 +9,13 @@ import React from "react";
 import {
   generatePath,
   Navigate,
+  useFetcher,
   useLoaderData,
-  useNavigation,
 } from "react-router";
 import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
 import { ROUTES } from "~/lib/routes";
 import type { loader } from "~/root";
+import { action } from "~/routes/refresh-session";
 import { LoadingSpinner } from "../ui/loading-spinner";
 import { PageLoadingSpinner } from "../ui/page-loading-spinner";
 
@@ -98,13 +99,14 @@ export function CatchAll() {
 
 export function useWorkosConvexAuth() {
   const { user, accessToken } = useLoaderData<typeof loader>();
-  const { state } = useNavigation();
-  const isLoading = state === "loading";
-  console.log("isLoading", isLoading);
+  const { submit, data } = useFetcher<typeof action>();
   const fetchAccessToken = React.useCallback(
     async ({ forceRefreshToken }: { forceRefreshToken: boolean }) => {
       console.log("fetching access token", forceRefreshToken);
-
+      if (forceRefreshToken) {
+        await submit({ method: "post" }, { action: "/refresh-session" });
+        return data?.accessToken ?? null;
+      }
       return accessToken ?? null;
     },
     [accessToken]
@@ -112,9 +114,9 @@ export function useWorkosConvexAuth() {
 
   return React.useMemo(() => {
     return {
-      isLoading,
+      isLoading: false,
       isAuthenticated: !!user,
       fetchAccessToken,
     };
-  }, [user, fetchAccessToken, isLoading]);
+  }, [user, fetchAccessToken]);
 }
