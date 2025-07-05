@@ -3,11 +3,13 @@ import {
   Authenticated as ConvexAuthenticated,
   Unauthenticated as ConvexUnauthenticated,
   Unauthenticated,
+  useConvexAuth,
 } from "convex/react";
 import React from "react";
 import {
   generatePath,
   Navigate,
+  useFetcher,
   useLoaderData,
   useRevalidator,
 } from "react-router";
@@ -16,6 +18,16 @@ import { ROUTES } from "~/lib/routes";
 import type { loader } from "~/root";
 import { LoadingSpinner } from "../ui/loading-spinner";
 import { PageLoadingSpinner } from "../ui/page-loading-spinner";
+
+export function Authenticated({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useConvexAuth();
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  return <>{children}</>;
+}
 
 export function AuthenticatedWithRedirect({
   children,
@@ -88,18 +100,21 @@ export function CatchAll() {
 export function useWorkosConvexAuth() {
   const { user, accessToken } = useLoaderData<typeof loader>();
   const { revalidate } = useRevalidator();
+  const { submit } = useFetcher();
 
   const fetchAccessToken = React.useCallback(
     async ({ forceRefreshToken }: { forceRefreshToken: boolean }) => {
-      console.log("fetching access token", forceRefreshToken);
+      console.log("fetching access token force refresh:", forceRefreshToken);
       if (!accessToken) {
         return null;
       }
-
+      await revalidate();
       if (forceRefreshToken) {
-        console.log("access token expired, refreshing");
-
-        await revalidate();
+        console.log("refreshing access token");
+        await submit({
+          method: "post",
+          action: "/refresh-session",
+        });
       }
 
       return accessToken ?? null;

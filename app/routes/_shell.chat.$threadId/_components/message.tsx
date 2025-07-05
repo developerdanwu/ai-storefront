@@ -2,6 +2,7 @@ import { type MessageDoc } from "@convex-dev/agent";
 import { type UIMessage, useSmoothText } from "@convex-dev/agent/react";
 import { AlertTriangleIcon } from "lucide-react";
 import { match, P } from "ts-pattern";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { MemoizedMarkdown } from "~/components/ui/markdown";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { cn } from "~/lib/utils";
@@ -32,7 +33,18 @@ function UserMessageWrapper({ children }: { children: React.ReactNode }) {
 }
 
 function AssistantMessageWrapper({ children }: { children: React.ReactNode }) {
-  return <div className="flex flex-col gap-2">{children}</div>;
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-2">
+        <Avatar className="size-6">
+          <AvatarImage src="" />
+          <AvatarFallback>DW</AvatarFallback>
+        </Avatar>
+        <p className="text-sm">Dan</p>
+      </div>
+      {children}
+    </div>
+  );
 }
 
 export function Message({

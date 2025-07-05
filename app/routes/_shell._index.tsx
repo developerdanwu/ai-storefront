@@ -29,21 +29,21 @@ export const meta: MetaFunction = () => {
 const suggestions = [
   {
     icon: <Camera size={16} />,
-    text: "Buy something",
+    text: "Buy some ceramics",
     value: "buy-something",
-    prompt: "I want to buy something",
+    prompt: "Can I see some of your ceramic works that are available for sale?",
   },
   {
     icon: <Github size={16} />,
-    text: "About me",
+    text: "Who are you?",
     value: "about-me",
-    prompt: "Tell me about yourself",
+    prompt: "Tell me about yourself and your work",
   },
   {
     icon: <Upload size={16} />,
     text: "Projects",
     value: "projects",
-    prompt: "Tell me about your projects",
+    prompt: "Tell me about your what projects you have worked on",
   },
 ] as const;
 

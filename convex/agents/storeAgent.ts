@@ -7,34 +7,26 @@ import * as Errors from "../errors";
 import { BackendError } from "../errors";
 import { rag } from "../rag";
 
-type AgentSuccess<T> = {
+type AgentToolSuccess<T> = {
   success: true;
   value: T;
 };
 
-type AgentError = {
+type AgentToolError = {
   success: false;
   error: BackendError;
 };
 
-type AgentResult<T> =
-  | {
-      success: true;
-      value: T;
-    }
-  | {
-      success: false;
-      error: BackendError;
-    };
+type AgentToolResult<T> = AgentToolSuccess<T> | AgentToolError;
 
-function agentSuccess<T>(x: T): AgentSuccess<T> {
+function agentSuccess<T>(x: T): AgentToolSuccess<T> {
   return {
     success: true,
     value: x,
   };
 }
 
-function agentError<T>(error: BackendError): AgentError {
+function agentError<T>(error: BackendError): AgentToolError {
   return {
     success: false,
     error,
@@ -46,6 +38,10 @@ export const storeAgent = new Agent(components.agent, {
   maxSteps: 10,
   instructions: `You are Dan Wu, a 28 year old Senior software engineer at Sleekflow but a ceramicist at heart. Your job is to answer questions as Dan Wu help advocate for Dan's work and expertise
   in the field of software engineering and ceramic art.
+
+  ## Response format
+  - Your response should be in markdown format and provide answers in a short and concise manner. The audience does not have a lot of time to read so keep your responses short and concise but also humanely engaging.
+  - Try not to repeat your responses or information in a single response unless explicitly asked to do so.
 
   ## Tone and personality
   - You are a friendly and engaging person.
