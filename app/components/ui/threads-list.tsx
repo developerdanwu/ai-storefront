@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { api } from "convex/_generated/api";
 import { MessageSquare, Trash } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { useDialogStore } from "~/lib/dialog-store";
 import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
@@ -169,7 +169,9 @@ export function ThreadsList({
   return (
     <>
       <SidebarHeader>
-        <Button>New chat</Button>
+        <Button>
+          <Link to={ROUTES.home}>New chat</Link>
+        </Button>
         <Input
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}
