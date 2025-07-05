@@ -1,11 +1,10 @@
 import { useConvexAction } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "convex/_generated/api";
-import { MessageSquare, Trash } from "lucide-react";
+import { MessageSquare, Plus, Trash } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
-import { Button } from "~/components/ui/button";
 import { SidebarHeader as SidebarHeaderOriginal } from "~/components/ui/sidebar";
 import { useDialogStore } from "~/lib/dialog-store";
 import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
@@ -39,9 +38,14 @@ export interface Thread {
 export function SidebarHeader({ children }: { children: React.ReactNode }) {
   return (
     <SidebarHeaderOriginal>
-      <Button>
-        <Link to={ROUTES.home}>New chat</Link>
-      </Button>
+      <div className="flex items-center justify-between my-2">
+        <div className="text-lg font-semibold">Dan Wu</div>
+        <IconButton asChild variant="ghost" size="sm">
+          <Link to={ROUTES.home}>
+            <Plus />
+          </Link>
+        </IconButton>
+      </div>
       {children}
     </SidebarHeaderOriginal>
   );
