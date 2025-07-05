@@ -4,7 +4,7 @@ import { usePaginatedQuery } from "convex-helpers/react";
 import { api } from "convex/_generated/api";
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { ThreadsList } from "./threads-list";
+import { ThreadsList } from "../../../components/threads-list";
 
 interface AuthenticatedThreadsProps {
   activeThreadId?: string;

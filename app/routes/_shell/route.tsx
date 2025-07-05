@@ -8,19 +8,19 @@ import { LogInIcon, MessageSquare, MoonIcon, SunIcon } from "lucide-react";
 import { Link, Outlet, useLoaderData, useParams } from "react-router";
 import { AnonymousUser } from "~/components/auth/auth-provider";
 import { useTheme } from "~/components/theme-provider";
-import { AnonymousThreads } from "~/components/ui/anonymous-threads";
-import { AuthenticatedThreads } from "~/components/ui/authenticated-threads";
+import { SidebarHeader } from "~/components/threads-list";
 import { Input } from "~/components/ui/input";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarHeader,
   SidebarInset,
   SidebarMenuButton,
   SidebarProvider,
   SidebarTrigger,
 } from "~/components/ui/sidebar";
+import { AnonymousThreads } from "~/routes/_shell/_components/anonymous-threads";
+import { AuthenticatedThreads } from "~/routes/_shell/_components/authenticated-threads";
 import { NavUser } from "~/routes/_shell/_components/nav-user";
 import type { Route } from "./+types/route";
 

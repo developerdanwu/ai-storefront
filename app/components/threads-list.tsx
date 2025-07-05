@@ -5,35 +5,46 @@ import { MessageSquare, Trash } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
+import { Button } from "~/components/ui/button";
+import { SidebarHeader as SidebarHeaderOriginal } from "~/components/ui/sidebar";
 import { useDialogStore } from "~/lib/dialog-store";
 import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
 import { ROUTES } from "~/lib/routes";
 import { cn } from "~/lib/utils";
 import { useShellLoaderData } from "~/routes/_shell/route";
-import { Button } from "./button";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuGroup,
   ContextMenuItem,
   ContextMenuTrigger,
-} from "./context-menu";
-import { IconButton } from "./icon-button";
-import { Input } from "./input";
+} from "./ui/context-menu";
+import { IconButton } from "./ui/icon-button";
+import { Input } from "./ui/input";
 import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "./sidebar";
+} from "./ui/sidebar";
 
 export interface Thread {
   _id: string;
   title?: string;
   _creationTime: number;
+}
+
+export function SidebarHeader({ children }: { children: React.ReactNode }) {
+  return (
+    <SidebarHeaderOriginal>
+      <Button>
+        <Link to={ROUTES.home}>New chat</Link>
+      </Button>
+      {children}
+    </SidebarHeaderOriginal>
+  );
 }
 
 function ThreadItem({
@@ -169,9 +180,6 @@ export function ThreadsList({
   return (
     <>
       <SidebarHeader>
-        <Button>
-          <Link to={ROUTES.home}>New chat</Link>
-        </Button>
         <Input
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}

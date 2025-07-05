@@ -5,7 +5,7 @@ import { usePaginatedQuery } from "convex/react";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
-import { ThreadsList } from "./threads-list";
+import { ThreadsList } from "../../../components/threads-list";
 
 interface AnonymousThreadsProps {
   activeThreadId?: string;
