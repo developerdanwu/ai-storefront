@@ -20,6 +20,9 @@ export const addCVEmbeddings = internalAction({
             medium: {
               url: "https://medium.com/@developerdanwu",
             },
+            linkedIn: {
+              url: "https://www.linkedin.com/in/madebywuu",
+            },
           },
         },
         summary:
