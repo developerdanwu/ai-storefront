@@ -107,7 +107,7 @@ export function useWorkosConvexAuth() {
 
       return accessToken ?? null;
     },
-    []
+    [accessToken]
   );
 
   return React.useMemo(() => {
