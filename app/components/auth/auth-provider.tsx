@@ -10,7 +10,7 @@ import {
   generatePath,
   Navigate,
   useLoaderData,
-  useRevalidator,
+  useNavigation,
 } from "react-router";
 import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
 import { ROUTES } from "~/lib/routes";
@@ -98,23 +98,23 @@ export function CatchAll() {
 
 export function useWorkosConvexAuth() {
   const { user, accessToken } = useLoaderData<typeof loader>();
-  const { revalidate } = useRevalidator();
+  const { state } = useNavigation();
+  const isLoading = state === "loading";
+  console.log("isLoading", isLoading);
   const fetchAccessToken = React.useCallback(
-    async ({ forceRefresh }: { forceRefresh: boolean }) => {
-      if (forceRefresh) {
-        await revalidate();
-      }
+    async ({ forceRefreshToken }: { forceRefreshToken: boolean }) => {
+      console.log("fetching access token", forceRefreshToken);
 
       return accessToken ?? null;
     },
-    [revalidate]
+    []
   );
 
   return React.useMemo(() => {
     return {
-      isLoading: false,
+      isLoading,
       isAuthenticated: !!user,
       fetchAccessToken,
     };
-  }, [user, fetchAccessToken]);
+  }, [user, fetchAccessToken, isLoading]);
 }
