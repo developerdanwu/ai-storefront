@@ -1,9 +1,45 @@
 import { xai } from "@ai-sdk/xai";
 import { Agent, createTool } from "@convex-dev/agent";
+import { ResultAsync } from "neverthrow";
 import z from "zod";
 import { components } from "../_generated/api";
+import * as Errors from "../errors";
+import { BackendError } from "../errors";
 import { rag } from "../rag";
 
+type AgentSuccess<T> = {
+  success: true;
+  value: T;
+};
+
+type AgentError = {
+  success: false;
+  error: BackendError;
+};
+
+type AgentResult<T> =
+  | {
+      success: true;
+      value: T;
+    }
+  | {
+      success: false;
+      error: BackendError;
+    };
+
+function agentSuccess<T>(x: T): AgentSuccess<T> {
+  return {
+    success: true,
+    value: x,
+  };
+}
+
+function agentError<T>(error: BackendError): AgentError {
+  return {
+    success: false,
+    error,
+  };
+}
 export const storeAgent = new Agent(components.agent, {
   chat: xai("grok-3"),
   name: "Store agent",
@@ -40,11 +76,20 @@ export const storeAgent = new Agent(components.agent, {
         .describe("Search Dan's curriculum vitae"),
       handler: async (ctx, args) => {
         console.log("Searching for", args.query);
-        const results = await rag.search(ctx, {
-          namespace: "cv",
-          query: args.query,
-        });
-        return results.entries;
+        return await ResultAsync.fromPromise(
+          rag.search(ctx, {
+            namespace: "cv",
+            query: args.query,
+          }),
+          () => {
+            return Errors.aiToolFailure({
+              message: "Failed to search curriculum vitae",
+            });
+          }
+        ).match(
+          (x) => agentSuccess(x.entries),
+          (e) => agentError(e)
+        );
       },
     }),
     searchCareerTransitionStory: createTool({
@@ -53,11 +98,20 @@ export const storeAgent = new Agent(components.agent, {
       }),
       handler: async (ctx, args) => {
         console.log("Searching for", args.query);
-        const results = await rag.search(ctx, {
-          namespace: "career_transition_story",
-          query: args.query,
-        });
-        return results.entries;
+        return await ResultAsync.fromPromise(
+          rag.search(ctx, {
+            namespace: "career_transition_story",
+            query: args.query,
+          }),
+          () => {
+            return Errors.aiToolFailure({
+              message: "Failed to search career transition story",
+            });
+          }
+        ).match(
+          (x) => agentSuccess(x.entries),
+          (e) => agentError(e)
+        );
       },
     }),
   },

@@ -36,7 +36,7 @@ function ToolResultFallback({
     <ScrollArea>
       <div
         className={cn(
-          "text-xs border-t p-2 whitespace-pre font-mono bg-background-muted/30",
+          "text-xs border-t p-2 whitespace-pre font-mono bg-muted/30",
           success === false && "text-red-600"
         )}
       >
@@ -61,7 +61,7 @@ function ToolResultFallback({
           <div>{content}</div>
           {/* Fade overlay at bottom */}
           <CollapsibleTrigger asChild>
-            <button className="cursor-pointer hover:bg-background-emphasis/80 transition-colors bg-background-emphasis/30 h-5 flex items-center justify-center absolute bottom-0 left-0 right-0">
+            <button className="cursor-pointer hover:bg-emphasis/80 transition-colors bg-emphasis/30 h-5 flex items-center justify-center absolute bottom-0 left-0 right-0">
               <ChevronDownIcon className="size-4" />
             </button>
           </CollapsibleTrigger>
@@ -71,7 +71,7 @@ function ToolResultFallback({
         {content}
         {open ? (
           <CollapsibleTrigger asChild>
-            <button className="cursor-pointer hover:bg-background-emphasis/80 transition-colors bg-background-emphasis/30 h-5 flex items-center justify-center w-full">
+            <button className="cursor-pointer hover:bg-emphasis/80 transition-colors bg-emphasis/30 h-5 flex items-center justify-center w-full">
               <ChevronUpIcon className="size-4" />
             </button>
           </CollapsibleTrigger>
@@ -112,13 +112,11 @@ export function ToolResultWrapper({
 
   return (
     <div className="my-2 shadow-xs flex border flex-col rounded-sm">
-      <div className="p-2 font-medium flex items-center justify-between text-xs border-b bg-background-muted">
+      <div className="p-2 font-medium flex items-center justify-between text-xs border-b">
         <p>
           <span className="inline-block align-middle">
             {success === "pending" ? "Calling tool:" : "Called tool:"}{" "}
-            <span className="font-normal text-background-emphasis/80">
-              {toolName}
-            </span>
+            <span className="font-normal text-emphasis/80">{toolName}</span>
           </span>{" "}
           {success === true ? (
             <CheckIcon className="ml-1.5 text-green-600 inline-block align-middle size-4" />
@@ -160,7 +158,7 @@ export function ToolResultWrapper({
               <div>{children}</div>
               {/* Fade overlay at bottom */}
               <CollapsibleTrigger asChild>
-                <button className="cursor-pointer hover:bg-background-emphasis/80 transition-colors bg-background-emphasis/30 h-5 flex items-center justify-center absolute bottom-0 left-0 right-0">
+                <button className="cursor-pointer hover:bg-background/80 transition-colors bg-background h-5 flex items-center justify-center absolute bottom-0 left-0 right-0">
                   <ChevronDownIcon className="size-4" />
                 </button>
               </CollapsibleTrigger>
@@ -170,7 +168,7 @@ export function ToolResultWrapper({
             <div ref={contentRef}>{children}</div>
             {open ? (
               <CollapsibleTrigger asChild>
-                <button className="cursor-pointer hover:bg-background-emphasis/80 transition-colors bg-background-emphasis/30 h-5 flex items-center justify-center w-full">
+                <button className="cursor-pointer hover:bg-background/80 transition-colors bg-background h-5 flex items-center justify-center w-full">
                   <ChevronUpIcon className="size-4" />
                 </button>
               </CollapsibleTrigger>
@@ -194,7 +192,7 @@ export function ToolResultWrapper({
         {jsonResponse ? (
           <CollapsibleContent>
             <ScrollArea>
-              <div className="text-xs border-t p-2 whitespace-pre font-mono bg-background-muted/30">
+              <div className="text-xs border-t p-2 whitespace-pre font-mono bg-muted/30">
                 {jsonResponse}
               </div>
             </ScrollArea>

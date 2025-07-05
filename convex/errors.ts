@@ -116,3 +116,10 @@ export function aiThreadNotFound(context: ErrorContext) {
     context,
   } as const satisfies BackendError;
 }
+
+export function aiToolFailure(context: ErrorContext) {
+  return {
+    _tag: "AiToolFailure",
+    context,
+  } as const satisfies BackendError;
+}
