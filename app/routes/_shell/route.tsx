@@ -34,7 +34,6 @@ export default function ShellRoute() {
   const { user } = useShellLoaderData();
   const { threadId } = useParams();
   const { setTheme, currentTheme, theme } = useTheme();
-  console.log("THEMING", currentTheme, theme);
   // Create new thread
   const createThread = useMutation({
     mutationFn: useConvexAction(api.ai.action.createThread),

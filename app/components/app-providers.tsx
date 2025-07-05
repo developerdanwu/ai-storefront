@@ -15,6 +15,7 @@ import { ConvexProviderWithAuth, ConvexReactClient } from "convex/react";
 import React, { useEffect } from "react";
 import { useLoaderData, useRevalidator } from "react-router";
 import { toast } from "sonner";
+import { useIsClient } from "usehooks-ts";
 import { useWorkosConvexAuth } from "~/components/auth/auth-provider";
 import { Toaster } from "~/components/ui/sonner";
 import { DialogStoreContextProvider, useDialogStore } from "~/lib/dialog-store";
@@ -106,6 +107,7 @@ function BaseProviders({ children }: { children: React.ReactNode }) {
 }
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
+  const isClient = useIsClient();
   const { revalidate } = useRevalidator();
   // // revalidate login state on focus change
   // useEffect(() => {
@@ -131,7 +133,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
           <ThemeProvider>
             <DialogStoreContextProvider>
               <BaseProviders>
-                {children}
+                {isClient ? children : null}
                 <GenericAlertDialog />
                 <Toaster />
                 <ReactQueryDevtools initialIsOpen={false} />

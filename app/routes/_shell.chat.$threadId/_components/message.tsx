@@ -187,29 +187,6 @@ export function Message({
               }
             )
             .otherwise(() => null);
-
-          if (x.type === "step-start") {
-            const nextStep = message.parts[index + 1];
-            return (
-              <StepStartMessage
-                key={index}
-                part={x}
-                message={message}
-                nextStep={nextStep}
-              />
-            );
-          }
-
-          if (x.type === "tool-invocation") {
-            return (
-              <ToolResultWrapper
-                success={true}
-                jsonResponse={x.jsonResponse}
-              ></ToolResultWrapper>
-            );
-          }
-
-          return <div key={index}>unknown part</div>;
         })}
       </MessageWrapper>
       {error ? (
