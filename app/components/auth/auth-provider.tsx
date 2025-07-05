@@ -6,13 +6,7 @@ import {
   useConvexAuth,
 } from "convex/react";
 import React from "react";
-import {
-  generatePath,
-  Navigate,
-  useFetcher,
-  useLoaderData,
-  useRevalidator,
-} from "react-router";
+import { generatePath, Navigate, useLoaderData } from "react-router";
 import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
 import { ROUTES } from "~/lib/routes";
 import type { loader } from "~/root";
@@ -99,29 +93,10 @@ export function CatchAll() {
 
 export function useWorkosConvexAuth() {
   const { user, accessToken } = useLoaderData<typeof loader>();
-  const { revalidate } = useRevalidator();
-  const { submit } = useFetcher();
 
-  const fetchAccessToken = React.useCallback(
-    async ({ forceRefreshToken }: { forceRefreshToken: boolean }) => {
-      console.log("fetching access token force refresh:", forceRefreshToken);
-      if (!accessToken) {
-        return null;
-      }
-      await revalidate();
-      if (forceRefreshToken) {
-        console.log("refreshing access token");
-        await submit({
-          method: "post",
-          action: "/refresh-session",
-        });
-        await revalidate();
-      }
-
-      return accessToken ?? null;
-    },
-    [accessToken]
-  );
+  const fetchAccessToken = React.useCallback(async () => {
+    return accessToken ?? null;
+  }, []);
 
   return React.useMemo(() => {
     return {

@@ -6,3 +6,4 @@ node_modules
 
 .react-router
 .env.local
+.env.production

@@ -187,7 +187,7 @@ export default function Index() {
       <div className="flex-1 flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-2xl space-y-6 text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold dark:text-white mb-8">
-            How can I help you?
+            Hi! I'm Dan 👋
           </h1>
 
           <div className="flex flex-wrap justify-center gap-2">
