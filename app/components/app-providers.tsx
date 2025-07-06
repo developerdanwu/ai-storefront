@@ -11,6 +11,7 @@ import {
 } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { api } from "convex/_generated/api";
+import type { BackendErrors } from "convex/errors";
 import {
   Authenticated,
   AuthLoading,
@@ -18,8 +19,10 @@ import {
   ConvexReactClient,
   Unauthenticated,
 } from "convex/react";
+import { ConvexError } from "convex/values";
 import React, { useEffect } from "react";
 import { toast } from "sonner";
+import { match } from "ts-pattern";
 import { useWorkosConvexAuth } from "~/components/auth/auth-provider";
 import { Toaster } from "~/components/ui/sonner";
 import { DialogStoreContextProvider, useDialogStore } from "~/lib/dialog-store";
@@ -40,7 +43,20 @@ const queryClient = new QueryClient({
     },
     mutations: {
       retry: (failureCount, error) => {
-        console.log("mutaion error", error);
+        if (error instanceof ConvexError) {
+          return match(error.data as BackendErrors)
+            .with(
+              {
+                _tag: "NotAuthenticated",
+              },
+              () => {
+                console.log("not authenticated, retrying");
+                return failureCount < 1;
+              }
+            )
+            .otherwise(() => false);
+        }
+
         return false;
       },
     },

@@ -4,7 +4,7 @@ import { ResultAsync } from "neverthrow";
 import z from "zod";
 import { components } from "../_generated/api";
 import * as Errors from "../errors";
-import { BackendError } from "../errors";
+import { BackendErrorSchema } from "../errors";
 import { rag } from "../rag";
 
 type AgentToolSuccess<T> = {
@@ -14,7 +14,7 @@ type AgentToolSuccess<T> = {
 
 type AgentToolError = {
   success: false;
-  error: BackendError;
+  error: BackendErrorSchema;
 };
 
 type AgentToolResult<T> = AgentToolSuccess<T> | AgentToolError;
@@ -26,7 +26,7 @@ function agentSuccess<T>(x: T): AgentToolSuccess<T> {
   };
 }
 
-function agentError<T>(error: BackendError): AgentToolError {
+function agentError<T>(error: BackendErrorSchema): AgentToolError {
   return {
     success: false,
     error,

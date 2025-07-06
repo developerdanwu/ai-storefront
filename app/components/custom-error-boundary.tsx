@@ -1,10 +1,16 @@
-import type { BackendError } from "convex/errors";
+import type { BackendErrorSchema } from "convex/errors";
 import { ConvexError } from "convex/values";
-import { ErrorBoundary, type ErrorBoundaryProps, type FallbackProps } from "react-error-boundary";
+import {
+  ErrorBoundary,
+  type ErrorBoundaryProps,
+  type FallbackProps,
+} from "react-error-boundary";
 import { Button } from "./ui/button";
 
 type ConvexErrorFallbackProps = FallbackProps & {
-  renderElementWithWrapper?: (props: { children: React.ReactNode }) => React.ReactElement;
+  renderElementWithWrapper?: (props: {
+    children: React.ReactNode;
+  }) => React.ReactElement;
 };
 
 export function GenericErrorBoundary({
@@ -35,7 +41,7 @@ export function ConvexErrorElement({
 }: Omit<ConvexErrorFallbackProps, "error"> & {
   error: ConvexError<any>;
 }) {
-  const _error = error.data as BackendError;
+  const _error = error.data as BackendErrorSchema;
 
   return (
     <GenericErrorBoundary
@@ -49,7 +55,9 @@ export function ConvexErrorElement({
 
 export function CustomErrorBoundary(
   props: Partial<ErrorBoundaryProps> & {
-    wrapRenderFallback?: (props: { children: React.ReactNode }) => React.ReactElement;
+    wrapRenderFallback?: (props: {
+      children: React.ReactNode;
+    }) => React.ReactElement;
   }
 ) {
   const {
@@ -57,10 +65,20 @@ export function CustomErrorBoundary(
     wrapRenderFallback,
     fallbackRender = (props) => {
       if (props.error instanceof ConvexError) {
-        return <ConvexErrorElement {...props} renderElementWithWrapper={wrapRenderFallback} />;
+        return (
+          <ConvexErrorElement
+            {...props}
+            renderElementWithWrapper={wrapRenderFallback}
+          />
+        );
       }
 
-      return <GenericErrorBoundary {...props} renderElementWithWrapper={wrapRenderFallback} />;
+      return (
+        <GenericErrorBoundary
+          {...props}
+          renderElementWithWrapper={wrapRenderFallback}
+        />
+      );
     },
     ...rest
   } = props;
