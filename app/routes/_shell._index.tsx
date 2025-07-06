@@ -218,6 +218,14 @@ export default function Index() {
       </div>
       <MessageInputField
         name="message"
+        onContactMe={async () => {
+          await handleMessageSubmit(
+            "I'd like to contact you. How should I do that?",
+            {
+              submittingSource: "message-input",
+            }
+          );
+        }}
         className="w-full max-w-3xl mx-auto"
         placeholder="Type your message..."
         onSubmit={(value) => {

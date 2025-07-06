@@ -183,6 +183,12 @@ export function ChatThreadBase({
           name="message"
           isGenerating={isStreaming}
           placeholder="Type your message..."
+          onContactMe={async () => {
+            shouldStickToBottom.current = true;
+            await onMessageSubmit(
+              "I'd like to contact you. How should I do that?"
+            );
+          }}
           onSubmit={async (value) => {
             // Ensure we stick to bottom when sending a message
             shouldStickToBottom.current = true;

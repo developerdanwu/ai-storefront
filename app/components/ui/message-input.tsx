@@ -35,6 +35,7 @@ export interface MessageInputProps
   showIcon?: boolean;
   rows?: number;
   isGenerating?: boolean;
+  onContactMe?: () => void;
 }
 
 const MessageInput = React.forwardRef<HTMLTextAreaElement, MessageInputProps>(
@@ -52,6 +53,7 @@ const MessageInput = React.forwardRef<HTMLTextAreaElement, MessageInputProps>(
       rows = 1,
       placeholder = "Type your message...",
       isGenerating,
+      onContactMe,
       ...props
     },
     ref
@@ -76,7 +78,10 @@ const MessageInput = React.forwardRef<HTMLTextAreaElement, MessageInputProps>(
           <AlertCircleIcon />
           <AlertTitle>
             Please do not enter secrets in this chat If you wish to discuss
-            something sensitive, contact me
+            something sensitive,{" "}
+            <span className="underline cursor-pointer" onClick={onContactMe}>
+              contact me
+            </span>
           </AlertTitle>
         </Alert>
         <div className={cn(messageInputVariants({ variant }), className)}>
