@@ -154,6 +154,7 @@ body {
     @apply border-border outline-ring/50;
   }
   body {
+    @apply overscroll-none;
     @apply bg-background text-foreground;
   }
 }
