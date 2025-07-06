@@ -2,6 +2,7 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { PanelLeftIcon } from "lucide-react";
 import * as React from "react";
+import { useLocalStorage } from "usehooks-ts";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Separator } from "~/components/ui/separator";
@@ -51,6 +52,8 @@ function useSidebar() {
   return context;
 }
 
+const SIDEBAR_LOCAL_STORAGE_KEY = "sidebar_open";
+
 function SidebarProvider({
   defaultOpen = true,
   open: openProp,
@@ -69,7 +72,10 @@ function SidebarProvider({
 
   // This is the internal state of the sidebar.
   // We use openProp and setOpenProp for control from outside the component.
-  const [_open, _setOpen] = React.useState(defaultOpen);
+  const [_open, _setOpen] = useLocalStorage(
+    SIDEBAR_LOCAL_STORAGE_KEY,
+    defaultOpen
+  );
   const open = openProp ?? _open;
   const setOpen = React.useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {

@@ -35,7 +35,7 @@ export function useShellLoaderData() {
 export default function ShellRoute() {
   const { user } = useShellLoaderData();
   const { threadId } = useParams();
-  const { setTheme, currentTheme, theme } = useTheme();
+  const { setTheme, currentTheme } = useTheme();
 
   // Create new thread
   const createThread = useMutation({
