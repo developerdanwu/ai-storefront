@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { authkitLoader } from "@workos-inc/authkit-react-router";
 import { api } from "convex/_generated/api";
 import { Authenticated, Unauthenticated } from "convex/react";
-import { LogInIcon, MessageSquare, MoonIcon, SunIcon } from "lucide-react";
+import { LogInIcon, MoonIcon, SunIcon } from "lucide-react";
 import { Link, Outlet, useLoaderData, useParams } from "react-router";
 import { AnonymousUser } from "~/components/auth/auth-provider";
 import { NavigationProgress } from "~/components/navigation-progress";
@@ -22,6 +22,7 @@ import {
 } from "~/components/ui/sidebar";
 import { AnonymousThreads } from "~/routes/_shell/_components/anonymous-threads";
 import { AuthenticatedThreads } from "~/routes/_shell/_components/authenticated-threads";
+import { EmptyThreads } from "~/routes/_shell/_components/empty-threads";
 import { NavUser } from "~/routes/_shell/_components/nav-user";
 import type { Route } from "./+types/route";
 
@@ -55,14 +56,7 @@ export default function ShellRoute() {
                 <Input />
               </SidebarHeader>
               <SidebarContent>
-                <div className="p-4 text-center text-muted-foreground">
-                  <MessageSquare
-                    size={48}
-                    className="mx-auto mb-2 opacity-50"
-                  />
-                  <p className="text-sm">No chats yet</p>
-                  <p className="text-xs">Start a new conversation</p>
-                </div>
+                <EmptyThreads />
               </SidebarContent>
             </>
           }

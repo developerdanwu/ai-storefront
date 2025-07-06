@@ -1,7 +1,7 @@
 import { useConvexAction } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "convex/_generated/api";
-import { MessageSquare, Plus, Trash } from "lucide-react";
+import { Plus, Trash } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -10,6 +10,7 @@ import { useDialogStore } from "~/lib/dialog-store";
 import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
 import { ROUTES } from "~/lib/routes";
 import { cn } from "~/lib/utils";
+import { EmptyThreads } from "~/routes/_shell/_components/empty-threads";
 import { useShellLoaderData } from "~/routes/_shell/route";
 import {
   ContextMenu,
@@ -20,6 +21,7 @@ import {
 } from "./ui/context-menu";
 import { IconButton } from "./ui/icon-button";
 import { Input } from "./ui/input";
+import { LoadingSpinner } from "./ui/loading-spinner";
 import {
   SidebarContent,
   SidebarGroup,
@@ -194,11 +196,11 @@ export function ThreadsList({
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-2">
-              {isLoading && (
-                <div className="p-4 text-center text-muted-foreground">
-                  <p className="text-sm">Loading chats...</p>
+              {isLoading ? (
+                <div className="flex justify-center items-center text-center text-muted-foreground">
+                  <LoadingSpinner />
                 </div>
-              )}
+              ) : null}
 
               {threads.map((thread) => (
                 <ThreadItem
@@ -209,16 +211,7 @@ export function ThreadsList({
                 />
               ))}
 
-              {!isLoading && threads.length === 0 && (
-                <div className="p-4 text-center text-muted-foreground">
-                  <MessageSquare
-                    size={48}
-                    className="mx-auto mb-2 opacity-50"
-                  />
-                  <p className="text-sm">No chats yet</p>
-                  <p className="text-xs">Start a new conversation</p>
-                </div>
-              )}
+              {!isLoading && threads.length === 0 && <EmptyThreads />}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
