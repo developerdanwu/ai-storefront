@@ -95,13 +95,14 @@ export function CatchAll() {
 export function useWorkosConvexAuth() {
   const { user, accessToken } = useLoaderData<typeof loader>();
   const { submit, data, state } = useRefreshSession();
-  const refreshedToken = data?.accessToken;
+  const refreshedToken = data?.accessToken ?? accessToken ?? null;
+
   const fetchAccessToken = React.useCallback(
     async ({ forceRefreshToken }: { forceRefreshToken: boolean }) => {
       console.log("fetching access token", forceRefreshToken);
       if (forceRefreshToken) {
         await submit({ method: "post", action: "/refresh-session" });
-        return refreshedToken ?? accessToken ?? null;
+        return refreshedToken;
       }
       return accessToken ?? null;
     },
