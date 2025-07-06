@@ -38,6 +38,12 @@ const queryClient = new QueryClient({
       queryKeyHashFn: convexQueryClient.hashFn(),
       queryFn: convexQueryClient.queryFn(),
     },
+    mutations: {
+      retry: (failureCount, error) => {
+        console.log("mutaion error", error);
+        return false;
+      },
+    },
   },
 });
 
