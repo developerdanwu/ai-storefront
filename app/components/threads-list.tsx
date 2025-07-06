@@ -2,6 +2,7 @@ import { useConvexAction } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "convex/_generated/api";
 import { Plus, Trash } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -50,6 +51,61 @@ export function SidebarHeader({ children }: { children: React.ReactNode }) {
       </div>
       {children}
     </SidebarHeaderOriginal>
+  );
+}
+
+function ThreadItemButton({
+  onThreadSelect,
+  handleDelete,
+  thread,
+  activeThreadId,
+  menuOpen,
+}: {
+  onThreadSelect: (threadId: string) => void;
+  handleDelete: () => void;
+  thread: Thread;
+  activeThreadId: string | undefined;
+  menuOpen: boolean;
+}) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <AnimatePresence>
+      <SidebarMenuButton
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        onClick={() => onThreadSelect(thread._id)}
+        isActive={activeThreadId === thread._id}
+        className={cn(
+          "justify-start group/item w-0 h-10 flex-[1_1_0px] flex text-sm truncate text-left",
+          menuOpen && "bg-muted"
+        )}
+      >
+        <span className="font-medium w-0 flex-[1_1_0px] text-sm truncate block text-left">
+          {thread.title}
+        </span>
+
+        {hovered ? (
+          <IconButton
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDelete();
+            }}
+            // className="group-hover/item:visible opacity-0 group-hover/item:opacity-100 transition-all duration-500 group-hover/item:relative invisible"
+            asChild
+            variant="ghost"
+            size="sm"
+          >
+            <motion.button
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <Trash />
+            </motion.button>
+          </IconButton>
+        ) : null}
+      </SidebarMenuButton>
+    </AnimatePresence>
   );
 }
 
@@ -126,30 +182,13 @@ function ThreadItem({
     <SidebarMenuItem key={thread._id} className="w-full flex">
       <ContextMenu onOpenChange={setMenuOpen}>
         <ContextMenuTrigger asChild>
-          <SidebarMenuButton
-            onClick={() => onThreadSelect(thread._id)}
-            isActive={activeThreadId === thread._id}
-            className={cn(
-              "justify-start group/item w-0 h-10 flex-[1_1_0px] flex text-sm truncate text-left",
-              menuOpen && "bg-muted"
-            )}
-          >
-            <span className="font-medium w-0 flex-[1_1_0px] text-sm truncate block text-left">
-              {thread.title}
-            </span>
-            <IconButton
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDelete();
-              }}
-              className="group-hover/item:visible opacity-0 group-hover/item:opacity-100 transition-all duration-500 absolute group-hover/item:relative invisible"
-              asChild
-              variant="ghost"
-              size="sm"
-            >
-              <Trash />
-            </IconButton>
-          </SidebarMenuButton>
+          <ThreadItemButton
+            handleDelete={handleDelete}
+            thread={thread}
+            activeThreadId={activeThreadId}
+            menuOpen={menuOpen}
+            onThreadSelect={onThreadSelect}
+          />
         </ContextMenuTrigger>
         <ContextMenuContent>
           <ContextMenuGroup>
