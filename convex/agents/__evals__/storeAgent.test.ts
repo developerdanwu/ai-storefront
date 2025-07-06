@@ -2,6 +2,7 @@ import { FaithfulnessMetric, PromptAlignmentMetric } from "@mastra/evals/llm";
 import { describe } from "vitest";
 import { api } from "../../_generated/api";
 import { convexTest } from "../../lib/convexTest.fixture";
+import { grok } from "../models";
 
 describe("Store agent", () => {
   convexTest(
@@ -9,7 +10,7 @@ describe("Store agent", () => {
     {
       timeout: 60_000,
     },
-    async ({ convex, seedDB, expect, task }) => {
+    async ({ convex, seedDB, expect }) => {
       const prompt = "Hi, who are you?";
       const newUserId = await seedDB.createAnonymousUser();
       const thread = await seedDB.createAiThread({
@@ -35,7 +36,7 @@ describe("Store agent", () => {
         }
       );
 
-      const metric = new PromptAlignmentMetric(model, {
+      const metric = new PromptAlignmentMetric(grok, {
         instructions,
         scale: 1,
       });
@@ -70,7 +71,7 @@ describe("Store agent", () => {
         }
       );
 
-      const metric = new FaithfulnessMetric(model, {
+      const metric = new FaithfulnessMetric(grok, {
         context: [
           "You should mention at least some of the following technologies: Python, JavaScript, TypeScript, React, NextJS, FastAPI, React Query, Redux, Tailwind CSS, Mantine UI, GraphQL, Contentful, RXJS, Material UI, Chakra UI, Selenium, Playwright, Storybook, Git, GitHub, GitHub Actions, GitLab, Jira, Asana, Clickup, and Figma. You do not have to mention all of them.",
           "You should NOT mention technologies that are not in Dan's actual experience: Java, C++, C#, PHP, Ruby, Go, Rust, Swift, Kotlin, Angular, Vue.js, Django, Flask, Spring, .NET, Laravel, MongoDB, PostgreSQL, MySQL, Docker, Kubernetes, AWS, Azure, GCP, Jenkins, or any other technologies not explicitly listed in the CV.",
@@ -115,7 +116,7 @@ describe("Store agent", () => {
         "Do not act as a general AI assistant for non-Dan related queries",
       ];
 
-      const alignmentMetric = new PromptAlignmentMetric(model, {
+      const alignmentMetric = new PromptAlignmentMetric(grok, {
         instructions,
         scale: 1,
       });
