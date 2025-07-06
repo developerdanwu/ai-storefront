@@ -94,7 +94,7 @@ export function CatchAll() {
 
 export function useWorkosConvexAuth() {
   const { user, accessToken } = useLoaderData<typeof loader>();
-  const { submit, data, state } = useRefreshSession();
+  const { submit, data } = useRefreshSession();
   const refreshedToken = data?.accessToken ?? accessToken ?? null;
   const fetchAccessToken = React.useCallback(
     async ({ forceRefreshToken }: { forceRefreshToken: boolean }) => {
@@ -110,9 +110,9 @@ export function useWorkosConvexAuth() {
 
   return React.useMemo(() => {
     return {
-      isLoading: state === "submitting",
+      isLoading: false,
       isAuthenticated: !!user,
       fetchAccessToken,
     };
-  }, [user, fetchAccessToken, state]);
+  }, [user, fetchAccessToken]);
 }
