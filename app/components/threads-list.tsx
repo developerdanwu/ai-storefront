@@ -229,7 +229,6 @@ export function ThreadsList({
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}
           className="mb-2"
-          suppressHydrationWarning
         />
       </SidebarHeader>
       <SidebarContent>
