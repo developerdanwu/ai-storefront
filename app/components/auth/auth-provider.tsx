@@ -102,9 +102,9 @@ export function useWorkosConvexAuth() {
       if (forceRefreshToken) {
         await submit({ method: "post", action: "/refresh-session" });
       }
-      return refreshedToken ?? accessToken;
+      return refreshedToken;
     },
-    [submit, refreshedToken, accessToken]
+    [refreshedToken, submit]
   );
 
   return React.useMemo(() => {
