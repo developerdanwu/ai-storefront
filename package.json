@@ -11,7 +11,8 @@
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
     "convex:dev": "convex dev",
-    "convex:deploy": "pnpm dlx convex deploy --cmd 'pnpm run build' --yes"
+    "convex:deploy": "pnpm dlx convex deploy --cmd 'pnpm run build' --yes",
+    "analyze": "pnpm dlx vite-bundle-analyzer"
   },
   "dependencies": {
     "@ai-sdk/cohere": "^1.2.10",
@@ -87,6 +88,7 @@
     "tailwindcss": "^4.1.11",
     "typescript": "^5.1.6",
     "vite": "^7.0.0",
+    "vite-bundle-analyzer": "^1.0.0",
     "vite-tsconfig-paths": "^4.2.1"
   },
   "engines": {

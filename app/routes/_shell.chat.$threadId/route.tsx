@@ -1,8 +1,12 @@
 import { Authenticated } from "convex/react";
+import { Suspense } from "react";
 import type { MetaFunction } from "react-router";
 import { AnonymousUser } from "~/components/auth/auth-provider";
-import { AnonymousChatThread } from "./_components/anonymous-chat-thread";
-import { AuthenticatedChatThread } from "./_components/authenticated-chat-thread";
+import {
+  LazyAnonymousChatThread,
+  LazyAuthenticatedChatThread,
+} from "~/lib/lazy-components";
+import { ChatThreadSkeleton } from "~/routes/_shell.chat.$threadId/_components/chat-thread-skeleton";
 
 export const meta: MetaFunction = () => {
   return [
@@ -19,10 +23,14 @@ export default function ChatThreadRoute() {
   return (
     <>
       <Authenticated>
-        <AuthenticatedChatThread />
+        <Suspense fallback={<ChatThreadSkeleton />}>
+          <LazyAuthenticatedChatThread />
+        </Suspense>
       </Authenticated>
       <AnonymousUser>
-        <AnonymousChatThread />
+        <Suspense fallback={<ChatThreadSkeleton />}>
+          <LazyAnonymousChatThread />
+        </Suspense>
       </AnonymousUser>
     </>
   );

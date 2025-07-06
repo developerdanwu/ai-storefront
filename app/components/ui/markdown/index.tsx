@@ -56,7 +56,7 @@ export const MemoizedMarkdownBlock = memo(
               {children}
             </blockquote>
           ),
-          a: ({ href, children }) => (
+          a: ({ children, href }) => (
             <a
               href={href}
               className="text-blue-600 hover:underline"
@@ -65,6 +65,20 @@ export const MemoizedMarkdownBlock = memo(
             >
               {children}
             </a>
+          ),
+          hr: () => <hr className="my-4 border-gray-300" />,
+          table: ({ children }) => (
+            <table className="w-full border-collapse border border-gray-300 mb-4">
+              {children}
+            </table>
+          ),
+          th: ({ children }) => (
+            <th className="border border-gray-300 px-2 py-1 bg-gray-100 font-bold">
+              {children}
+            </th>
+          ),
+          td: ({ children }) => (
+            <td className="border border-gray-300 px-2 py-1">{children}</td>
           ),
         }}
       >
@@ -87,3 +101,17 @@ export const MemoizedMarkdown = memo(
     ));
   }
 );
+
+// Create a wrapper component for lazy loading
+export const LazyMarkdown = ({
+  content,
+  id,
+}: {
+  content: string;
+  id: string;
+}) => {
+  return <MemoizedMarkdown content={content} id={id} />;
+};
+
+// Default export for lazy loading
+export default LazyMarkdown;
