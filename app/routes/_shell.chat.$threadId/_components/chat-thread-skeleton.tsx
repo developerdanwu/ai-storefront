@@ -36,7 +36,7 @@ function MessageSkeleton({
       <div className="mb-4 w-full max-w-3xl mx-auto text-sm flex justify-end">
         <div className="space-y-2 rounded-md w-full flex flex-col items-end">
           {lineWidths.map((width, i) => (
-            <Skeleton className={cn("h-4", width)} />
+            <Skeleton key={i} className={cn("h-4", width)} />
           ))}
         </div>
       </div>
@@ -59,11 +59,11 @@ function MessageSkeleton({
 export function ChatThreadSkeleton() {
   return (
     <div className="flex-1 flex flex-col gap-4 p-4 ax-w-3xl mx-auto w-full">
-      <MessageSkeleton variant="user" lines={3} />
-      <MessageSkeleton variant="assistant" lines={2} />
-      <MessageSkeleton variant="user" lines={3} />
-      <MessageSkeleton variant="assistant" lines={4} />
-      <MessageSkeleton variant="user" lines={2} />
+      <MessageSkeleton key={1} variant="user" lines={3} />
+      <MessageSkeleton key={2} variant="assistant" lines={2} />
+      <MessageSkeleton key={3} variant="user" lines={3} />
+      <MessageSkeleton key={4} variant="assistant" lines={4} />
+      <MessageSkeleton key={5} variant="user" lines={2} />
     </div>
   );
 }

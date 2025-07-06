@@ -29,7 +29,7 @@ function TextPart({
 
 function UserMessageWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex self-end w-max flex-col border rounded-md bg-muted">
+    <div className="flex self-end w-max flex-col border rounded-md bg-muted max-w-11/12">
       <div className="p-2">{children}</div>
     </div>
   );
@@ -106,9 +106,18 @@ export function Message({
               {
                 type: "text",
               },
-              (x) => (
-                <TextPart key={index} part={x} needToStream={isStreaming} />
-              )
+              (x) => {
+                if (message.role === "user") {
+                  return (
+                    <p key={index} className="text-sm">
+                      {x.text}
+                    </p>
+                  );
+                }
+                return (
+                  <TextPart key={index} part={x} needToStream={isStreaming} />
+                );
+              }
             )
             .with(
               {
@@ -139,6 +148,7 @@ export function Message({
               ({ toolInvocation }) => {
                 return (
                   <ToolResultWrapper
+                    key={index}
                     toolName={toolInvocation.toolName}
                     success={toolInvocation.result.success}
                   >
@@ -169,6 +179,7 @@ export function Message({
               ({ toolInvocation }) => {
                 return (
                   <ToolResultWrapper
+                    key={index}
                     toolName={toolInvocation.toolName}
                     success={toolInvocation.result.success}
                   >

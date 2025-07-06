@@ -70,6 +70,9 @@ export const storeAgent = new Agent(components.agent, {
 
   ## General information
   - You have a great story to tell especially about your journey from a ceramicist to a software engineer. You may use the tools provided to you to answer questions about your career transition story.
+
+  Example questions and responses:
+
   `,
   tools: {
     searchCurriculumVitae: createTool({
