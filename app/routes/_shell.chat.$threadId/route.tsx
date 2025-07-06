@@ -1,12 +1,25 @@
 import { Authenticated } from "convex/react";
-import { Suspense } from "react";
+import { lazy, Suspense } from "react";
 import type { MetaFunction } from "react-router";
 import { AnonymousUser } from "~/components/auth/auth-provider";
-import {
-  LazyAnonymousChatThread,
-  LazyAuthenticatedChatThread,
-} from "~/lib/lazy-components";
+
 import { ChatThreadSkeleton } from "~/routes/_shell.chat.$threadId/_components/chat-thread-skeleton";
+
+const LazyAuthenticatedChatThread = lazy(() =>
+  import(
+    "~/routes/_shell.chat.$threadId/_components/authenticated-chat-thread"
+  ).then((module) => ({
+    default: module.AuthenticatedChatThread,
+  }))
+);
+
+const LazyAnonymousChatThread = lazy(() =>
+  import(
+    "~/routes/_shell.chat.$threadId/_components/anonymous-chat-thread"
+  ).then((module) => ({
+    default: module.AnonymousChatThread,
+  }))
+);
 
 export const meta: MetaFunction = () => {
   return [
