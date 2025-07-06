@@ -1,6 +1,6 @@
 import {
-  ConvexQueryClient,
   convexQuery,
+  ConvexQueryClient,
   useConvexMutation,
 } from "@convex-dev/react-query";
 import {
@@ -12,9 +12,11 @@ import {
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { api } from "convex/_generated/api";
 import {
+  Authenticated,
+  AuthLoading,
   ConvexProviderWithAuth,
   ConvexReactClient,
-  useConvexAuth,
+  Unauthenticated,
 } from "convex/react";
 import React, { useEffect } from "react";
 import { toast } from "sonner";
@@ -99,17 +101,17 @@ function AuthenticatedProvider({ children }: { children: React.ReactNode }) {
 }
 
 function BaseProviders({ children }: { children: React.ReactNode }) {
-  const { isLoading, isAuthenticated } = useConvexAuth();
-
-  if (isLoading) {
-    return <PageLoadingSpinner />;
-  }
-
-  if (isAuthenticated) {
-    return <AuthenticatedProvider>{children}</AuthenticatedProvider>;
-  }
-
-  return <>{children}</>;
+  return (
+    <>
+      <Authenticated>
+        <AuthenticatedProvider>{children}</AuthenticatedProvider>
+      </Authenticated>
+      <AuthLoading>
+        <PageLoadingSpinner />
+      </AuthLoading>
+      <Unauthenticated>{children}</Unauthenticated>
+    </>
+  );
 }
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
