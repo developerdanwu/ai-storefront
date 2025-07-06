@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as agents_models from "../agents/models.js";
 import type * as agents_storeAgent from "../agents/storeAgent.js";
 import type * as agents_summaryAgent from "../agents/summaryAgent.js";
 import type * as ai_action from "../ai/action.js";
@@ -48,6 +49,7 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  "agents/models": typeof agents_models;
   "agents/storeAgent": typeof agents_storeAgent;
   "agents/summaryAgent": typeof agents_summaryAgent;
   "ai/action": typeof ai_action;
@@ -537,6 +539,24 @@ export declare const components: {
         "internal",
         { messageId: string },
         null
+      >;
+      deleteByIds: FunctionReference<
+        "mutation",
+        "internal",
+        { messageIds: Array<string> },
+        Array<string>
+      >;
+      deleteByOrder: FunctionReference<
+        "mutation",
+        "internal",
+        {
+          endOrder: number;
+          endStepOrder?: number;
+          startOrder: number;
+          startStepOrder?: number;
+          threadId: string;
+        },
+        { isDone: boolean; lastOrder?: number; lastStepOrder?: number }
       >;
       getMessagesByIds: FunctionReference<
         "query",
@@ -1360,6 +1380,7 @@ export declare const components: {
           messageId: string;
           patch: {
             error?: string;
+            fileIds?: Array<string>;
             message?:
               | {
                   content:

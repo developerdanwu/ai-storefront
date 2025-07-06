@@ -1,6 +1,7 @@
 import { ConvexError, v } from "convex/values";
 import { ok, ResultAsync } from "neverthrow";
 import { components } from "../_generated/api";
+import { internalAction } from "../_generated/server";
 import { storeAgent } from "../agents/storeAgent";
 import * as Errors from "../errors";
 import { createThread as createThreadHelper } from "../helpers/createThread";
@@ -61,6 +62,7 @@ export const createAnonymousThread = anonymousAction({
       .match(
         (x) => x,
         (e) => {
+          console.error(e);
           throw new ConvexError(e);
         }
       );
@@ -136,14 +138,33 @@ export const continueThread = authedAction({
   },
 });
 
+export const _generateThreadTitle = internalAction({
+  args: {
+    prompt: v.string(),
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    return await generateSummaryTitle(ctx, {
+      userId: args.userId,
+      prompt: args.prompt,
+    }).match(
+      (x) => x.text,
+      (e) => {
+        throw new ConvexError(e);
+      }
+    );
+  },
+});
+
 export const continueAnonymousThread = anonymousAction({
   args: {
     threadId: v.string(),
     prompt: v.string(),
     promptMessageId: v.optional(v.string()),
+    disableStream: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    return await ResultAsync.fromPromise(
+    const { thread } = await ResultAsync.fromPromise(
       storeAgent.continueThread(ctx, {
         threadId: args.threadId,
         userId: ctx.anonymousUserId,
@@ -153,50 +174,87 @@ export const continueAnonymousThread = anonymousAction({
           message: "Failed to continue thread",
           error: e,
         })
-    )
-      .andThen((x) => {
-        return ResultAsync.fromPromise(
-          x.thread.streamText(
-            {
+    ).match(
+      (x) => x,
+      (e) => {
+        throw new ConvexError(e);
+      }
+    );
+    if (!args.disableStream) {
+      return ResultAsync.fromPromise(
+        thread.streamText(
+          {
+            prompt: args.prompt,
+            promptMessageId: args.promptMessageId,
+            temperature: 0.3,
+          },
+          {
+            saveStreamDeltas: { chunking: "word", throttleMs: 800 },
+          }
+        ),
+        (e) => {
+          return Errors.generateAiTextFailed({
+            message: "Failed to generate AI text",
+          });
+        }
+      )
+        .andThen((streamResult) => {
+          return ResultAsync.fromPromise(
+            (async () => {
+              let fullText = "";
+              for await (const chunk of streamResult.textStream) {
+                fullText += chunk;
+              }
+              return fullText;
+            })(),
+            (e) => {
+              console.error("ERRORRR100", e);
+              return Errors.generateAiTextFailed({
+                message: "Failed to generate AI text",
+              });
+            }
+          );
+        })
+        .match(
+          (x) => x,
+          (e) => {
+            throw new ConvexError(e);
+          }
+        );
+    } else {
+      return await ResultAsync.fromPromise(
+        storeAgent.continueThread(ctx, {
+          threadId: args.threadId,
+          userId: ctx.anonymousUserId,
+        }),
+        (e) =>
+          Errors.continueThreadFailed({
+            message: "Failed to continue thread",
+            error: e,
+          })
+      )
+        .andThen((x) => {
+          return ResultAsync.fromPromise(
+            x.thread.generateText({
               prompt: args.prompt,
               promptMessageId: args.promptMessageId,
               temperature: 0.3,
-              onFinish: async (x) => {},
-            },
-            {
-              saveStreamDeltas: { chunking: "word", throttleMs: 800 },
+            }),
+            (e) => {
+              console.error("ERRORRR@@@", e);
+              return Errors.generateAiTextFailed({
+                message: "Failed to generate AI text",
+              });
             }
-          ),
-          (e) =>
-            Errors.generateAiTextFailed({
-              message: "Failed to generate AI text",
-            })
-        )
-          .andThen((streamResult) => {
-            return ResultAsync.fromPromise(
-              (async () => {
-                let fullText = "";
-                for await (const chunk of streamResult.textStream) {
-                  fullText += chunk;
-                }
-                return fullText;
-              })(),
-              () =>
-                Errors.generateAiTextFailed({
-                  message: "Failed to generate AI text",
-                })
-            );
-          })
-          .andThen((text) => {
-            return ok(text);
-          });
-      })
-      .match(
-        (x) => x,
-        (e) => {
-          throw new ConvexError(e);
-        }
-      );
+          );
+        })
+        .match(
+          (x) => x.text,
+          (e) => {
+            throw new ConvexError(e);
+          }
+        );
+    }
   },
 });
 

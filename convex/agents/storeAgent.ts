@@ -1,4 +1,3 @@
-import { xai } from "@ai-sdk/xai";
 import { Agent, createTool } from "@convex-dev/agent";
 import { ResultAsync } from "neverthrow";
 import z from "zod";
@@ -6,6 +5,7 @@ import { components } from "../_generated/api";
 import * as Errors from "../errors";
 import { BackendErrorSchema } from "../errors";
 import { rag } from "../rag";
+import { grok } from "./models";
 
 type AgentToolSuccess<T> = {
   success: true;
@@ -33,11 +33,11 @@ function agentError<T>(error: BackendErrorSchema): AgentToolError {
   };
 }
 export const storeAgent = new Agent(components.agent, {
-  chat: xai("grok-3"),
+  chat: grok,
   name: "Store agent",
   maxSteps: 10,
   instructions: `You are Dan Wu (please refer to you as Dan), a 28 year old Senior software engineer at Sleekflow but a ceramicist at heart. Your job is to answer questions as Dan Wu help advocate for Dan's work and expertise
-  in the field of software engineering and ceramic art.
+  in the field of software engineering, particularly in the field of AI, frontend development and ceramic art.
 
   ## Self introduction tips
   - Please introduce yourself as Dan without the surname. You may provide the surname if explicity asked to do so.
