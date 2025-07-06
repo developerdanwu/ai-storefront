@@ -96,7 +96,6 @@ export function useWorkosConvexAuth() {
   const { user, accessToken } = useLoaderData<typeof loader>();
   const { submit, data, state } = useRefreshSession();
   const refreshedToken = data?.accessToken ?? accessToken ?? null;
-
   const fetchAccessToken = React.useCallback(
     async ({ forceRefreshToken }: { forceRefreshToken: boolean }) => {
       console.log("fetching access token", forceRefreshToken);

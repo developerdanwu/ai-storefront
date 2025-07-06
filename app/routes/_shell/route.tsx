@@ -7,6 +7,7 @@ import { Authenticated, Unauthenticated } from "convex/react";
 import { LogInIcon, MessageSquare, MoonIcon, SunIcon } from "lucide-react";
 import { Link, Outlet, useLoaderData, useParams } from "react-router";
 import { AnonymousUser } from "~/components/auth/auth-provider";
+import { NavigationProgress } from "~/components/navigation-progress";
 import { useTheme } from "~/components/theme-provider";
 import { SidebarHeader } from "~/components/threads-list";
 import { Input } from "~/components/ui/input";
@@ -34,6 +35,7 @@ export default function ShellRoute() {
   const { user } = useShellLoaderData();
   const { threadId } = useParams();
   const { setTheme, currentTheme, theme } = useTheme();
+
   // Create new thread
   const createThread = useMutation({
     mutationFn: useConvexAction(api.ai.action.createThread),
@@ -41,6 +43,7 @@ export default function ShellRoute() {
 
   return (
     <SidebarProvider>
+      <NavigationProgress />
       <Sidebar>
         <Authenticated>
           <AuthenticatedThreads activeThreadId={threadId} />
