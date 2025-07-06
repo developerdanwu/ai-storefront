@@ -119,6 +119,9 @@ importers:
       isbot:
         specifier: ^4.1.0
         version: 4.4.0
+      jwt-decode:
+        specifier: ^4.0.0
+        version: 4.0.0
       lucide-react:
         specifier: ^0.525.0
         version: 0.525.0(react@18.3.1)

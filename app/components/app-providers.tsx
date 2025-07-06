@@ -23,6 +23,7 @@ import { ConvexError } from "convex/values";
 import React, { useEffect } from "react";
 import { toast } from "sonner";
 import { match } from "ts-pattern";
+import { useIsClient } from "usehooks-ts";
 import { useWorkosConvexAuth } from "~/components/auth/auth-provider";
 import { Toaster } from "~/components/ui/sonner";
 import { DialogStoreContextProvider, useDialogStore } from "~/lib/dialog-store";
@@ -123,6 +124,12 @@ function AuthenticatedProvider({ children }: { children: React.ReactNode }) {
 }
 
 function BaseProviders({ children }: { children: React.ReactNode }) {
+  const isClient = useIsClient();
+
+  if (!isClient) {
+    return <PageLoadingSpinner />;
+  }
+
   return (
     <>
       <Authenticated>

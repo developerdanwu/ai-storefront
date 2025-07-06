@@ -5,7 +5,8 @@ import {
   Unauthenticated,
   useConvexAuth,
 } from "convex/react";
-import React from "react";
+import { jwtDecode } from "jwt-decode";
+import React, { useEffect } from "react";
 import { generatePath, Navigate, useLoaderData } from "react-router";
 import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
 import { ROUTES } from "~/lib/routes";
@@ -106,6 +107,29 @@ export function useWorkosConvexAuth() {
     },
     [refreshedToken, submit]
   );
+  useEffect(() => {
+    function isTokenExpired(token: string): boolean {
+      try {
+        const decoded: { exp: number } = jwtDecode(token);
+        const now = Date.now() / 1000; // in seconds
+        return decoded.exp < now;
+      } catch {
+        // If can't decode, treat as expired
+        return true;
+      }
+    }
+
+    if (refreshedToken) {
+      const interval = setInterval(async () => {
+        if (isTokenExpired(refreshedToken)) {
+          console.log("token expired, refreshing");
+          await submit({ method: "post", action: "/refresh-session" });
+        }
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, []);
 
   return React.useMemo(() => {
     return {
