@@ -17,13 +17,11 @@ import {
   useConvexAuth,
 } from "convex/react";
 import React, { useEffect } from "react";
-import { useLoaderData } from "react-router";
 import { toast } from "sonner";
 import { useWorkosConvexAuth } from "~/components/auth/auth-provider";
 import { Toaster } from "~/components/ui/sonner";
 import { DialogStoreContextProvider, useDialogStore } from "~/lib/dialog-store";
 import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
-import type { loader } from "~/root";
 import { CustomErrorBoundary } from "./custom-error-boundary";
 import { GenericAlertDialog } from "./dialogs/generic-alert-dialog";
 import { ThemeProvider } from "./theme-provider";
@@ -101,14 +99,13 @@ function AuthenticatedProvider({ children }: { children: React.ReactNode }) {
 }
 
 function BaseProviders({ children }: { children: React.ReactNode }) {
-  const { user } = useLoaderData<typeof loader>();
-  const { isLoading } = useConvexAuth();
+  const { isLoading, isAuthenticated } = useConvexAuth();
 
   if (isLoading) {
     return <PageLoadingSpinner />;
   }
 
-  if (user) {
+  if (isAuthenticated) {
     return <AuthenticatedProvider>{children}</AuthenticatedProvider>;
   }
 

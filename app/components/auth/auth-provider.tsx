@@ -105,7 +105,7 @@ export function useWorkosConvexAuth() {
       }
       return accessToken ?? null;
     },
-    [accessToken, submit, refreshedToken]
+    [submit, refreshedToken]
   );
 
   return React.useMemo(() => {
