@@ -20,8 +20,6 @@ const agentModules = import.meta.glob(
 const t = originalConvexTest(schema, convexFolderModules);
 t.registerComponent("rag", ragSchema, ragModules);
 t.registerComponent("agent", agentSchema, agentModules);
-// Global seeding state
-let globalSeedingPromise: Promise<void> | null = null;
 const seedFixture = createSeedDbFixture({ convex: t });
 await seedFixture.createRagDocuments();
 
