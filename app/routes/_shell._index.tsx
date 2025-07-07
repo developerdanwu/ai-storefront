@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { authkitLoader } from "@workos-inc/authkit-react-router";
 import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";
-import { Camera, Github, Upload } from "lucide-react";
+import { Camera, User } from "lucide-react";
 import * as React from "react";
 import { useCallback } from "react";
 import {
@@ -13,6 +13,7 @@ import {
   useNavigate,
 } from "react-router";
 import { toast } from "sonner";
+import { GithubIcon } from "~/components/icons/github";
 import { Button } from "~/components/ui/button";
 import { MessageInputField } from "~/components/ui/message-input-field";
 import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
@@ -33,18 +34,18 @@ export const meta: MetaFunction = () => {
 const suggestions = [
   {
     icon: <Camera size={16} />,
-    text: "Buy some ceramics",
-    value: "buy-something",
-    prompt: "Can I see some of your ceramic works that are available for sale?",
+    text: "How did you get into tech?",
+    value: "how-did-you-get-into-tech",
+    prompt: "Hello! I would like to know more about how you got into tech.",
   },
   {
-    icon: <Github size={16} />,
+    icon: <User size={16} />,
     text: "Who are you?",
     value: "about-me",
     prompt: "Tell me about yourself and your work",
   },
   {
-    icon: <Upload size={16} />,
+    icon: <GithubIcon size={16} />,
     text: "Projects",
     value: "projects",
     prompt: "Tell me about your what projects you have worked on",
