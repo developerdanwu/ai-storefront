@@ -17,6 +17,9 @@ importers:
       '@auth/core':
         specifier: 0.37.0
         version: 0.37.0
+      '@convex-dev/action-cache':
+        specifier: ^0.2.10
+        version: 0.2.10(convex@1.25.2(react@18.3.1))
       '@convex-dev/agent':
         specifier: ^0.1.14-alpha.0
         version: 0.1.14-alpha.3(ai@4.3.16(react@18.3.1)(zod@3.25.74))(convex-helpers@0.1.96(convex@1.25.2(react@18.3.1))(hono@4.8.4)(react@18.3.1)(typescript@5.8.3)(zod@3.25.74))(convex@1.25.2(react@18.3.1))(react@18.3.1)
@@ -26,6 +29,9 @@ importers:
       '@convex-dev/rag':
         specifier: ^0.1.7
         version: 0.1.7(@ai-sdk/provider@1.1.3)(@convex-dev/workpool@0.2.15(convex-helpers@0.1.96(convex@1.25.2(react@18.3.1))(hono@4.8.4)(react@18.3.1)(typescript@5.8.3)(zod@3.25.74))(convex@1.25.2(react@18.3.1)))(ai@4.3.16(react@18.3.1)(zod@3.25.74))(convex-helpers@0.1.96(convex@1.25.2(react@18.3.1))(hono@4.8.4)(react@18.3.1)(typescript@5.8.3)(zod@3.25.74))(convex@1.25.2(react@18.3.1))
+      '@convex-dev/rate-limiter':
+        specifier: ^0.2.10
+        version: 0.2.10(convex@1.25.2(react@18.3.1))(react@18.3.1)
       '@convex-dev/react-query':
         specifier: 0.0.0-alpha.11
         version: 0.0.0-alpha.11(@tanstack/react-query@5.81.5(react@18.3.1))(convex@1.25.2(react@18.3.1))(hono@4.8.4)(react@18.3.1)(typescript@5.8.3)(zod@3.25.74)
@@ -650,6 +656,11 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@convex-dev/action-cache@0.2.10':
+    resolution: {integrity: sha512-1di9dOJD1eBYJEzXyBlsR5cY6EjjTLMkCAt2wtOt567LJH5RBla4WDHKYkX6SyTm0VKzgHf6kDJdj5+pok+GBA==}
+    peerDependencies:
+      convex: ~1.16.5 || >=1.17.0 <1.35.0
+
   '@convex-dev/agent@0.1.14-alpha.3':
     resolution: {integrity: sha512-PyqrkduZ5Nwm4YoblxB1KouvTt+LlwqG4g5sdsZabg42JT4t7PU1MvXeFPeqlCP2zKEUx9rP5HkzTJ86E8y5lw==}
     peerDependencies:
@@ -691,6 +702,15 @@ packages:
       ai: ^4.3.16
       convex: ^1.24.8
       convex-helpers: ^0.1.94
+
+  '@convex-dev/rate-limiter@0.2.10':
+    resolution: {integrity: sha512-EU6wJ5XEAE1s1GnYW85w/PpcFs2/q6sJY9ndKX6oVk6nhhRmxmwNzwITl5/Y3ufS6BtoQ12sQ+0tqYy2SQWlkg==}
+    peerDependencies:
+      convex: ~1.16.5 || >=1.17.0 <1.35.0
+      react: ^18.3.1 || ^19.0.0
+    peerDependenciesMeta:
+      react:
+        optional: true
 
   '@convex-dev/react-query@0.0.0-alpha.11':
     resolution: {integrity: sha512-Fy/p3JOvUUNrbBBQD0AEXcSU40PBu567gm3XRgExHkiKlv07kBOjnuXA0TvodKkryyuHLbuIxYP8XIv03i6DEw==}
@@ -6349,6 +6369,10 @@ snapshots:
   '@biomejs/cli-win32-x64@2.0.6':
     optional: true
 
+  '@convex-dev/action-cache@0.2.10(convex@1.25.2(react@18.3.1))':
+    dependencies:
+      convex: 1.25.2(react@18.3.1)
+
   '@convex-dev/agent@0.1.14-alpha.3(ai@4.3.16(react@18.3.1)(zod@3.25.74))(convex-helpers@0.1.96(convex@1.25.2(react@18.3.1))(hono@4.8.4)(react@18.3.1)(typescript@5.8.3)(zod@3.25.74))(convex@1.25.2(react@18.3.1))(react@18.3.1)':
     dependencies:
       ai: 4.3.16(react@18.3.1)(zod@3.25.74)
@@ -6396,6 +6420,12 @@ snapshots:
       ai: 4.3.16(react@18.3.1)(zod@3.25.74)
       convex: 1.25.2(react@18.3.1)
       convex-helpers: 0.1.96(convex@1.25.2(react@18.3.1))(hono@4.8.4)(react@18.3.1)(typescript@5.8.3)(zod@3.25.74)
+
+  '@convex-dev/rate-limiter@0.2.10(convex@1.25.2(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      convex: 1.25.2(react@18.3.1)
+    optionalDependencies:
+      react: 18.3.1
 
   '@convex-dev/react-query@0.0.0-alpha.11(@tanstack/react-query@5.81.5(react@18.3.1))(convex@1.25.2(react@18.3.1))(hono@4.8.4)(react@18.3.1)(typescript@5.8.3)(zod@3.25.74)':
     dependencies:

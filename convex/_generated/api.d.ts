@@ -23,11 +23,13 @@ import type * as helpers_getAnonymousUser from "../helpers/getAnonymousUser.js";
 import type * as helpers_getUser from "../helpers/getUser.js";
 import type * as helpers_getUserId from "../helpers/getUserId.js";
 import type * as helpers_normalizeId from "../helpers/normalizeId.js";
+import type * as helpers_rateLimit from "../helpers/rateLimit.js";
 import type * as helpers_searchAiThreads from "../helpers/searchAiThreads.js";
 import type * as helpers_sendAiMessage from "../helpers/sendAiMessage.js";
 import type * as http from "../http.js";
 import type * as procedures from "../procedures.js";
 import type * as rag from "../rag.js";
+import type * as rateLimiter from "../rateLimiter.js";
 import type * as users_mutation from "../users/mutation.js";
 import type * as users_nodeAction from "../users/nodeAction.js";
 import type * as users_query from "../users/query.js";
@@ -64,11 +66,13 @@ declare const fullApi: ApiFromModules<{
   "helpers/getUser": typeof helpers_getUser;
   "helpers/getUserId": typeof helpers_getUserId;
   "helpers/normalizeId": typeof helpers_normalizeId;
+  "helpers/rateLimit": typeof helpers_rateLimit;
   "helpers/searchAiThreads": typeof helpers_searchAiThreads;
   "helpers/sendAiMessage": typeof helpers_sendAiMessage;
   http: typeof http;
   procedures: typeof procedures;
   rag: typeof rag;
+  rateLimiter: typeof rateLimiter;
   "users/mutation": typeof users_mutation;
   "users/nodeAction": typeof users_nodeAction;
   "users/query": typeof users_query;
@@ -2698,6 +2702,182 @@ export declare const components: {
           }>;
         }
       >;
+    };
+  };
+  actionCache: {
+    crons: {
+      purge: FunctionReference<
+        "mutation",
+        "internal",
+        { expiresAt?: number },
+        null
+      >;
+    };
+    lib: {
+      get: FunctionReference<
+        "query",
+        "internal",
+        { args: any; name: string; ttl: number | null },
+        { kind: "hit"; value: any } | { expiredEntry?: string; kind: "miss" }
+      >;
+      put: FunctionReference<
+        "mutation",
+        "internal",
+        {
+          args: any;
+          expiredEntry?: string;
+          name: string;
+          ttl: number | null;
+          value: any;
+        },
+        { cacheHit: boolean; deletedExpiredEntry: boolean }
+      >;
+      remove: FunctionReference<
+        "mutation",
+        "internal",
+        { args: any; name: string },
+        null
+      >;
+      removeAll: FunctionReference<
+        "mutation",
+        "internal",
+        { batchSize?: number; before?: number; name?: string },
+        null
+      >;
+    };
+  };
+  rateLimiter: {
+    lib: {
+      checkRateLimit: FunctionReference<
+        "query",
+        "internal",
+        {
+          config:
+            | {
+                capacity?: number;
+                kind: "token bucket";
+                maxReserved?: number;
+                period: number;
+                rate: number;
+                shards?: number;
+                start?: null;
+              }
+            | {
+                capacity?: number;
+                kind: "fixed window";
+                maxReserved?: number;
+                period: number;
+                rate: number;
+                shards?: number;
+                start?: number;
+              };
+          count?: number;
+          key?: string;
+          name: string;
+          reserve?: boolean;
+          throws?: boolean;
+        },
+        { ok: true; retryAfter?: number } | { ok: false; retryAfter: number }
+      >;
+      clearAll: FunctionReference<
+        "mutation",
+        "internal",
+        { before?: number },
+        null
+      >;
+      getServerTime: FunctionReference<"mutation", "internal", {}, number>;
+      getValue: FunctionReference<
+        "query",
+        "internal",
+        {
+          config:
+            | {
+                capacity?: number;
+                kind: "token bucket";
+                maxReserved?: number;
+                period: number;
+                rate: number;
+                shards?: number;
+                start?: null;
+              }
+            | {
+                capacity?: number;
+                kind: "fixed window";
+                maxReserved?: number;
+                period: number;
+                rate: number;
+                shards?: number;
+                start?: number;
+              };
+          key?: string;
+          name: string;
+          sampleShards?: number;
+        },
+        {
+          config:
+            | {
+                capacity?: number;
+                kind: "token bucket";
+                maxReserved?: number;
+                period: number;
+                rate: number;
+                shards?: number;
+                start?: null;
+              }
+            | {
+                capacity?: number;
+                kind: "fixed window";
+                maxReserved?: number;
+                period: number;
+                rate: number;
+                shards?: number;
+                start?: number;
+              };
+          shard: number;
+          ts: number;
+          value: number;
+        }
+      >;
+      rateLimit: FunctionReference<
+        "mutation",
+        "internal",
+        {
+          config:
+            | {
+                capacity?: number;
+                kind: "token bucket";
+                maxReserved?: number;
+                period: number;
+                rate: number;
+                shards?: number;
+                start?: null;
+              }
+            | {
+                capacity?: number;
+                kind: "fixed window";
+                maxReserved?: number;
+                period: number;
+                rate: number;
+                shards?: number;
+                start?: number;
+              };
+          count?: number;
+          key?: string;
+          name: string;
+          reserve?: boolean;
+          throws?: boolean;
+        },
+        { ok: true; retryAfter?: number } | { ok: false; retryAfter: number }
+      >;
+      resetRateLimit: FunctionReference<
+        "mutation",
+        "internal",
+        { key?: string; name: string },
+        null
+      >;
+    };
+    time: {
+      getServerTime: FunctionReference<"mutation", "internal", {}, number>;
     };
   };
 };

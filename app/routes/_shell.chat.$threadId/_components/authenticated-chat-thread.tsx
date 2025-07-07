@@ -2,8 +2,11 @@ import { useThreadMessages } from "@convex-dev/agent/react";
 import { useConvexAction } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "convex/_generated/api";
+import type { BackendErrors } from "convex/errors";
+import { ConvexError } from "convex/values";
 import { useCallback } from "react";
 import { useParams } from "react-router";
+import { toast } from "sonner";
 import { ChatThreadBase } from "./chat-thread-base";
 
 export function AuthenticatedChatThread() {
@@ -22,6 +25,19 @@ export function AuthenticatedChatThread() {
 
   const continueThreadMutation = useMutation({
     mutationFn: useConvexAction(api.ai.action.continueThread),
+    onError: (error) => {
+      if (error instanceof ConvexError) {
+        const data = error.data as BackendErrors;
+        if (data._tag === "RateLimitExceeded") {
+          return toast.error(
+            `Rate limit exceeded, please try again in ${Math.ceil(
+              data.context.retryAfter / 1000
+            )} seconds`
+          );
+        }
+      }
+      return toast.error("Failed to continue thread");
+    },
   });
 
   const isStreaming =

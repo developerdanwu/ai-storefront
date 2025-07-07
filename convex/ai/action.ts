@@ -6,6 +6,7 @@ import { storeAgent } from "../agents/storeAgent";
 import * as Errors from "../errors";
 import { createThread as createThreadHelper } from "../helpers/createThread";
 import { generateSummaryTitle } from "../helpers/generateSummaryTitle";
+import { rateLimit } from "../helpers/rateLimit";
 import { anonymousAction, authedAction } from "../procedures";
 
 export const createThread = authedAction({
@@ -13,6 +14,15 @@ export const createThread = authedAction({
     prompt: v.string(),
   },
   handler: async (ctx, args) => {
+    await rateLimit(ctx, {
+      name: "createAiThread",
+      key: ctx.user._id,
+    }).match(
+      (x) => x,
+      (e) => {
+        throw new ConvexError(e);
+      }
+    );
     const { threadId } = await generateSummaryTitle(ctx, {
       userId: ctx.user._id,
       prompt: `
@@ -44,6 +54,15 @@ export const createAnonymousThread = anonymousAction({
     prompt: v.string(),
   },
   handler: async (ctx, args) => {
+    await rateLimit(ctx, {
+      name: "createAiThread",
+      key: ctx.anonymousUserId,
+    }).match(
+      (x) => x,
+      (e) => {
+        throw new ConvexError(e);
+      }
+    );
     const { threadId } = await generateSummaryTitle(ctx, {
       userId: ctx.anonymousUserId,
       prompt: `
@@ -81,6 +100,15 @@ export const continueThread = authedAction({
     promptMessageId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await rateLimit(ctx, {
+      name: "sendAIMessage",
+      key: ctx.user._id,
+    }).match(
+      (x) => x,
+      (e) => {
+        throw new ConvexError(e);
+      }
+    );
     return await ResultAsync.fromPromise(
       storeAgent.continueThread(ctx, {
         threadId: args.threadId,
@@ -164,6 +192,15 @@ export const continueAnonymousThread = anonymousAction({
     disableStream: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
+    await rateLimit(ctx, {
+      name: "sendAIMessage",
+      key: ctx.anonymousUserId,
+    }).match(
+      (x) => x,
+      (e) => {
+        throw new ConvexError(e);
+      }
+    );
     const { thread } = await ResultAsync.fromPromise(
       storeAgent.continueThread(ctx, {
         threadId: args.threadId,
@@ -230,7 +267,6 @@ export const continueAnonymousThread = anonymousAction({
         (e) =>
           Errors.continueThreadFailed({
             message: "Failed to continue thread",
-            error: e,
           })
       )
         .andThen((x) => {
@@ -241,7 +277,6 @@ export const continueAnonymousThread = anonymousAction({
               temperature: 0.3,
             }),
             (e) => {
-              console.error("ERRORRR@@@", e);
               return Errors.generateAiTextFailed({
                 message: "Failed to generate AI text",
               });

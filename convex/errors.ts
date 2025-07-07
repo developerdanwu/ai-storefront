@@ -21,7 +21,10 @@ export type BackendErrors =
   | NotAuthenticated
   | UserNotFound
   | SummaryGenerationFailed
-  | CreateThreadFailed;
+  | CreateThreadFailed
+  | RateLimitExceeded;
+
+export type RateLimitExceeded = ReturnType<typeof rateLimitExceeded>;
 
 export type CreateThreadFailed = ReturnType<typeof createThreadFailed>;
 
@@ -140,6 +143,22 @@ export function getAiProfilePictureFailed(context: ErrorContext) {
 export function aiAgentPersonaNotFound(context: ErrorContext) {
   return {
     _tag: "AiAgentPersonaNotFound",
+    context,
+  } as const satisfies BackendErrorSchema;
+}
+
+export function rateLimitExceeded(
+  context: ErrorContext & { retryAfter: number; name: string }
+) {
+  return {
+    _tag: "RateLimitExceeded",
+    context,
+  } as const satisfies BackendErrorSchema;
+}
+
+export function unknownError(context: ErrorContext) {
+  return {
+    _tag: "UnknownError",
     context,
   } as const satisfies BackendErrorSchema;
 }
