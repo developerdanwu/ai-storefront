@@ -292,7 +292,7 @@ describe("Store agent", () => {
       );
 
       const instructions = [
-        "Provide appropriate contact information or methods",
+        "Provide appropriate contact information and all methods of contact including email, linkedin, github link and medium link",
         "Be helpful and welcoming to potential contacts",
         "Speak in first person as Dan",
         "Offer professional ways to get in touch",
