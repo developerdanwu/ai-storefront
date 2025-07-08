@@ -17,11 +17,13 @@ import { GithubIcon } from "~/components/icons/github";
 import { Button } from "~/components/ui/button";
 import { MessageInputField } from "~/components/ui/message-input-field";
 import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
+import { DEFAULT_META } from "~/lib/meta";
 import { ROUTES } from "~/lib/routes";
 import type { Route } from "./+types/_shell._index";
 
 export const meta: MetaFunction = () => {
   return [
+    ...DEFAULT_META,
     { title: "Dan Wu's personal website | Home" },
     {
       name: "description",
