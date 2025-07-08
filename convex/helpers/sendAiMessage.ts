@@ -1,7 +1,7 @@
 import { Infer, v } from "convex/values";
 import { ok, ResultAsync } from "neverthrow";
 import { ActionCtx } from "../_generated/server";
-import { storeAgent } from "../agents/storeAgent";
+import { createStoreAgent } from "../agents/storeAgent";
 import * as Errors from "../errors";
 
 export const VSendAiMessageArgs = v.object({
@@ -14,7 +14,7 @@ export type TSendAiMessageArgs = Infer<typeof VSendAiMessageArgs>;
 
 export function sendAiMessage(ctx: ActionCtx, args: TSendAiMessageArgs) {
   return ResultAsync.fromPromise(
-    storeAgent.continueThread(ctx, {
+    createStoreAgent().continueThread(ctx, {
       threadId: args.threadId,
       userId: args.userId,
     }),

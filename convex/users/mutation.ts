@@ -3,7 +3,7 @@ import { ok, ResultAsync } from "neverthrow";
 import { components } from "../_generated/api";
 import { Id } from "../_generated/dataModel";
 import { internalMutation } from "../_generated/server";
-import { storeAgent } from "../agents/storeAgent";
+import { createStoreAgent } from "../agents/storeAgent";
 import * as Errors from "../errors";
 import { getAnonymousUser } from "../helpers/getAnonymousUser";
 import { authedMutation } from "../procedures";
@@ -139,7 +139,7 @@ export const migrateAnonymousUser = authedMutation({
       // Update each thread's userId to the authenticated user's ID
       for (const thread of threadsPage.page) {
         await ResultAsync.fromPromise(
-          storeAgent.updateThreadMetadata(ctx, {
+          createStoreAgent().updateThreadMetadata(ctx, {
             threadId: thread._id,
             patch: {
               userId: authenticatedUserId,

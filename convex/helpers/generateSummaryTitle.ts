@@ -1,7 +1,8 @@
 import { Infer, v } from "convex/values";
 import { ResultAsync } from "neverthrow";
 import { ActionCtx } from "../_generated/server";
-import { summaryAgent } from "../agents/summaryAgent";
+import { createCacheMiddleware } from "../agents/middleware/cacheMiddleware";
+import { createSummaryAgent } from "../agents/summaryAgent";
 import * as Errors from "../errors";
 
 export const VGenerateSummaryTitle = v.object({
@@ -17,7 +18,9 @@ export function generateSummaryTitle(
   args: TGenerateSummaryTitle
 ) {
   return ResultAsync.fromPromise(
-    summaryAgent.generateText(
+    createSummaryAgent({
+      middleware: [createCacheMiddleware(ctx)],
+    }).generateText(
       ctx,
       {
         userId: args.userId,

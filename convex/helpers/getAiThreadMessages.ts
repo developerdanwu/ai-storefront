@@ -3,7 +3,7 @@ import { paginationOptsValidator } from "convex/server";
 import { type Infer, v } from "convex/values";
 import { errAsync, ok, ResultAsync } from "neverthrow";
 import { QueryCtx } from "../_generated/server";
-import { storeAgent } from "../agents/storeAgent";
+import { createStoreAgent } from "../agents/storeAgent";
 import * as Errors from "../errors";
 
 export const VGetAiThreadMessagesArgs = v.object({
@@ -20,7 +20,7 @@ export function getAiThreadMessages(
   args: TGetAiThreadMessagesArgs
 ) {
   return ResultAsync.fromPromise(
-    storeAgent.getThreadMetadata(ctx, {
+    createStoreAgent().getThreadMetadata(ctx, {
       threadId: args.threadId,
     }),
     () =>
@@ -37,7 +37,7 @@ export function getAiThreadMessages(
     }
 
     return ResultAsync.fromPromise(
-      storeAgent.listMessages(ctx, {
+      createStoreAgent().listMessages(ctx, {
         threadId: args.threadId,
         paginationOpts: args.paginationOpts,
       }),
@@ -48,7 +48,7 @@ export function getAiThreadMessages(
       }
     ).andThen((messages) => {
       return ResultAsync.fromPromise(
-        storeAgent.syncStreams(ctx, {
+        createStoreAgent().syncStreams(ctx, {
           threadId: args.threadId,
           streamArgs: args.streamArgs,
         }),

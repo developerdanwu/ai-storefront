@@ -1,7 +1,7 @@
 import { Infer, v } from "convex/values";
 import { ResultAsync } from "neverthrow";
 import { ActionCtx } from "../_generated/server";
-import { storeAgent } from "../agents/storeAgent";
+import { createStoreAgent } from "../agents/storeAgent";
 import * as Errors from "../errors";
 
 export const VCreateThreadArgs = v.object({
@@ -13,7 +13,7 @@ export type TCreateThreadArgs = Infer<typeof VCreateThreadArgs>;
 
 export function createThread(ctx: ActionCtx, args: TCreateThreadArgs) {
   return ResultAsync.fromPromise(
-    storeAgent.createThread(ctx, {
+    createStoreAgent().createThread(ctx, {
       title: args.title,
       userId: args.userId,
     }),

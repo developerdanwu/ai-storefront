@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as agents_middleware_cacheMiddleware from "../agents/middleware/cacheMiddleware.js";
 import type * as agents_models from "../agents/models.js";
 import type * as agents_storeAgent from "../agents/storeAgent.js";
 import type * as agents_summaryAgent from "../agents/summaryAgent.js";
@@ -51,6 +52,7 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  "agents/middleware/cacheMiddleware": typeof agents_middleware_cacheMiddleware;
   "agents/models": typeof agents_models;
   "agents/storeAgent": typeof agents_storeAgent;
   "agents/summaryAgent": typeof agents_summaryAgent;

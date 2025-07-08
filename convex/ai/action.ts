@@ -2,7 +2,7 @@ import { ConvexError, v } from "convex/values";
 import { ok, ResultAsync } from "neverthrow";
 import { components } from "../_generated/api";
 import { internalAction } from "../_generated/server";
-import { storeAgent } from "../agents/storeAgent";
+import { createStoreAgent } from "../agents/storeAgent";
 import * as Errors from "../errors";
 import { createThread as createThreadHelper } from "../helpers/createThread";
 import { generateSummaryTitle } from "../helpers/generateSummaryTitle";
@@ -110,7 +110,7 @@ export const continueThread = authedAction({
       }
     );
     return await ResultAsync.fromPromise(
-      storeAgent.continueThread(ctx, {
+      createStoreAgent().continueThread(ctx, {
         threadId: args.threadId,
         userId: ctx.user._id,
       }),
@@ -133,10 +133,12 @@ export const continueThread = authedAction({
               saveStreamDeltas: { chunking: "word", throttleMs: 800 },
             }
           ),
-          (e) =>
-            Errors.generateAiTextFailed({
+          (e) => {
+            console.error("ERRORRR102", e);
+            return Errors.generateAiTextFailed({
               message: "Failed to generate AI text",
-            })
+            });
+          }
         )
           .andThen((streamResult) => {
             return ResultAsync.fromPromise(
@@ -147,10 +149,12 @@ export const continueThread = authedAction({
                 }
                 return fullText;
               })(),
-              () =>
-                Errors.generateAiTextFailed({
+              (e) => {
+                console.error("ERRORRR101", e);
+                return Errors.generateAiTextFailed({
                   message: "Failed to generate AI text",
-                })
+                });
+              }
             );
           })
           .andThen((text) => {
@@ -160,6 +164,7 @@ export const continueThread = authedAction({
       .match(
         (x) => x,
         (e) => {
+          console.error("ERRORRR100", e);
           throw new ConvexError(e);
         }
       );
@@ -202,7 +207,7 @@ export const continueAnonymousThread = anonymousAction({
       }
     );
     const { thread } = await ResultAsync.fromPromise(
-      storeAgent.continueThread(ctx, {
+      createStoreAgent().continueThread(ctx, {
         threadId: args.threadId,
         userId: ctx.anonymousUserId,
       }),
@@ -260,7 +265,7 @@ export const continueAnonymousThread = anonymousAction({
         );
     } else {
       return await ResultAsync.fromPromise(
-        storeAgent.continueThread(ctx, {
+        createStoreAgent().continueThread(ctx, {
           threadId: args.threadId,
           userId: ctx.anonymousUserId,
         }),
