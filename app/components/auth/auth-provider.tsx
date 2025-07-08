@@ -95,11 +95,11 @@ export function CatchAll() {
 
 export function useWorkosConvexAuth() {
   const { user, accessToken } = useLoaderData<typeof loader>();
-  const { submit, state } = useRefreshSession();
-  const refreshedToken = accessToken ?? null;
+  const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
+  const { submit, state, data } = useRefreshSession();
+  const refreshedToken = data?.accessToken ?? null;
   const fetchAccessToken = React.useCallback(
     async ({ forceRefreshToken }: { forceRefreshToken: boolean }) => {
-      console.log("fetching access token", forceRefreshToken);
       if (forceRefreshToken) {
         await submit({ method: "post", action: "/refresh-session" });
       }
@@ -120,15 +120,18 @@ export function useWorkosConvexAuth() {
     }
 
     if (refreshedToken) {
-      const interval = setInterval(async () => {
+      intervalRef.current = setInterval(async () => {
         if (isTokenExpired(refreshedToken)) {
-          console.log("token expired, refreshing");
           await submit({ method: "post", action: "/refresh-session" });
         }
       }, 1000);
-
-      return () => clearInterval(interval);
     }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
   }, [refreshedToken, submit]);
 
   return React.useMemo(() => {
