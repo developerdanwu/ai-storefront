@@ -3,6 +3,7 @@ node_modules
 /.cache
 /build
 .env
+/dist
 
 .react-router
 .env.local
