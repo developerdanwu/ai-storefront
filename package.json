@@ -8,7 +8,6 @@
     "dev": "react-router dev",
     "format": "biome format --write .",
     "lint": "oxlint",
-    "start": "pnpm http-server ./dist/client",
     "typecheck": "react-router typegen && tsc",
     "convex:dev": "convex dev",
     "convex:deploy": "pnpm dlx convex deploy --cmd 'pnpm run build' --yes",

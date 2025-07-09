@@ -4,6 +4,19 @@ import { defineConfig } from "vite";
 import { analyzer } from "vite-bundle-analyzer";
 import tsconfigPaths from "vite-tsconfig-paths";
 
-export default defineConfig({
-  plugins: [tailwindcss(), reactRouter(), tsconfigPaths(), analyzer()],
-});
+export default defineConfig(({ mode }) => ({
+  plugins: [
+    tailwindcss(),
+    reactRouter(),
+    tsconfigPaths(),
+    ...(mode === "development" ? [analyzer()] : []),
+  ],
+  build: {
+    sourcemap: false,
+    ...(mode === "development"
+      ? {
+          sourcemap: true,
+        }
+      : {}),
+  },
+}));
