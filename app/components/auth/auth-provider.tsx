@@ -6,6 +6,7 @@ import {
   Unauthenticated,
   useConvexAuth,
 } from "convex/react";
+import { ResultAsync } from "neverthrow";
 import React from "react";
 import { generatePath, Navigate } from "react-router";
 import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
@@ -95,10 +96,16 @@ export function useWorkosConvexAuth() {
   const { user, getAccessToken, isLoading } = useAuth();
   const fetchAccessToken = React.useCallback(
     async ({ forceRefreshToken }: { forceRefreshToken: boolean }) => {
-      if (forceRefreshToken) {
-        return getAccessToken({ forceRefresh: forceRefreshToken });
-      }
-      return getAccessToken();
+      return ResultAsync.fromPromise(
+        getAccessToken({ forceRefresh: forceRefreshToken }),
+        () => null
+      ).match(
+        (accessToken) => accessToken,
+        (error) => {
+          console.error("Error fetching access token", error);
+          return null;
+        }
+      );
     },
     [getAccessToken]
   );
@@ -106,7 +113,7 @@ export function useWorkosConvexAuth() {
   return React.useMemo(() => {
     return {
       isLoading,
-      isAuthenticated: !!user,
+      isAuthenticated: Boolean(user),
       fetchAccessToken,
     };
   }, [user, fetchAccessToken, isLoading]);
