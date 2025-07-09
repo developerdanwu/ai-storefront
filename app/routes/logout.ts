@@ -4,7 +4,9 @@ import { useEffect } from "react";
 export default function Logout() {
   const { signOut } = useAuth();
   useEffect(() => {
-    signOut();
+    signOut({
+      returnTo: "/",
+    });
   }, [signOut]);
 
   return null;
