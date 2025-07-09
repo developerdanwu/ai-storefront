@@ -22,6 +22,7 @@ import {
 } from "convex/react";
 import { ConvexError } from "convex/values";
 import React, { useEffect } from "react";
+import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { match } from "ts-pattern";
 import { useWorkosConvexAuth } from "~/components/auth/auth-provider";
@@ -138,6 +139,7 @@ function BaseProviders({ children }: { children: React.ReactNode }) {
 }
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
+  const navigate = useNavigate();
   return (
     <CustomErrorBoundary
       wrapRenderFallback={(props) => (
@@ -146,7 +148,14 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
         </div>
       )}
     >
-      <AuthKitProvider clientId={import.meta.env.VITE_WORKOS_CLIENT_ID}>
+      <AuthKitProvider
+        clientId={import.meta.env.VITE_WORKOS_CLIENT_ID}
+        onRedirectCallback={({ state }) => {
+          if (state?.returnTo) {
+            navigate(state.returnTo);
+          }
+        }}
+      >
         <ConvexProviderWithAuth client={convex} useAuth={useWorkosConvexAuth}>
           <QueryClientProvider client={queryClient}>
             <ThemeProvider>

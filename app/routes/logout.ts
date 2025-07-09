@@ -1,7 +1,11 @@
-import { signOut } from "@workos-inc/authkit-react-router";
-import type { Route } from "./+types/logout";
+import { useAuth } from "@workos-inc/authkit-react";
+import { useEffect } from "react";
 
-export async function action({ request }: Route.ActionArgs) {
-  console.log("CALLING LOGOUT");
-  return await signOut(request);
+export default function Logout() {
+  const { signOut } = useAuth();
+  useEffect(() => {
+    signOut();
+  }, [signOut]);
+
+  return null;
 }

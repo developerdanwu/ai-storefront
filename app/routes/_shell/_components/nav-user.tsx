@@ -1,5 +1,5 @@
 import { ChevronsUpDown, LogOut } from "lucide-react";
-import { Form } from "react-router";
+import { Link } from "react-router";
 import {
   Avatar,
   AvatarFallback,
@@ -96,20 +96,19 @@ export function NavUser({ user }: NavUserProps) {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <Form action="/logout" method="post" className="w-full">
-              <DropdownMenuItem
-                onSelect={(e) => {
-                  e.preventDefault();
-                }}
-                asChild
-                className="w-full"
-              >
-                <button type="submit">
-                  <LogOut />
-                  Log out
-                </button>
-              </DropdownMenuItem>
-            </Form>
+
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+              }}
+              asChild
+              className="w-full"
+            >
+              <Link to="/logout">
+                <LogOut />
+                Log out
+              </Link>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
