@@ -3,5 +3,8 @@
   "build": {
     "builder": "RAILPACK",
     "buildCommand": "pnpm build"
+  },
+  "deploy": {
+    "startCommand": "pnpm start"
   }
 }
