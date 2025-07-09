@@ -140,11 +140,7 @@ function BaseProviders({ children }: { children: React.ReactNode }) {
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
-  console.log(
-    "AppProviders",
-    import.meta.env.VITE_WORKOS_CLIENT_ID,
-    import.meta.env.VITE_CONVEX_URL
-  );
+
   return (
     <CustomErrorBoundary
       wrapRenderFallback={(props) => (
