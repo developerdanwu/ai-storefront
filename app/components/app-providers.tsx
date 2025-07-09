@@ -140,6 +140,11 @@ function BaseProviders({ children }: { children: React.ReactNode }) {
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
+  console.log(
+    "AppProviders",
+    import.meta.env.VITE_WORKOS_CLIENT_ID,
+    import.meta.env.VITE_CONVEX_URL
+  );
   return (
     <CustomErrorBoundary
       wrapRenderFallback={(props) => (
@@ -149,12 +154,14 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
       )}
     >
       <AuthKitProvider
+        https={true}
         clientId={import.meta.env.VITE_WORKOS_CLIENT_ID}
         onRedirectCallback={({ state }) => {
           if (state?.returnTo) {
             navigate(state.returnTo);
           }
         }}
+        devMode={true}
       >
         <ConvexProviderWithAuth client={convex} useAuth={useWorkosConvexAuth}>
           <QueryClientProvider client={queryClient}>

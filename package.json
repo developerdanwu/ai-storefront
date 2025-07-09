@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "react-router build",
-    "start": "serve dist/client -s",
+    "start": "serve build/client -s",
     "dev": "react-router dev",
     "format": "biome format --write .",
     "lint": "oxlint",
