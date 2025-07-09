@@ -1,6 +1,10 @@
 {
   "$schema": "https://railway.com/railway.schema.json",
   "build": {
-    "builder": "DOCKERFILE"
+    "builder": "RAILPACK",
+    "buildCommand": "pnpm build"
+  },
+  "deploy": {
+    "startCommand": "serve build/client -s -p $PORT"
   }
 }

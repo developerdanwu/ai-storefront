@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "react-router build",
+    "start": "serve dist/client -s",
     "dev": "react-router dev",
     "format": "biome format --write .",
     "lint": "oxlint",
@@ -68,6 +69,7 @@
     "react-markdown": "^10.1.0",
     "react-router": "^7.6.3",
     "rehype-raw": "^7.0.0",
+    "serve": "^14.2.3",
     "rehype-sanitize": "^6.0.0",
     "remark-gfm": "^4.0.1",
     "server": "link:@convex-dev/auth/server",
