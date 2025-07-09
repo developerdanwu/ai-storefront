@@ -13,7 +13,13 @@ http.route({
     const sigHeader = String(request.headers.get("workos-signature"));
 
     try {
-      const { data, event } = JSON.parse(bodyText);
+      const { data, event } = await ctx.runAction(
+        internal.workos.verifyWebhook,
+        {
+          payload: bodyText,
+          signature: sigHeader,
+        }
+      );
 
       switch (event) {
         case "user.created":
@@ -21,10 +27,10 @@ http.route({
           await ctx.runMutation(internal.users.mutation._upsertFromWorkos, {
             externalId: data.id,
             email: data.email,
-            emailVerified: data.email_verified,
-            firstName: data.first_name,
-            lastName: data.last_name,
-            profilePictureUrl: data.profile_picture_url,
+            emailVerified: data.emailVerified,
+            firstName: data.firstName,
+            lastName: data.lastName,
+            profilePictureUrl: data.profilePictureUrl,
             isAnonymous: false,
           });
           break;
