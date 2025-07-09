@@ -10,6 +10,7 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { AuthKitProvider } from "@workos-inc/authkit-react";
 import { api } from "convex/_generated/api";
 import type { BackendErrors } from "convex/errors";
 import {
@@ -152,20 +153,22 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
         </div>
       )}
     >
-      <ConvexProviderWithAuth client={convex} useAuth={useWorkosConvexAuth}>
-        <QueryClientProvider client={queryClient}>
-          <ThemeProvider>
-            <DialogStoreContextProvider>
-              <BaseProviders>
-                {children}
-                <GenericAlertDialog />
-                <Toaster />
-                <ReactQueryDevtools initialIsOpen={false} />
-              </BaseProviders>
-            </DialogStoreContextProvider>
-          </ThemeProvider>
-        </QueryClientProvider>
-      </ConvexProviderWithAuth>
+      <AuthKitProvider clientId={import.meta.env.VITE_WORKOS_CLIENT_ID}>
+        <ConvexProviderWithAuth client={convex} useAuth={useWorkosConvexAuth}>
+          <QueryClientProvider client={queryClient}>
+            <ThemeProvider>
+              <DialogStoreContextProvider>
+                <BaseProviders>
+                  {children}
+                  <GenericAlertDialog />
+                  <Toaster />
+                  <ReactQueryDevtools initialIsOpen={false} />
+                </BaseProviders>
+              </DialogStoreContextProvider>
+            </ThemeProvider>
+          </QueryClientProvider>
+        </ConvexProviderWithAuth>
+      </AuthKitProvider>
     </CustomErrorBoundary>
   );
 }

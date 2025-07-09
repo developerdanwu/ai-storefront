@@ -1,17 +1,10 @@
-import { getSignInUrl } from "@workos-inc/authkit-react-router";
-import { redirect } from "react-router";
-
-export const loader = async () => {
-  const signInUrl = await getSignInUrl().catch((e) => console.error(e));
-  console.log("SIGN IN URL", signInUrl);
-
-  if (!signInUrl) {
-    return null;
-  }
-
-  return redirect(signInUrl);
-};
+import { useAuth } from "@workos-inc/authkit-react";
+import { useEffect } from "react";
 
 export default function LoginPage() {
+  const { signIn } = useAuth();
+  useEffect(() => {
+    signIn();
+  }, []);
   return null;
 }

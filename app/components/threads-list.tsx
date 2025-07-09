@@ -1,5 +1,6 @@
 import { useConvexAction } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
+import { useAuth } from "@workos-inc/authkit-react";
 import { api } from "convex/_generated/api";
 import { Plus, Trash } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -12,7 +13,7 @@ import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
 import { ROUTES } from "~/lib/routes";
 import { cn } from "~/lib/utils";
 import { EmptyThreads } from "~/routes/_shell/_components/empty-threads";
-import { useShellLoaderData } from "~/routes/_shell/route";
+
 import {
   ContextMenu,
   ContextMenuContent,
@@ -118,7 +119,7 @@ function ThreadItem({
   onThreadSelect: (threadId: string) => void;
   activeThreadId: string | undefined;
 }) {
-  const { user } = useShellLoaderData();
+  const { user } = useAuth();
   const [anonymousUserId] = useAnonymousUserId();
   const [menuOpen, setMenuOpen] = useState(false);
   const dialogStore = useDialogStore();

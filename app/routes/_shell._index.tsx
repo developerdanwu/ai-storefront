@@ -1,17 +1,12 @@
 import { useConvexAction } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
-import { authkitLoader } from "@workos-inc/authkit-react-router";
+import { useAuth } from "@workos-inc/authkit-react";
 import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";
 import { Camera, User } from "lucide-react";
 import * as React from "react";
 import { useCallback } from "react";
-import {
-  generatePath,
-  type MetaFunction,
-  useLoaderData,
-  useNavigate,
-} from "react-router";
+import { generatePath, type MetaFunction, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { GithubIcon } from "~/components/icons/github";
 import { Button } from "~/components/ui/button";
@@ -19,7 +14,6 @@ import { MessageInputField } from "~/components/ui/message-input-field";
 import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
 import { DEFAULT_META } from "~/lib/meta";
 import { ROUTES } from "~/lib/routes";
-import type { Route } from "./+types/_shell._index";
 
 export const meta: MetaFunction = () => {
   return [
@@ -56,10 +50,8 @@ const suggestions = [
 
 type SubmittingSource = "message-input" | (typeof suggestions)[number]["value"];
 
-export const loader = async (args: Route.LoaderArgs) => authkitLoader(args);
-
 export default function Index() {
-  const { user } = useLoaderData<typeof loader>();
+  const { user } = useAuth();
 
   const [submittingSource, setSubmittingSource] = React.useState<
     SubmittingSource | undefined

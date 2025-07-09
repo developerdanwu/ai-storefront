@@ -1,3 +1,4 @@
+import { useAuth } from "@workos-inc/authkit-react";
 import {
   AuthLoading,
   Authenticated as ConvexAuthenticated,
@@ -5,13 +6,10 @@ import {
   Unauthenticated,
   useConvexAuth,
 } from "convex/react";
-import { jwtDecode } from "jwt-decode";
-import React, { useEffect } from "react";
-import { generatePath, Navigate, useLoaderData } from "react-router";
+import React from "react";
+import { generatePath, Navigate } from "react-router";
 import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
 import { ROUTES } from "~/lib/routes";
-import type { loader } from "~/root";
-import { useRefreshSession } from "~/routes/refresh-session";
 import { LoadingSpinner } from "../ui/loading-spinner";
 import { PageLoadingSpinner } from "../ui/page-loading-spinner";
 
@@ -94,51 +92,22 @@ export function CatchAll() {
 }
 
 export function useWorkosConvexAuth() {
-  const { user, accessToken } = useLoaderData<typeof loader>();
-  const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
-  const { submit, state, data } = useRefreshSession();
-  const refreshedToken = data?.accessToken ?? null;
+  const { user, getAccessToken, isLoading } = useAuth();
   const fetchAccessToken = React.useCallback(
     async ({ forceRefreshToken }: { forceRefreshToken: boolean }) => {
       if (forceRefreshToken) {
-        await submit({ method: "post", action: "/refresh-session" });
+        return getAccessToken({ forceRefresh: forceRefreshToken });
       }
-      return refreshedToken;
+      return getAccessToken();
     },
-    [refreshedToken, submit]
+    [getAccessToken]
   );
-  useEffect(() => {
-    function isTokenExpired(token: string): boolean {
-      try {
-        const decoded: { exp: number } = jwtDecode(token);
-        const now = Date.now() / 1000; // in seconds
-        return decoded.exp < now;
-      } catch {
-        // If can't decode, treat as expired
-        return true;
-      }
-    }
-
-    if (refreshedToken) {
-      intervalRef.current = setInterval(async () => {
-        if (isTokenExpired(refreshedToken)) {
-          await submit({ method: "post", action: "/refresh-session" });
-        }
-      }, 1000);
-    }
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [refreshedToken, submit]);
 
   return React.useMemo(() => {
     return {
-      isLoading: state === "submitting",
+      isLoading,
       isAuthenticated: !!user,
       fetchAccessToken,
     };
-  }, [user, fetchAccessToken, state]);
+  }, [user, fetchAccessToken, isLoading]);
 }
