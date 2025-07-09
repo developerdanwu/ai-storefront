@@ -161,6 +161,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
             navigate(state.returnTo);
           }
         }}
+        // have to have custom domain to use dev mode false
         devMode={true}
       >
         <ConvexProviderWithAuth client={convex} useAuth={useWorkosConvexAuth}>
