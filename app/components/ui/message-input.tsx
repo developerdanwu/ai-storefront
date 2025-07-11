@@ -1,9 +1,9 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { AlertCircleIcon } from "lucide-react";
-import { motion } from "motion/react";
 import * as React from "react";
 import { cn } from "~/lib/utils";
 import { Alert, AlertTitle } from "./alert";
+import { AnimatingEllipsis } from "./animating-ellipsis";
 import { Button } from "./button";
 import { Textarea } from "./textarea";
 
@@ -93,26 +93,7 @@ const MessageInput = React.forwardRef<HTMLTextAreaElement, MessageInputProps>(
             >
               <p className={cn("text-primary text-xs font-semibold")}>
                 Generating
-                <span className="inline-flex ml-1">
-                  {[0, 1, 2].map((index) => (
-                    <motion.span
-                      key={index}
-                      animate={{
-                        opacity: [0, 0, 1, 1, 0],
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        delay: index * 0.3,
-                        ease: "linear",
-                        times: [0, index * 0.15, (index + 1) * 0.15, 0.8, 1],
-                      }}
-                      className="text-primary"
-                    >
-                      .
-                    </motion.span>
-                  ))}
-                </span>
+                <AnimatingEllipsis />
               </p>
             </div>
           ) : null}

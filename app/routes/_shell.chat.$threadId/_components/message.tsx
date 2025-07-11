@@ -15,12 +15,14 @@ import {
 import { AnimatePresence, motion } from "motion/react";
 import { memo, useEffect, useRef } from "react";
 import { match, P } from "ts-pattern";
+import { AnimatingEllipsis } from "~/components/ui/animating-ellipsis";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "~/components/ui/collapsible";
+import { LoadingSpinner } from "~/components/ui/loading-spinner";
 import { MemoizedMarkdown } from "~/components/ui/markdown";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { cn } from "~/lib/utils";
@@ -105,19 +107,40 @@ function ReasoningPart({
     >
       <CollapsibleTrigger asChild>
         <button
-          className="cursor-pointer text-sm italic flex items-center p-2 gap-1 w-full"
+          className="cursor-pointer text-sm italic flex flex-col items-center p-2 gap-1 w-full"
           disabled={isMessageStreaming}
         >
-          <div className="flex items-center gap-1 w-full">
-            <LightbulbIcon size={16} />
-            <span>{isMessageStreaming ? "Thinking..." : "Thoughts..."}</span>
+          <div className="flex gap-1 w-full">
+            <div className="flex items-center gap-1 w-full">
+              {isMessageStreaming ? (
+                <LoadingSpinner size={16} />
+              ) : (
+                <LightbulbIcon size={16} />
+              )}
+              <span>
+                {isMessageStreaming ? (
+                  <>
+                    Thinking
+                    <AnimatingEllipsis />
+                  </>
+                ) : (
+                  "Thoughts"
+                )}
+              </span>
+            </div>
+            {isMessageStreaming ? (
+              <ChevronUp className="justify-self-center" size={16} />
+            ) : isOpen ? (
+              <ChevronUp className="justify-self-center" size={16} />
+            ) : (
+              <ChevronDown className="justify-self-center" size={16} />
+            )}
           </div>
-          {isMessageStreaming ? (
-            <ChevronUp className="justify-self-center" size={16} />
-          ) : isOpen ? (
-            <ChevronUp className="justify-self-center" size={16} />
-          ) : (
-            <ChevronDown className="justify-self-center" size={16} />
+
+          {!isMessageStreaming && (
+            <div className="text-xs text-muted-foreground self-start">
+              {isOpen ? "Click to collapse" : "Click to expand"}
+            </div>
           )}
         </button>
       </CollapsibleTrigger>
