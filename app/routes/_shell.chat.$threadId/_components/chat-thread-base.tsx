@@ -6,7 +6,6 @@ import { useParams } from "react-router";
 import { Virtualizer, type VirtualizerHandle } from "virtua";
 import { Button } from "~/components/ui/button";
 import { MessageInputField } from "~/components/ui/message-input-field";
-import { ScrollArea } from "~/components/ui/scroll-area";
 import { cn } from "~/lib/utils";
 import { ChatThreadSkeleton } from "~/routes/_shell.chat.$threadId/_components/chat-thread-skeleton";
 import { Message } from "~/routes/_shell.chat.$threadId/_components/message";
@@ -26,13 +25,12 @@ export function ChatThreadBase({
 }: ChatThreadBaseProps) {
   const { threadId } = useParams<{ threadId: string }>();
   const virtualizerRef = useRef<VirtualizerHandle>(null);
-  const viewportRef = useRef<HTMLDivElement>(null);
+  // const viewportRef = useRef<HTMLDivElement>(null);
   const shouldStickToBottom = useRef(true);
   const [isInitialized, setIsInitialized] = useState(false);
   const [isLoadingOlderMessages, setIsLoadingOlderMessages] = useState(false);
 
   const loadingFirstPage = messages.status === "LoadingFirstPage";
-
   const uiMessages = useMemo(() => {
     return [
       ...(messages.status === "CanLoadMore" || messages.status === "LoadingMore"
@@ -103,24 +101,23 @@ export function ChatThreadBase({
       </div>
     );
   }
-
   return (
     <div className="h-full flex flex-col items-center w-full justify-center">
       <div className="h-full w-full flex flex-col">
         {messages.status === "LoadingFirstPage" && <ChatThreadSkeleton />}
         {messages.status !== "LoadingFirstPage" && (
-          <ScrollArea
-            viewportRef={viewportRef}
-            className="flex-[1_1_0px] h-0 w-full overscroll-none"
-            viewportClassName={cn(
-              "w-full relative overscroll-none",
-              !isInitialized && "opacity-0"
-            )}
+          <div
+            // viewportRef={viewportRef}
+            className="flex-[1_1_0px] overflow-y-auto h-0 w-full overscroll-none"
+            // viewportClassName={cn(
+            //   "w-full relative overscroll-none h-full",
+            //   !isInitialized && "opacity-0"
+            // )}
           >
             <Virtualizer
               shift={isLoadingOlderMessages}
               ref={virtualizerRef}
-              scrollRef={viewportRef}
+              // scrollRef={viewportRef}
               overscan={5}
               onScroll={(offset) => {
                 if (!virtualizerRef.current) {
@@ -155,7 +152,11 @@ export function ChatThreadBase({
                 return (
                   <div
                     key={message.key}
-                    className="mb-4 max-w-3xl mx-auto text-sm"
+                    className={cn(
+                      "mb-4 max-w-3xl mx-auto text-sm",
+                      index === uiMessages.length - 1 &&
+                        "min-h-[calc(100vh-25rem)]"
+                    )}
                   >
                     <Message
                       isStreaming={isStreaming}
@@ -169,7 +170,7 @@ export function ChatThreadBase({
                 );
               })}
             </Virtualizer>
-          </ScrollArea>
+          </div>
         )}
         <MessageInputField
           name="message"
@@ -186,7 +187,7 @@ export function ChatThreadBase({
             shouldStickToBottom.current = true;
             await onMessageSubmit(value.message);
           }}
-          className="w-full max-w-3xl mx-auto"
+          className="w-full max-w-3xl mx-auto sticky bottom-0"
           isSubmitting={isSubmitting}
           rows={1}
         />

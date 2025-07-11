@@ -1,16 +1,33 @@
 import { type MessageDoc } from "@convex-dev/agent";
 import { type UIMessage, useSmoothText } from "@convex-dev/agent/react";
 import { convexQuery } from "@convex-dev/react-query";
+import {} from "@radix-ui/react-collapsible";
 import { useQuery } from "@tanstack/react-query";
+import { createAtom } from "@xstate/store";
+import { useAtom } from "@xstate/store/react";
 import { api } from "convex/_generated/api";
-import { AlertTriangleIcon } from "lucide-react";
+import {
+  AlertTriangleIcon,
+  ChevronDown,
+  ChevronUp,
+  LightbulbIcon,
+} from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { memo, useEffect, useRef } from "react";
 import { match, P } from "ts-pattern";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "~/components/ui/collapsible";
 import { MemoizedMarkdown } from "~/components/ui/markdown";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { cn } from "~/lib/utils";
 import { StepStartMessage } from "./step-start-message";
 import { ToolResultWrapper } from "./tool-result-wrapper";
+
+const reasoningCollapsedAtom = createAtom({} as Record<string, boolean>);
 
 function TextPart({
   part,
@@ -25,6 +42,112 @@ function TextPart({
   const text = isStreaming && needToStream ? visibleText : part.text;
 
   return <MemoizedMarkdown content={text} id={part.text} />;
+}
+
+function ReasoningPart({
+  id,
+  part,
+  isMessageStreaming,
+}: {
+  id: string;
+  part: Extract<UIMessage["parts"][number], { type: "reasoning" }>;
+  isMessageStreaming: boolean;
+}) {
+  const [visibleText, {}] = useSmoothText(part.reasoning, {
+    charsPerSec: 400,
+  });
+
+  const isOpen = useAtom(reasoningCollapsedAtom, (s) => s[id] || false);
+  const text = isMessageStreaming ? visibleText : part.reasoning;
+  const viewportRef = useRef<HTMLDivElement>(null);
+
+  const setIsOpen = (isOpen: boolean) => {
+    reasoningCollapsedAtom.set((s) => {
+      return {
+        ...s,
+        [id]: isOpen,
+      };
+    });
+  };
+
+  // Auto-scroll to bottom when streaming
+  useEffect(() => {
+    if (isMessageStreaming && viewportRef.current) {
+      viewportRef.current.scrollTop = viewportRef.current.scrollHeight;
+    }
+  }, [visibleText, isMessageStreaming]);
+
+  // Disable mouse wheel scroll while streaming
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      if (isMessageStreaming) {
+        e.preventDefault();
+      }
+    };
+
+    viewport.addEventListener("wheel", handleWheel, { passive: false });
+
+    return () => {
+      viewport.removeEventListener("wheel", handleWheel);
+    };
+  }, [isMessageStreaming]);
+
+  return (
+    <Collapsible
+      // id to force re-render to reset collapse animation
+      key={`${id}-${isMessageStreaming ? "streaming" : "finished"}`}
+      className="border rounded-md mb-2"
+      open={isMessageStreaming ? true : isOpen}
+      onOpenChange={isMessageStreaming ? undefined : setIsOpen}
+    >
+      <CollapsibleTrigger asChild>
+        <button
+          className="cursor-pointer text-sm italic flex items-center p-2 gap-1 w-full"
+          disabled={isMessageStreaming}
+        >
+          <div className="flex items-center gap-1 w-full">
+            <LightbulbIcon size={16} />
+            <span>{isMessageStreaming ? "Thinking..." : "Thoughts..."}</span>
+          </div>
+          {isMessageStreaming ? (
+            <ChevronUp className="justify-self-center" size={16} />
+          ) : isOpen ? (
+            <ChevronUp className="justify-self-center" size={16} />
+          ) : (
+            <ChevronDown className="justify-self-center" size={16} />
+          )}
+        </button>
+      </CollapsibleTrigger>
+      <CollapsibleContent asChild animate>
+        <div className="p-3 text-xs leading-relaxed">
+          {isMessageStreaming ? (
+            <div className="relative">
+              <ScrollArea
+                viewportRef={viewportRef}
+                className="h-40"
+                style={{ overflowAnchor: "none" }}
+              >
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                >
+                  <MemoizedMarkdown content={text} id={part.reasoning} />
+                </motion.div>
+              </ScrollArea>
+              <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-background to-transparent pointer-events-none" />
+              <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-background to-transparent pointer-events-none" />
+            </div>
+          ) : (
+            <MemoizedMarkdown content={text} id={part.reasoning} />
+          )}
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
+  );
 }
 
 function UserMessageWrapper({ children }: { children: React.ReactNode }) {
@@ -54,7 +177,7 @@ function AssistantMessageWrapper({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function Message({
+function _Message({
   message,
   nextMessage,
   isStreaming,
@@ -67,6 +190,7 @@ export function Message({
     originalMessage?: MessageDoc;
   };
 }) {
+  console.log("MESSAGE", message);
   const error = match({
     role: message.role,
     error: message.originalMessage?.error,
@@ -94,9 +218,9 @@ export function Message({
     .otherwise(() => {
       return null;
     });
-
   const MessageWrapper =
     message.role === "user" ? UserMessageWrapper : AssistantMessageWrapper;
+
   return (
     <div className="flex flex-col gap-2">
       <MessageWrapper>
@@ -109,13 +233,17 @@ export function Message({
               (x) => {
                 if (message.role === "user") {
                   return (
-                    <p key={index} className="text-sm">
+                    <p key={`${message.key}-${index}`} className="text-sm">
                       {x.text}
                     </p>
                   );
                 }
                 return (
-                  <TextPart key={index} part={x} needToStream={isStreaming} />
+                  <TextPart
+                    key={`${message.key}-${index}`}
+                    part={x}
+                    needToStream={isStreaming}
+                  />
                 );
               }
             )
@@ -127,7 +255,7 @@ export function Message({
                 const nextStep = message.parts[index + 1];
                 return (
                   <StepStartMessage
-                    key={index}
+                    key={`${message.key}-${index}`}
                     part={x}
                     message={message}
                     nextStep={nextStep}
@@ -148,7 +276,7 @@ export function Message({
               ({ toolInvocation }) => {
                 return (
                   <ToolResultWrapper
-                    key={index}
+                    key={`${message.key}-${index}`}
                     toolName={toolInvocation.toolName}
                     success={toolInvocation.result.success}
                   >
@@ -179,7 +307,7 @@ export function Message({
               ({ toolInvocation }) => {
                 return (
                   <ToolResultWrapper
-                    key={index}
+                    key={`${message.key}-${index}`}
                     toolName={toolInvocation.toolName}
                     success={toolInvocation.result.success}
                   >
@@ -197,6 +325,23 @@ export function Message({
                 );
               }
             )
+            .with(
+              {
+                type: "reasoning",
+              },
+              (x) => {
+                return (
+                  <AnimatePresence mode="wait">
+                    <ReasoningPart
+                      isMessageStreaming={message.status === "streaming"}
+                      key={`${message.key}-${index}`}
+                      id={`${message.key}-${index}`}
+                      part={x}
+                    />
+                  </AnimatePresence>
+                );
+              }
+            )
             .otherwise(() => null);
         })}
       </MessageWrapper>
@@ -209,3 +354,5 @@ export function Message({
     </div>
   );
 }
+
+export const Message = memo(_Message);

@@ -5,6 +5,7 @@ import { test } from "vitest";
 
 const convexFolderModules = import.meta.glob("../**/*.*s");
 
+import actionCacheSchema from "../../node_modules/@convex-dev/action-cache/src/component/schema.js";
 import agentSchema from "../../node_modules/@convex-dev/agent/src/component/schema.js";
 import ragSchema from "../../node_modules/@convex-dev/rag/src/component/schema.js";
 import rateLimiterSchema from "../../node_modules/@convex-dev/rate-limiter/src/component/schema.js";
@@ -23,10 +24,15 @@ const rateLimiterModules = import.meta.glob(
   "../../node_modules/@convex-dev/rate-limiter/src/component/**/*.ts"
 );
 
+const actionCacheModules = import.meta.glob(
+  "../../node_modules/@convex-dev/action-cache/src/component/**/*.ts"
+);
+
 const t = originalConvexTest(schema, convexFolderModules);
 t.registerComponent("rag", ragSchema, ragModules);
 t.registerComponent("agent", agentSchema, agentModules);
 t.registerComponent("rateLimiter", rateLimiterSchema, rateLimiterModules);
+t.registerComponent("actionCache", actionCacheSchema, actionCacheModules);
 const seedFixture = createSeedDbFixture({ convex: t });
 await seedFixture.createRagDocuments();
 

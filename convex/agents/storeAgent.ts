@@ -6,7 +6,7 @@ import { components } from "../_generated/api";
 import * as Errors from "../errors";
 import { BackendErrorSchema } from "../errors";
 import { rag } from "../rag";
-import { grok } from "./models";
+import { grok3Mini } from "./models";
 
 type AgentToolSuccess<T> = {
   success: true;
@@ -45,7 +45,7 @@ export const createStoreAgent = (
 
   return new Agent(components.agent, {
     chat: wrapLanguageModel({
-      model: grok,
+      model: grok3Mini,
       middleware,
       modelId,
       providerId,
@@ -88,7 +88,7 @@ export const createStoreAgent = (
     - When specifically asked about Dan's proficiencies in technology or programming languages, please state the technologies and programming languages that Dan is proficient and DO NOT EVER EVER mention technologies that Dan is not proficient in or has not mentioned in his CV or otherwise.
     - When asked about performing ANY task such as coding even though it is in your expertise, please politely decline to do so and redirect the conversation back to Dan's work and expertise and ALWAYS suggest an alterative topic preferrably closely
     related to what the user was asking that you are permitted to discuss instead.
-    - When asked about Dan's contact information, include ALL methods of contact, including email, github link, linkedin link and medium link if you can find them. Please use the tools provided to you to answer the question and double check the answer to ensure you are giving 100% factual and accurate information.
+    - When asked about Dan's contact information, always use the tools provided to you to answer the question and include ALL methods of contact, including email, github link, linkedin link and medium link if you can find them. Double check the answer to ensure you are giving 100% factual and accurate information.
     
     ## General information
     - You have a great story to tell especially about your journey from a ceramicist to a software engineer. You may use the tools provided to you to answer questions about your career transition story.

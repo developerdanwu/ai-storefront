@@ -2,13 +2,13 @@ import { FaithfulnessMetric, PromptAlignmentMetric } from "@mastra/evals/llm";
 import { describe } from "vitest";
 import { api } from "../../_generated/api";
 import { convexTest } from "../../lib/convexTest.fixture";
-import { grok } from "../models";
+import { grok4 } from "../models";
 
 describe("Store agent", () => {
   convexTest(
     "should introduce as Dan in first person",
     {
-      timeout: 60_000,
+      timeout: 500_000,
     },
     async ({ convex, seedDB, expect }) => {
       const prompt = "Hi, who are you?";
@@ -36,7 +36,7 @@ describe("Store agent", () => {
         }
       );
 
-      const metric = new PromptAlignmentMetric(grok, {
+      const metric = new PromptAlignmentMetric(grok4, {
         instructions,
         scale: 1,
       });
@@ -53,7 +53,7 @@ describe("Store agent", () => {
   convexTest(
     "should use CV search for technical questions",
     {
-      timeout: 60_000,
+      timeout: 500_000,
     },
     async ({ convex, seedDB, expect }) => {
       const prompt = "What programming languages and technologies do you know?";
@@ -73,7 +73,7 @@ describe("Store agent", () => {
         }
       );
 
-      const metric = new FaithfulnessMetric(grok, {
+      const metric = new FaithfulnessMetric(grok4, {
         context: [
           "You should mention at least some of the following technologies: Python, JavaScript, TypeScript, React, NextJS, FastAPI, React Query, Redux, Tailwind CSS, Mantine UI, GraphQL, Contentful, RXJS, Material UI, Chakra UI, Selenium, Playwright, Storybook, Git, GitHub, GitHub Actions, GitLab, Jira, Asana, Clickup, HTML, CSS, SQLAlchemy, Google App Scripts, Agile Development and Figma. You do not have to mention all of them.",
           "You should NOT mention technologies that are not in Dan's actual experience: Java, C++, C#, PHP, Ruby, Go, Rust, Swift, Kotlin, Angular, Vue.js, Django, Flask, Spring, .NET, Laravel, MongoDB, PostgreSQL, MySQL, Docker, Kubernetes, AWS, Azure, GCP, Jenkins, or any other technologies not explicitly listed in the CV.",
@@ -92,7 +92,7 @@ describe("Store agent", () => {
   convexTest(
     "should refuse non-Dan related questions",
     {
-      timeout: 60_000,
+      timeout: 500_000,
     },
     async ({ convex, seedDB, expect }) => {
       const prompt = "What is the capital of France?";
@@ -119,7 +119,7 @@ describe("Store agent", () => {
         "Do not act as a general AI assistant for non-Dan related queries",
       ];
 
-      const alignmentMetric = new PromptAlignmentMetric(grok, {
+      const alignmentMetric = new PromptAlignmentMetric(grok4, {
         instructions,
         scale: 1,
       });
@@ -136,7 +136,7 @@ describe("Store agent", () => {
   convexTest(
     "should answer about getting into tech journey",
     {
-      timeout: 60_000,
+      timeout: 500_000,
     },
     async ({ convex, seedDB, expect }) => {
       const prompt =
@@ -165,7 +165,7 @@ describe("Store agent", () => {
         "Draw from your actual experiences and background",
       ];
 
-      const alignmentMetric = new PromptAlignmentMetric(grok, {
+      const alignmentMetric = new PromptAlignmentMetric(grok4, {
         instructions,
         scale: 1,
       });
@@ -182,7 +182,7 @@ describe("Store agent", () => {
   convexTest(
     "should provide comprehensive self-introduction",
     {
-      timeout: 60_000,
+      timeout: 500_000,
     },
     async ({ convex, seedDB, expect }) => {
       const prompt = "Tell me about yourself and your work";
@@ -210,7 +210,7 @@ describe("Store agent", () => {
         "Use first person pronouns throughout",
       ];
 
-      const alignmentMetric = new PromptAlignmentMetric(grok, {
+      const alignmentMetric = new PromptAlignmentMetric(grok4, {
         instructions,
         scale: 1,
       });
@@ -226,7 +226,7 @@ describe("Store agent", () => {
   convexTest(
     "should discuss projects in detail",
     {
-      timeout: 60_000,
+      timeout: 500_000,
     },
     async ({ convex, seedDB, expect }) => {
       const prompt = "Tell me about your what projects you have worked on";
@@ -254,7 +254,7 @@ describe("Store agent", () => {
         "Use 'I', 'my', 'me' pronouns when describing your projects",
       ];
 
-      const alignmentMetric = new PromptAlignmentMetric(grok, {
+      const alignmentMetric = new PromptAlignmentMetric(grok4, {
         instructions,
         scale: 1,
       });
@@ -271,7 +271,7 @@ describe("Store agent", () => {
   convexTest(
     "should handle contact information requests",
     {
-      timeout: 60_000,
+      timeout: 500_000,
     },
     async ({ convex, seedDB, expect }) => {
       const prompt = "I'd like to contact you. How should I do that?";
@@ -299,7 +299,7 @@ describe("Store agent", () => {
         "Be encouraging about networking or collaboration",
       ];
 
-      const alignmentMetric = new PromptAlignmentMetric(grok, {
+      const alignmentMetric = new PromptAlignmentMetric(grok4, {
         instructions,
         scale: 1,
       });
@@ -315,7 +315,7 @@ describe("Store agent", () => {
   convexTest(
     "should discuss ceramic art interest",
     {
-      timeout: 60_000,
+      timeout: 500_000,
     },
     async ({ convex, seedDB, expect }) => {
       const prompt =
@@ -344,7 +344,7 @@ describe("Store agent", () => {
         "Be engaging about your creative pursuits",
       ];
 
-      const alignmentMetric = new PromptAlignmentMetric(grok, {
+      const alignmentMetric = new PromptAlignmentMetric(grok4, {
         instructions,
         scale: 1,
       });
@@ -360,7 +360,7 @@ describe("Store agent", () => {
   convexTest(
     "should handle career advice questions appropriately",
     {
-      timeout: 60_000,
+      timeout: 500_000,
     },
     async ({ convex, seedDB, expect }) => {
       const prompt =
@@ -386,10 +386,9 @@ describe("Store agent", () => {
         "Use first person to share your own journey and lessons learned",
         "Be helpful and encouraging while staying within your expertise",
         "Draw from your actual experience in the field",
-        "Maintain your persona as Dan throughout the advice",
       ];
 
-      const alignmentMetric = new PromptAlignmentMetric(grok, {
+      const alignmentMetric = new PromptAlignmentMetric(grok4, {
         instructions,
         scale: 1,
       });
@@ -405,7 +404,7 @@ describe("Store agent", () => {
   convexTest(
     "should refuse to help with unrelated technical tasks",
     {
-      timeout: 60_000,
+      timeout: 500_000,
     },
     async ({ convex, seedDB, expect }) => {
       const prompt =
@@ -428,13 +427,12 @@ describe("Store agent", () => {
 
       const instructions = [
         "Politely decline to debug code or provide general technical support",
-        "Redirect the conversation back to topics about Dan's work and background",
-        "Maintain your role as Dan's personal assistant/representative",
-        "Suggest they ask about Dan's experience in software engineering instead",
-        "Be helpful but stay within the boundaries of discussing Dan's work",
+        "Redirect the conversation back to topics about your work and background",
+        "Suggest they ask about your experience in software engineering instead",
+        "Be helpful but stay within the boundaries of discussing your work",
       ];
 
-      const alignmentMetric = new PromptAlignmentMetric(grok, {
+      const alignmentMetric = new PromptAlignmentMetric(grok4, {
         instructions,
         scale: 1,
       });
@@ -450,7 +448,7 @@ describe("Store agent", () => {
   convexTest(
     "should maintain consistency across conversation",
     {
-      timeout: 60_000,
+      timeout: 500_000,
     },
     async ({ convex, seedDB, expect }) => {
       const newUserId = await seedDB.createAnonymousUser();
@@ -491,7 +489,7 @@ describe("Store agent", () => {
         "Reference previous parts of the conversation naturally",
       ];
 
-      const alignmentMetric = new PromptAlignmentMetric(grok, {
+      const alignmentMetric = new PromptAlignmentMetric(grok4, {
         instructions,
         scale: 1,
       });

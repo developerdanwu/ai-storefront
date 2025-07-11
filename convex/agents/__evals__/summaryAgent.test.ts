@@ -2,7 +2,7 @@ import { PromptAlignmentMetric } from "@mastra/evals/llm";
 import { describe } from "vitest";
 import { internal } from "../../_generated/api";
 import { convexTest } from "../../lib/convexTest.fixture";
-import { grok } from "../models";
+import { grok4 } from "../models";
 
 describe("Summary agent", () => {
   convexTest(
@@ -21,7 +21,7 @@ describe("Summary agent", () => {
         }
       );
 
-      const metric = new PromptAlignmentMetric(grok, {
+      const metric = new PromptAlignmentMetric(grok4, {
         instructions: [
           "The generated title should be 15 words or less",
           `The generated title should be relevant to the input prompt: '${prompt}'`,
