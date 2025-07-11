@@ -49,15 +49,20 @@ function TextPart({
 function ReasoningPart({
   id,
   part,
-  isMessageStreaming,
+  isMessageStreaming: isMessageStreamingProp,
 }: {
   id: string;
   part: Extract<UIMessage["parts"][number], { type: "reasoning" }>;
   isMessageStreaming: boolean;
 }) {
-  const [visibleText, {}] = useSmoothText(part.reasoning, {
-    charsPerSec: 400,
-  });
+  const [visibleText, { isStreaming: isStreamingText }] = useSmoothText(
+    part.reasoning,
+    {
+      charsPerSec: 400,
+    }
+  );
+
+  const isMessageStreaming = isMessageStreamingProp;
 
   const isOpen = useAtom(reasoningCollapsedAtom, (s) => s[id] || false);
   const text = isMessageStreaming ? visibleText : part.reasoning;
@@ -248,6 +253,7 @@ function _Message({
     <div className="flex flex-col gap-2">
       <MessageWrapper>
         {message.parts.map((x, index) => {
+          const nextPart = message.parts[index + 1];
           return match(x)
             .with(
               {
@@ -356,7 +362,9 @@ function _Message({
                 return (
                   <AnimatePresence mode="wait">
                     <ReasoningPart
-                      isMessageStreaming={message.status === "streaming"}
+                      isMessageStreaming={
+                        message.status === "streaming" && !Boolean(nextPart)
+                      }
                       key={`${message.key}-${index}`}
                       id={`${message.key}-${index}`}
                       part={x}
