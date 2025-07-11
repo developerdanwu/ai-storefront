@@ -55,12 +55,9 @@ function ReasoningPart({
   part: Extract<UIMessage["parts"][number], { type: "reasoning" }>;
   isMessageStreaming: boolean;
 }) {
-  const [visibleText, { isStreaming: isStreamingText }] = useSmoothText(
-    part.reasoning,
-    {
-      charsPerSec: 400,
-    }
-  );
+  const [visibleText] = useSmoothText(part.reasoning, {
+    charsPerSec: 400,
+  });
 
   const isMessageStreaming = isMessageStreamingProp;
 
