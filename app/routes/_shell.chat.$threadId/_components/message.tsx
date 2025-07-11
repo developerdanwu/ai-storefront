@@ -110,7 +110,7 @@ function ReasoningPart({
           className="cursor-pointer text-sm italic flex flex-col items-center p-2 gap-1 w-full"
           disabled={isMessageStreaming}
         >
-          <div className="flex gap-1 w-full">
+          <div className="flex gap-1 w-full items-center">
             <div className="flex items-center gap-1 w-full">
               {isMessageStreaming ? (
                 <LoadingSpinner size={16} />
