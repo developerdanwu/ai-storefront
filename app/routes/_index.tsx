@@ -3,6 +3,8 @@ import { useMutation } from "@tanstack/react-query";
 import { api } from "convex/_generated/api";
 import { ZapIcon } from "lucide-react";
 import { useCallback } from "react";
+import { useNavigate } from "react-router";
+import { toast } from "sonner";
 import { z } from "zod";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
@@ -16,12 +18,16 @@ const FormSchema = z.object({
 });
 
 export default function EmailSignup() {
+  const navigate = useNavigate();
+
   const { mutate: emailSubscription, isPending } = useMutation({
     mutationFn: useConvexAction(api.marketing.actionNode.emailSubscription),
     onSuccess: () => {
+      toast.success("You've subscribed to the waitlist!");
       // Reset form on success
       form.reset();
-      // You could add a toast notification here
+      // Redirect to thank you page
+      navigate("/thank-you");
     },
   });
 
