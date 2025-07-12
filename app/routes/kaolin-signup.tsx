@@ -46,9 +46,6 @@ export default function EmailSignup() {
         firstName: value.firstName,
         lastName: value.lastName,
         email: value.email,
-        _test: {
-          result: "delivered",
-        },
       });
     },
   });
