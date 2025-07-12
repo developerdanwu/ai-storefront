@@ -1,13 +1,14 @@
 import { Authenticated } from "convex/react";
 import { lazy, Suspense } from "react";
-import type { MetaFunction } from "react-router";
+import { type MetaFunction, redirect } from "react-router";
 import { AnonymousUser } from "~/components/auth/auth-provider";
 import { DEFAULT_META } from "~/lib/meta";
-import { ChatThreadSkeleton } from "~/routes/_shell.chat.$threadId/_components/chat-thread-skeleton";
+import { ChatThreadSkeleton } from "~/routes/users.$user._shell.chat.$threadId/_components/chat-thread-skeleton";
+import type { Route } from "../+types/users.$user._shell._index";
 
 const LazyAuthenticatedChatThread = lazy(() =>
   import(
-    "~/routes/_shell.chat.$threadId/_components/authenticated-chat-thread"
+    "~/routes/users.$user._shell.chat.$threadId/_components/authenticated-chat-thread"
   ).then((module) => ({
     default: module.AuthenticatedChatThread,
   }))
@@ -15,11 +16,15 @@ const LazyAuthenticatedChatThread = lazy(() =>
 
 const LazyAnonymousChatThread = lazy(() =>
   import(
-    "~/routes/_shell.chat.$threadId/_components/anonymous-chat-thread"
+    "~/routes/users.$user._shell.chat.$threadId/_components/anonymous-chat-thread"
   ).then((module) => ({
     default: module.AnonymousChatThread,
   }))
 );
+
+export const clientLoader = async ({ request }: Route.ClientLoaderArgs) => {
+  return redirect("/");
+};
 
 export const meta: MetaFunction = () => {
   return [
