@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { api } from "convex/_generated/api";
 import { ZapIcon } from "lucide-react";
 import { useCallback } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
@@ -77,13 +77,9 @@ export default function EmailSignup() {
               I'm thinking about building a platform to create AI agents in{" "}
               <span className="font-bold">60 seconds.</span> It'll be the
               easiest way to create experiences like{" "}
-              <a
-                target="_blank"
-                href="https://developerdanwu.com"
-                className="text-cyan-400"
-              >
+              <Link target="_blank" to="/" className="text-cyan-400">
                 this
-              </a>{" "}
+              </Link>{" "}
               out there. Want to be the first to know about it? Sign up below.
             </p>
             <div className="flex items-center justify-center space-x-2">

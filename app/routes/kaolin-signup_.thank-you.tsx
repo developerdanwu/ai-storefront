@@ -1,5 +1,7 @@
 import { CheckCircleIcon } from "lucide-react";
+import { Link } from "react-router";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { Button } from "~/components/ui/button";
 
 export default function ThankYou() {
   return (
@@ -48,20 +50,9 @@ export default function ThankYou() {
               <span className="text-gray-400">Dan</span>
             </div>
           </div>
-
-          <div className="space-y-4">
-            <p className="text-gray-500 text-sm">
-              Want to learn more about what I'm building?{" "}
-              <a
-                href="https://developerdanwu.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-cyan-400 hover:text-cyan-300 transition-colors"
-              >
-                Check out my work
-              </a>
-            </p>
-          </div>
+          <Button size="lg" asChild className="w-full">
+            <Link to="/">Back to Home</Link>
+          </Button>
         </div>
       </div>
     </div>
