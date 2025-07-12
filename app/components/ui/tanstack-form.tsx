@@ -1,13 +1,12 @@
 import { Slot } from "@radix-ui/react-slot";
-import * as React from "react";
-
-import { Label } from "~/components/ui/label";
-import { cn } from "~/lib/utils";
 import {
   createFormHook,
   createFormHookContexts,
   useStore,
 } from "@tanstack/react-form";
+import * as React from "react";
+import { Label } from "~/components/ui/label";
+import { cn } from "~/lib/utils";
 
 const {
   fieldContext,
@@ -34,7 +33,7 @@ type FormItemContextValue = {
 };
 
 const FormItemContext = React.createContext<FormItemContextValue>(
-  {} as FormItemContextValue,
+  {} as FormItemContextValue
 );
 
 function FormItem({ className, ...props }: React.ComponentProps<"div">) {
@@ -132,7 +131,7 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
     <p
       data-slot="form-message"
       id={formMessageId}
-      className={cn("text-destructive text-sm", className)}
+      className={cn("text-destructive text-sm text-left", className)}
       {...props}
     >
       {body}
@@ -140,4 +139,4 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   );
 }
 
-export { useAppForm, useFormContext, useFieldContext, withForm };
+export { useAppForm, useFieldContext, useFormContext, withForm };

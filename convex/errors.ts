@@ -1,3 +1,5 @@
+import { ConvexError } from "convex/values";
+
 export type BackendErrorSchema = {
   _tag: string;
   context: ErrorContext;
@@ -161,4 +163,21 @@ export function unknownError(context: ErrorContext) {
     _tag: "UnknownError",
     context,
   } as const satisfies BackendErrorSchema;
+}
+
+export function resendError(context: ErrorContext) {
+  return {
+    _tag: "ResendError",
+    context,
+  } as const satisfies BackendErrorSchema;
+}
+
+export function propogateConvexError(e: BackendErrorSchema) {
+  console.error(e);
+  throw new ConvexError({
+    _tag: e._tag,
+    context: {
+      message: e.context.message,
+    },
+  });
 }
