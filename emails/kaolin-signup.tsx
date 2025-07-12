@@ -48,7 +48,7 @@ export const SubscriptionThankYouEmail = ({
             <Text className="text-slate-900 text-base leading-6 m-0 font-sans">
               🎯 <strong>What's coming:</strong>
               <br />
-              • Create AI agents in under a minute
+              • Create AI chat interfaces in under a minute
               <br />
               • No coding required
               <br />
@@ -62,6 +62,20 @@ export const SubscriptionThankYouEmail = ({
             builder out there and you'll be among the first to get access when
             it's ready!
           </Text>
+
+          <Text className="text-gray-700 text-base leading-6 my-4 font-sans">
+            In the meantime, have a sneak peek of the experience{" "}
+            <a
+              href="https://developerdanwu.com"
+              className="text-cyan-600 underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              here
+            </a>
+            !
+          </Text>
+
           <Text className="text-gray-700 text-base leading-6 my-8 font-sans">
             Best,
             <br />
