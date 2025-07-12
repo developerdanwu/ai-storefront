@@ -27,7 +27,10 @@ export default function EmailSignup() {
       // Reset form on success
       form.reset();
       // Redirect to thank you page
-      navigate("/thank-you");
+      navigate("/kaolin-chat/thank-you");
+    },
+    onError: () => {
+      toast.error("Failed to subscribe to the waitlist");
     },
   });
 

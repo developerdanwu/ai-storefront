@@ -5,7 +5,7 @@ import { useAuth } from "@workos-inc/authkit-react";
 import { api } from "convex/_generated/api";
 import { Authenticated, Unauthenticated } from "convex/react";
 import { LogInIcon, MoonIcon, SunIcon } from "lucide-react";
-import { Link, Outlet, redirect, useParams } from "react-router";
+import { Link, Outlet, useParams } from "react-router";
 import { AnonymousUser } from "~/components/auth/auth-provider";
 import { NavigationProgress } from "~/components/navigation-progress";
 import { useTheme } from "~/components/theme-provider";
@@ -20,15 +20,10 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "~/components/ui/sidebar";
-import { AnonymousThreads } from "~/routes/users.$user._shell/_components/anonymous-threads";
-import { AuthenticatedThreads } from "~/routes/users.$user._shell/_components/authenticated-threads";
-import { EmptyThreads } from "~/routes/users.$user._shell/_components/empty-threads";
-import { NavUser } from "~/routes/users.$user._shell/_components/nav-user";
-import type { Route } from "../+types/users.$user._shell._index";
-
-export const clientLoader = async ({ request }: Route.ClientLoaderArgs) => {
-  return redirect("/");
-};
+import { AnonymousThreads } from "~/routes/_shell/_components/anonymous-threads";
+import { AuthenticatedThreads } from "~/routes/_shell/_components/authenticated-threads";
+import { EmptyThreads } from "~/routes/_shell/_components/empty-threads";
+import { NavUser } from "~/routes/_shell/_components/nav-user";
 
 export default function ShellRoute() {
   const { user } = useAuth();

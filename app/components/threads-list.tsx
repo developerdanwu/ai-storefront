@@ -12,7 +12,7 @@ import { useDialogStore } from "~/lib/dialog-store";
 import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
 import { ROUTES } from "~/lib/routes";
 import { cn } from "~/lib/utils";
-import { EmptyThreads } from "~/routes/users.$user._shell/_components/empty-threads";
+import { EmptyThreads } from "~/routes/_shell/_components/empty-threads";
 
 import {
   ContextMenu,

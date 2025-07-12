@@ -7,8 +7,8 @@ import { Virtualizer, type VirtualizerHandle } from "virtua";
 import { Button } from "~/components/ui/button";
 import { MessageInputField } from "~/components/ui/message-input-field";
 import { cn } from "~/lib/utils";
-import { ChatThreadSkeleton } from "~/routes/users.$user._shell.chat.$threadId/_components/chat-thread-skeleton";
-import { Message } from "~/routes/users.$user._shell.chat.$threadId/_components/message";
+import { ChatThreadSkeleton } from "~/routes/_shell.chat.$threadId/_components/chat-thread-skeleton";
+import { Message } from "~/routes/_shell.chat.$threadId/_components/message";
 
 interface ChatThreadBaseProps {
   messages: UsePaginatedQueryResult<MessageDoc>;
