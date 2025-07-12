@@ -28,9 +28,11 @@ import type * as helpers_rateLimit from "../helpers/rateLimit.js";
 import type * as helpers_searchAiThreads from "../helpers/searchAiThreads.js";
 import type * as helpers_sendAiMessage from "../helpers/sendAiMessage.js";
 import type * as http from "../http.js";
+import type * as marketing_actionNode from "../marketing/actionNode.js";
 import type * as procedures from "../procedures.js";
 import type * as rag from "../rag.js";
 import type * as rateLimiter from "../rateLimiter.js";
+import type * as resend from "../resend.js";
 import type * as users_mutation from "../users/mutation.js";
 import type * as users_nodeAction from "../users/nodeAction.js";
 import type * as users_query from "../users/query.js";
@@ -72,9 +74,11 @@ declare const fullApi: ApiFromModules<{
   "helpers/searchAiThreads": typeof helpers_searchAiThreads;
   "helpers/sendAiMessage": typeof helpers_sendAiMessage;
   http: typeof http;
+  "marketing/actionNode": typeof marketing_actionNode;
   procedures: typeof procedures;
   rag: typeof rag;
   rateLimiter: typeof rateLimiter;
+  resend: typeof resend;
   "users/mutation": typeof users_mutation;
   "users/nodeAction": typeof users_nodeAction;
   "users/query": typeof users_query;
@@ -2880,6 +2884,62 @@ export declare const components: {
     };
     time: {
       getServerTime: FunctionReference<"mutation", "internal", {}, number>;
+    };
+  };
+  resend: {
+    lib: {
+      cancelEmail: FunctionReference<
+        "mutation",
+        "internal",
+        { emailId: string },
+        null
+      >;
+      get: FunctionReference<"query", "internal", { emailId: string }, any>;
+      getStatus: FunctionReference<
+        "query",
+        "internal",
+        { emailId: string },
+        {
+          complained: boolean;
+          errorMessage: string | null;
+          opened: boolean;
+          status:
+            | "waiting"
+            | "queued"
+            | "cancelled"
+            | "sent"
+            | "delivered"
+            | "delivery_delayed"
+            | "bounced";
+        }
+      >;
+      handleEmailEvent: FunctionReference<
+        "mutation",
+        "internal",
+        { event: any },
+        null
+      >;
+      sendEmail: FunctionReference<
+        "mutation",
+        "internal",
+        {
+          from: string;
+          headers?: Array<{ name: string; value: string }>;
+          html?: string;
+          options: {
+            apiKey: string;
+            initialBackoffMs: number;
+            onEmailEvent?: { fnHandle: string };
+            retryAttempts: number;
+            testMode: boolean;
+          };
+          replyTo?: Array<string>;
+          subject: string;
+          text?: string;
+          to: string;
+        },
+        string
+      >;
     };
   };
 };

@@ -20,10 +20,10 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "~/components/ui/sidebar";
-import { AnonymousThreads } from "~/routes/_shell/_components/anonymous-threads";
-import { AuthenticatedThreads } from "~/routes/_shell/_components/authenticated-threads";
-import { EmptyThreads } from "~/routes/_shell/_components/empty-threads";
-import { NavUser } from "~/routes/_shell/_components/nav-user";
+import { AnonymousThreads } from "~/routes/users.$user._shell/_components/anonymous-threads";
+import { AuthenticatedThreads } from "~/routes/users.$user._shell/_components/authenticated-threads";
+import { EmptyThreads } from "~/routes/users.$user._shell/_components/empty-threads";
+import { NavUser } from "~/routes/users.$user._shell/_components/nav-user";
 
 export default function ShellRoute() {
   const { user } = useAuth();
