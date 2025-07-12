@@ -14,7 +14,7 @@
     "email:dev": "email dev",
     "email:build": "email build",
     "email:export": "email export",
-    "convex:deploy": "pnpm dlx convex deploy --cmd 'pnpm run build'",
+    "convex:deploy": "pnpm dlx convex deploy --cmd 'pnpm run build' --yes",
     "analyze": "pnpm dlx vite-bundle-analyzer",
     "test": "vitest"
   },
