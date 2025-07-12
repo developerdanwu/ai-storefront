@@ -13,11 +13,22 @@ export const emailSubscription = action({
     firstName: v.string(),
     lastName: v.string(),
     email: v.string(),
+    _test: v.optional(
+      v.object({
+        result: v.union(
+          v.literal("delivered"),
+          v.literal("bounced"),
+          v.literal("spam")
+        ),
+      })
+    ),
   },
   handler: async (ctx, args) => {
+    const email = args._test ? TEST_EMAILS[args._test.result] : args.email;
+
     return ResultAsync.fromPromise(
       resendBase.contacts.create({
-        email: args.email,
+        email,
         audienceId: process.env.RESEND_AUDIENCE_LIST_ID!,
         firstName: args.firstName,
         lastName: args.lastName,
