@@ -3,4 +3,6 @@ export const ROUTES = {
   chat: "/chat",
   login: "/login",
   chatThread: "/chat/:threadId",
+  appAgents: "/app/agents",
+  appSettings: "/app/settings",
 };

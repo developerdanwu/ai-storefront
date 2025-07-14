@@ -19,12 +19,10 @@ export const createThread = authedAction({
       key: ctx.user._id,
     }).match(
       (x) => x,
-      (e) => {
-        throw new ConvexError(e);
-      }
+      (e) => Errors.propogateConvexError(e)
     );
+
     const { threadId } = await generateSummaryTitle(ctx, {
-      userId: ctx.user._id,
       prompt: `
             summarise the prompt below to create a title
   \`\`\`
@@ -40,9 +38,7 @@ export const createThread = authedAction({
       })
       .match(
         (x) => x,
-        (e) => {
-          throw new ConvexError(e);
-        }
+        (e) => Errors.propogateConvexError(e)
       );
 
     return { threadId };
@@ -64,7 +60,6 @@ export const createAnonymousThread = anonymousAction({
       }
     );
     const { threadId } = await generateSummaryTitle(ctx, {
-      userId: ctx.anonymousUserId,
       prompt: `
             summarise the prompt below to create a title
   \`\`\`
@@ -80,10 +75,7 @@ export const createAnonymousThread = anonymousAction({
       })
       .match(
         (x) => x,
-        (e) => {
-          console.error(e);
-          throw new ConvexError(e);
-        }
+        (e) => Errors.propogateConvexError(e)
       );
 
     return {
@@ -105,9 +97,7 @@ export const continueThread = authedAction({
       key: ctx.user._id,
     }).match(
       (x) => x,
-      (e) => {
-        throw new ConvexError(e);
-      }
+      (e) => Errors.propogateConvexError(e)
     );
     return await ResultAsync.fromPromise(
       createStoreAgent().continueThread(ctx, {
@@ -163,10 +153,7 @@ export const continueThread = authedAction({
       })
       .match(
         (x) => x,
-        (e) => {
-          console.error("ERRORRR100", e);
-          throw new ConvexError(e);
-        }
+        (e) => Errors.propogateConvexError(e)
       );
   },
 });
@@ -178,7 +165,6 @@ export const _generateThreadTitle = internalAction({
   },
   handler: async (ctx, args) => {
     return await generateSummaryTitle(ctx, {
-      userId: args.userId,
       prompt: args.prompt,
     }).match(
       (x) => x.text,
@@ -202,9 +188,7 @@ export const continueAnonymousThread = anonymousAction({
       key: ctx.anonymousUserId,
     }).match(
       (x) => x,
-      (e) => {
-        throw new ConvexError(e);
-      }
+      (e) => Errors.propogateConvexError(e)
     );
     const { thread } = await ResultAsync.fromPromise(
       createStoreAgent().continueThread(ctx, {
@@ -218,9 +202,7 @@ export const continueAnonymousThread = anonymousAction({
         })
     ).match(
       (x) => x,
-      (e) => {
-        throw new ConvexError(e);
-      }
+      (e) => Errors.propogateConvexError(e)
     );
     if (!args.disableStream) {
       return ResultAsync.fromPromise(
@@ -259,9 +241,7 @@ export const continueAnonymousThread = anonymousAction({
         })
         .match(
           (x) => x,
-          (e) => {
-            throw new ConvexError(e);
-          }
+          (e) => Errors.propogateConvexError(e)
         );
     } else {
       return await ResultAsync.fromPromise(
@@ -290,9 +270,7 @@ export const continueAnonymousThread = anonymousAction({
         })
         .match(
           (x) => x.text,
-          (e) => {
-            throw new ConvexError(e);
-          }
+          (e) => Errors.propogateConvexError(e)
         );
     }
   },

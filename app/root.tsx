@@ -1,6 +1,5 @@
 import type { LinksFunction } from "react-router";
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
-import { AppProviders } from "~/components/app-providers";
 import "./tailwind.css";
 
 export const links: LinksFunction = () => [
@@ -35,9 +34,5 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return (
-    <AppProviders>
-      <Outlet />
-    </AppProviders>
-  );
+  return <Outlet />;
 }

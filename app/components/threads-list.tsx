@@ -91,7 +91,6 @@ function ThreadItemButton({
               e.stopPropagation();
               handleDelete();
             }}
-            // className="group-hover/item:visible opacity-0 group-hover/item:opacity-100 transition-all duration-500 group-hover/item:relative invisible"
             asChild
             variant="ghost"
             size="sm"

@@ -172,7 +172,35 @@ export function resendError(context: ErrorContext) {
   } as const satisfies BackendErrorSchema;
 }
 
-export function propogateConvexError(e: BackendErrorSchema) {
+export function createAgentPersonaFailed(context: ErrorContext) {
+  return {
+    _tag: "CreateAgentPersonaFailed",
+    context,
+  } as const satisfies BackendErrorSchema;
+}
+
+export function deleteAiAgentPersonaFailed(context: ErrorContext) {
+  return {
+    _tag: "DeleteAiAgentPersonaFailed",
+    context,
+  } as const satisfies BackendErrorSchema;
+}
+
+export function getAiAgentPersonaFailed(context: ErrorContext) {
+  return {
+    _tag: "GetAiAgentPersonaFailed",
+    context,
+  } as const satisfies BackendErrorSchema;
+}
+
+export function updateAiAgentPersonaFailed(context: ErrorContext) {
+  return {
+    _tag: "UpdateAiAgentPersonaFailed",
+    context,
+  } as const satisfies BackendErrorSchema;
+}
+
+export function propogateConvexError(e: BackendErrorSchema): never {
   console.error(e);
   throw new ConvexError({
     _tag: e._tag,

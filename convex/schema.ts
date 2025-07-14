@@ -6,7 +6,9 @@ const schema = defineSchema({
   users: Users.table
     .index("externalId", ["externalId"])
     .index("email", ["email"]),
-  aiAgentPersona: AiAgentPersona.table.index("agentId", ["agentId"]),
+  aiAgentPersona: AiAgentPersona.table
+    .index("agentId", ["agentId"])
+    .index("userId", ["userId"]),
 });
 
 export default schema;

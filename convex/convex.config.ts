@@ -8,6 +8,12 @@ import { defineApp } from "convex/server";
 
 const app = defineApp();
 app.use(agent);
+app.use(agent, {
+  name: "playgroundAgent",
+});
+app.use(agent, {
+  name: "kaolinAgent",
+});
 app.use(workflow);
 app.use(rag);
 app.use(cache);

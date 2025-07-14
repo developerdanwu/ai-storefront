@@ -6,6 +6,7 @@ import { api } from "convex/_generated/api";
 import { Authenticated, Unauthenticated } from "convex/react";
 import { LogInIcon, MoonIcon, SunIcon } from "lucide-react";
 import { Link, Outlet, useParams } from "react-router";
+import { AppProviders } from "~/components/app-providers";
 import { AnonymousUser } from "~/components/auth/auth-provider";
 import { NavigationProgress } from "~/components/navigation-progress";
 import { useTheme } from "~/components/theme-provider";
@@ -25,7 +26,7 @@ import { AuthenticatedThreads } from "~/routes/_shell/_components/authenticated-
 import { EmptyThreads } from "~/routes/_shell/_components/empty-threads";
 import { NavUser } from "~/routes/_shell/_components/nav-user";
 
-export default function ShellRoute() {
+export function ShellInner() {
   const { user } = useAuth();
   const { threadId } = useParams();
   const { setTheme, currentTheme } = useTheme();
@@ -91,5 +92,13 @@ export default function ShellRoute() {
         </div>
       </SidebarInset>
     </SidebarProvider>
+  );
+}
+
+export default function ShellRoute() {
+  return (
+    <AppProviders>
+      <ShellInner />
+    </AppProviders>
   );
 }

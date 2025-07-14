@@ -1,33 +1,6 @@
 import { createStore } from "@xstate/store";
 import React, { createContext, useContext } from "react";
 
-export type DialogStoreEvents =
-  | {
-      type: "alertDialogOpened";
-      title: string;
-      description: React.ReactNode;
-      onConfirm: () => void;
-      onCancel?: () => void;
-      confirmText?: string;
-      cancelText?: string;
-      disableCloseOnConfirm?: boolean;
-      confirmButtonMutationKeys?: string[][];
-      cancelButtonMutationKeys?: string[][];
-    }
-  | { type: "alertDialogClosed" };
-
-export type DialogStoreActions =
-  | {
-      type: "openAlertDialog";
-      title: string;
-      description: React.ReactNode;
-      onConfirm: () => void;
-      onCancel?: () => void;
-      confirmText?: string;
-      cancelText?: string;
-    }
-  | { type: "closeAlertDialog" };
-
 const dialogStore = createStore({
   emits: {
     alertDialogOpened: (payload: {
@@ -42,15 +15,70 @@ const dialogStore = createStore({
       disableCloseOnConfirm?: boolean;
     }) => {},
     alertDialogClosed: () => {},
+    alertDialogWithConfirmKeywordOpened: (payload: {
+      confirmKeyword: string;
+      onConfirm: () => void;
+      onCancel?: () => void;
+      title: string;
+      description: React.ReactNode;
+      confirmText?: string;
+      cancelText?: string;
+      disableCloseOnConfirm?: boolean;
+      confirmButtonMutationKeys?: string[][];
+      cancelButtonMutationKeys?: string[][];
+    }) => {},
+    alertDialogWithConfirmKeywordClosed: () => {},
+    createAgentPersonaDialogOpened: () => {},
+    createAgentPersonaDialogClosed: () => {},
+    playgroundThreadsDialogOpened: () => {},
+    playgroundThreadsDialogClosed: () => {},
   },
   context: {
-    dialog: undefined as
-      | "alert"
-      | "interactiveMessageDialog"
-      | "aiThreadsDialog"
-      | undefined,
+    dialog: undefined as "alert" | "alertWithConfirmKeyword" | undefined,
   },
   on: {
+    openAlertDialogWithConfirmKeyword: (
+      context,
+      props: {
+        confirmKeyword?: string;
+        onConfirm: () => void;
+        onCancel?: () => void;
+        title: string;
+        description: React.ReactNode;
+        confirmText?: string;
+        cancelText?: string;
+        disableCloseOnConfirm?: boolean;
+        confirmButtonMutationKeys?: string[][];
+        cancelButtonMutationKeys?: string[][];
+      },
+      { emit }
+    ) => {
+      emit.alertDialogWithConfirmKeywordOpened({
+        confirmKeyword: props.confirmKeyword ?? "DELETE",
+        onConfirm: props.onConfirm,
+        onCancel: props.onCancel,
+        title: props.title,
+        description: props.description,
+        confirmText: props.confirmText,
+        cancelText: props.cancelText,
+        disableCloseOnConfirm: props.disableCloseOnConfirm,
+        confirmButtonMutationKeys: props.confirmButtonMutationKeys,
+        cancelButtonMutationKeys: props.cancelButtonMutationKeys,
+      });
+      return { ...context, dialog: "alertWithConfirmKeyword" as const };
+    },
+    closeAlertDialogWithConfirmKeyword: (context, _props, { emit }) => {
+      emit.alertDialogWithConfirmKeywordClosed();
+      return { ...context, dialog: undefined };
+    },
+    openPlaygroundThreadsDialog: (context, _props, { emit }) => {
+      emit.playgroundThreadsDialogOpened();
+      return { ...context };
+    },
+    closePlaygroundThreadsDialog: (context, _props, { emit }) => {
+      emit.playgroundThreadsDialogClosed();
+      return { ...context };
+    },
     openAlertDialog: (
       context,
       props: {
@@ -82,6 +110,14 @@ const dialogStore = createStore({
     closeAlertDialog: (context, _props, { emit }) => {
       emit.alertDialogClosed();
       return { ...context, dialog: undefined };
+    },
+    openCreateAgentPersonaDialog: (context, _props, { emit }) => {
+      emit.createAgentPersonaDialogOpened();
+      return { ...context };
+    },
+    closeCreateAgentPersonaDialog: (context, _props, { emit }) => {
+      emit.createAgentPersonaDialogClosed();
+      return { ...context };
     },
   },
 });

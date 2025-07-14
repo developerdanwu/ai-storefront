@@ -25,18 +25,19 @@ export function AuthenticatedThreads({
     }
   );
 
-  const searchThreadsResult = useQuery(
-    convexQuery(api.ai.query.searchThreads, {
-      query: query,
-      limit: 20,
-    })
-  );
+  const { data: searchThreadsResult, isLoading: searchThreadsLoading } =
+    useQuery(
+      convexQuery(api.ai.query.searchThreads, {
+        query: query,
+        limit: 20,
+      })
+    );
 
   const threads = query
-    ? searchThreadsResult.data || []
+    ? searchThreadsResult || []
     : threadsResult.results || [];
   const threadsLoading =
-    threadsResult.isLoading || searchThreadsResult.isLoading;
+    query.length > 0 ? searchThreadsLoading : threadsResult.isLoading;
 
   const handleThreadSelect = (selectedThreadId: string) => {
     navigate(`/chat/${selectedThreadId}`);

@@ -1,6 +1,6 @@
 import { vStreamArgs } from "@convex-dev/agent";
 import { paginationOptsValidator } from "convex/server";
-import { ConvexError, v } from "convex/values";
+import { v } from "convex/values";
 import { ResultAsync } from "neverthrow";
 import { query } from "../_generated/server";
 import * as Errors from "../errors";
@@ -19,9 +19,7 @@ export const getThreads = authedQuery({
       paginationOpts: args.paginationOpts,
     }).match(
       (x) => x,
-      (e) => {
-        throw new ConvexError(e);
-      }
+      (e) => Errors.propogateConvexError(e)
     );
   },
 });
@@ -38,9 +36,7 @@ export const searchThreads = authedQuery({
       limit: args.limit,
     }).match(
       (x) => x,
-      (e) => {
-        throw new ConvexError(e);
-      }
+      (e) => Errors.propogateConvexError(e)
     );
   },
 });
@@ -66,9 +62,7 @@ export const getAnonymousThreads = anonymousQuery({
       paginationOpts: args.paginationOpts,
     }).match(
       (x) => x,
-      (e) => {
-        throw new ConvexError(e);
-      }
+      (e) => Errors.propogateConvexError(e)
     );
   },
 });
@@ -85,9 +79,7 @@ export const searchAnonymousThreads = anonymousQuery({
       limit: args.limit,
     }).match(
       (x) => x,
-      (e) => {
-        throw new ConvexError(e);
-      }
+      (e) => Errors.propogateConvexError(e)
     );
   },
 });
@@ -107,7 +99,7 @@ export const getThreadMessages = authedQuery({
     }).match(
       (x) => x,
       (e) => {
-        throw new ConvexError(e);
+        Errors.propogateConvexError(e);
       }
     );
   },
@@ -127,9 +119,7 @@ export const getAnonymousThreadMessages = anonymousQuery({
       userId: ctx.user._id,
     }).match(
       (x) => x,
-      (e) => {
-        throw new ConvexError(e);
-      }
+      (e) => Errors.propogateConvexError(e)
     );
   },
 });
@@ -151,16 +141,14 @@ export const needMigration = authedQuery({
       },
     }).match(
       (x) => !!x,
-      (e) => {
-        throw new ConvexError(e);
-      }
+      (e) => Errors.propogateConvexError(e)
     );
   },
 });
 
 export const getAiAgentProfile = query({
   args: {},
-  handler: async (ctx, args) => {
+  handler: async (ctx) => {
     const agentPersona = await ResultAsync.fromPromise(
       ctx.db
         .query("aiAgentPersona")
@@ -172,9 +160,7 @@ export const getAiAgentProfile = query({
         })
     ).match(
       (x) => x,
-      (e) => {
-        throw new ConvexError(e);
-      }
+      (e) => Errors.propogateConvexError(e)
     );
     let profilePicUrl: null | string = null;
     if (agentPersona?.profilePictureStorageId) {
@@ -183,9 +169,7 @@ export const getAiAgentProfile = query({
         () => null
       ).match(
         (x) => x,
-        (e) => {
-          throw new ConvexError(e);
-        }
+        () => null
       );
     }
 

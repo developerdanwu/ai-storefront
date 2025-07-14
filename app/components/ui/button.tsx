@@ -36,14 +36,13 @@ const buttonVariants = cva(
   }
 );
 
-const Button = React.forwardRef<
-  HTMLButtonElement,
-  React.ComponentProps<"button"> &
-    VariantProps<typeof buttonVariants> & {
-      asChild?: boolean;
-      loading?: boolean;
-    }
->(
+export type ButtonProps = React.ComponentProps<"button"> &
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean;
+    loading?: boolean;
+  };
+
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       className,

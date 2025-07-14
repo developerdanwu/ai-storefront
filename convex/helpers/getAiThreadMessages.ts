@@ -23,9 +23,10 @@ export function getAiThreadMessages(
     createStoreAgent().getThreadMetadata(ctx, {
       threadId: args.threadId,
     }),
-    () =>
+    (e) =>
       Errors.aiThreadNotFound({
         message: "AI thread not found",
+        error: e,
       })
   ).andThen((thread) => {
     if (thread.userId !== args.userId) {
@@ -44,6 +45,7 @@ export function getAiThreadMessages(
       (e) => {
         return Errors.getAiThreadMessagesFailed({
           message: "Failed to get AI thread messages",
+          error: e,
         });
       }
     ).andThen((messages) => {
@@ -55,6 +57,7 @@ export function getAiThreadMessages(
         (e) => {
           return Errors.getAiThreadMessagesFailed({
             message: "Failed to sync streams",
+            error: e,
           });
         }
       ).andThen((streams) => {

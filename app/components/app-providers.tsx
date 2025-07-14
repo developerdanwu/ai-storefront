@@ -25,11 +25,13 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { match } from "ts-pattern";
+import { useIsClient } from "usehooks-ts";
 import { useWorkosConvexAuth } from "~/components/auth/auth-provider";
 import { Toaster } from "~/components/ui/sonner";
 import { DialogStoreContextProvider, useDialogStore } from "~/lib/dialog-store";
 import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
 import { CustomErrorBoundary } from "./custom-error-boundary";
+import { AlertDialogWithConfirmKeyword } from "./dialogs/alert-dialog-with-confirm-keyword";
 import { GenericAlertDialog } from "./dialogs/generic-alert-dialog";
 import { ThemeProvider } from "./theme-provider";
 import { PageLoadingSpinner } from "./ui/page-loading-spinner";
@@ -64,6 +66,7 @@ const queryClient = new QueryClient({
     },
   },
 });
+convexQueryClient.connect(queryClient);
 
 function AuthenticatedProvider({ children }: { children: React.ReactNode }) {
   const [anonymousUserId, setAnonymousUserId] = useAnonymousUserId();
@@ -125,6 +128,10 @@ function AuthenticatedProvider({ children }: { children: React.ReactNode }) {
 }
 
 function BaseProviders({ children }: { children: React.ReactNode }) {
+  const isClient = useIsClient();
+  if (!isClient) {
+    return <PageLoadingSpinner />;
+  }
   return (
     <>
       <Authenticated>
@@ -167,6 +174,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
                 <BaseProviders>
                   {children}
                   <GenericAlertDialog />
+                  <AlertDialogWithConfirmKeyword />
                   <Toaster />
                   <ReactQueryDevtools initialIsOpen={false} />
                 </BaseProviders>

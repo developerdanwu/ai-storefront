@@ -26,16 +26,20 @@ export function AnonymousThreads({ activeThreadId }: AnonymousThreadsProps) {
     }
   );
 
-  const { data: searchThreadsResult } = useQuery(
-    convexQuery(api.ai.query.searchAnonymousThreads, {
-      query: query,
-      limit: 20,
-      anonymousUserId: anonymousUserId,
-    })
-  );
+  const { data: searchThreadsResult, isLoading: searchThreadsLoading } =
+    useQuery(
+      convexQuery(api.ai.query.searchAnonymousThreads, {
+        query: query,
+        limit: 20,
+        anonymousUserId: anonymousUserId,
+      })
+    );
 
   const threads = query ? searchThreadsResult || [] : threadsResult || [];
-  const threadsLoading = threadsStatus === "LoadingFirstPage";
+  const threadsLoading =
+    query.length > 0
+      ? searchThreadsLoading
+      : threadsStatus === "LoadingFirstPage";
 
   const handleThreadSelect = (selectedThreadId: string) => {
     navigate(`/chat/${selectedThreadId}`);

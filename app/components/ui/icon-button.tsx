@@ -29,43 +29,56 @@ const iconButtonVariants = cva(
         lg: "size-10 rounded-md [&_svg]:size-5",
         icon: "size-9 [&_svg]:size-4",
       },
+      pressed: {
+        true: "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 hover:text-primary-foreground  dark:hover:bg-primary/90",
+        false: "",
+      },
     },
     defaultVariants: {
+      pressed: false,
       variant: "default",
       size: "default",
     },
   }
 );
 
-function IconButton({
-  className,
-  variant,
-  size,
-  asChild = false,
-  loading = false,
-  disabled,
-  children,
-  ...props
-}: React.ComponentProps<"button"> &
-  VariantProps<typeof iconButtonVariants> & {
-    asChild?: boolean;
-    loading?: boolean;
-  }) {
+const IconButton = React.forwardRef<
+  HTMLButtonElement,
+  React.ComponentProps<"button"> &
+    VariantProps<typeof iconButtonVariants> & {
+      asChild?: boolean;
+      loading?: boolean;
+    }
+>(function IconButton(
+  {
+    className,
+    variant,
+    size,
+    asChild = false,
+    loading = false,
+    disabled,
+    children,
+    pressed,
+    ...props
+  },
+  ref
+) {
   const Comp = asChild ? Slot : "button";
 
   return (
     <Comp
       data-slot="icon-button"
       className={cn(
-        iconButtonVariants({ variant, size, className }),
+        iconButtonVariants({ variant, size, className, pressed }),
         loading && "relative"
       )}
       disabled={loading || disabled}
+      ref={ref}
       {...props}
     >
       {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : children}
     </Comp>
   );
-}
+});
 
 export { IconButton, iconButtonVariants };

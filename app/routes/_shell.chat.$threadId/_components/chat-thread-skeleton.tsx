@@ -56,9 +56,18 @@ function MessageSkeleton({
   );
 }
 
-export function ChatThreadSkeleton() {
+export function ChatThreadSkeleton({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className="flex-1 flex flex-col gap-4 p-4 ax-w-3xl mx-auto w-full">
+    <div
+      className={cn(
+        "flex-1 flex flex-col gap-4 p-4 ax-w-3xl mx-auto w-full",
+        className
+      )}
+      {...props}
+    >
       <MessageSkeleton key={1} variant="user" lines={3} />
       <MessageSkeleton key={2} variant="assistant" lines={2} />
       <MessageSkeleton key={3} variant="user" lines={3} />

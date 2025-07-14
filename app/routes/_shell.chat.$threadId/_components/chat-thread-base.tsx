@@ -1,14 +1,9 @@
 import type { MessageDoc } from "@convex-dev/agent";
-import { toUIMessages } from "@convex-dev/agent/react";
 import type { UsePaginatedQueryResult } from "convex/react";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useRef } from "react";
 import { useParams } from "react-router";
-import { Virtualizer, type VirtualizerHandle } from "virtua";
-import { Button } from "~/components/ui/button";
+import { ThreadMessages } from "~/components/thread-messages";
 import { MessageInputField } from "~/components/ui/message-input-field";
-import { cn } from "~/lib/utils";
-import { ChatThreadSkeleton } from "~/routes/_shell.chat.$threadId/_components/chat-thread-skeleton";
-import { Message } from "~/routes/_shell.chat.$threadId/_components/message";
 
 interface ChatThreadBaseProps {
   messages: UsePaginatedQueryResult<MessageDoc>;
@@ -24,73 +19,7 @@ export function ChatThreadBase({
   isSubmitting,
 }: ChatThreadBaseProps) {
   const { threadId } = useParams<{ threadId: string }>();
-  const virtualizerRef = useRef<VirtualizerHandle>(null);
-  // const viewportRef = useRef<HTMLDivElement>(null);
   const shouldStickToBottom = useRef(true);
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [isLoadingOlderMessages, setIsLoadingOlderMessages] = useState(false);
-
-  const loadingFirstPage = messages.status === "LoadingFirstPage";
-  const uiMessages = useMemo(() => {
-    return [
-      ...(messages.status === "CanLoadMore" || messages.status === "LoadingMore"
-        ? ["load-more" as const]
-        : []),
-      ...toUIMessages(messages.results).map((x) => {
-        const originalMessage = messages.results.find((y) => y._id === x.id);
-        return {
-          ...x,
-          originalMessage,
-        };
-      }),
-    ];
-  }, [messages.results]);
-
-  // Track when we're loading older messages to maintain scroll position
-  useEffect(() => {
-    if (messages.status === "LoadingMore") {
-      setIsLoadingOlderMessages(true);
-    } else if (
-      messages.status === "CanLoadMore" ||
-      messages.status === "Exhausted"
-    ) {
-      // Keep shift=true for one more render cycle after loading completes
-      const timer = setTimeout(() => {
-        setIsLoadingOlderMessages(false);
-      }, 0);
-      return () => clearTimeout(timer);
-    }
-  }, [messages.status]);
-
-  // Initialize scroll position to bottom
-  useLayoutEffect(() => {
-    if (!virtualizerRef.current || loadingFirstPage || isInitialized) {
-      return;
-    }
-
-    if (uiMessages.length > 0) {
-      // Scroll to bottom on initial load
-      virtualizerRef.current.scrollToIndex(uiMessages.length - 1, {
-        align: "end",
-      });
-      setIsInitialized(true);
-    }
-  }, [uiMessages.length, loadingFirstPage, isInitialized]);
-
-  // Auto-scroll to bottom when new messages arrive/streamed in (if user is at bottom)
-  useEffect(() => {
-    if (!virtualizerRef.current) {
-      return;
-    }
-
-    if (!shouldStickToBottom.current) {
-      return;
-    }
-
-    virtualizerRef.current.scrollToIndex(uiMessages.length - 1, {
-      align: "end",
-    });
-  }, [uiMessages]);
 
   if (!threadId) {
     return (
@@ -101,77 +30,15 @@ export function ChatThreadBase({
       </div>
     );
   }
+
   return (
     <div className="h-full flex flex-col items-center w-full justify-center">
       <div className="h-full w-full flex flex-col">
-        {messages.status === "LoadingFirstPage" && <ChatThreadSkeleton />}
-        {messages.status !== "LoadingFirstPage" && (
-          <div
-            // viewportRef={viewportRef}
-            className="flex-[1_1_0px] overflow-y-auto h-0 w-full overscroll-none"
-            // viewportClassName={cn(
-            //   "w-full relative overscroll-none h-full",
-            //   !isInitialized && "opacity-0"
-            // )}
-          >
-            <Virtualizer
-              shift={isLoadingOlderMessages}
-              ref={virtualizerRef}
-              // scrollRef={viewportRef}
-              overscan={5}
-              onScroll={(offset) => {
-                if (!virtualizerRef.current) {
-                  return;
-                }
-
-                // Check if user is near the bottom (within 150px)
-                const { scrollSize, viewportSize } = virtualizerRef.current;
-                const distanceFromBottom = scrollSize - (offset + viewportSize);
-                shouldStickToBottom.current = distanceFromBottom <= 150;
-              }}
-            >
-              {uiMessages.map((message, index) => {
-                const nextMessage = uiMessages[index + 1];
-
-                if (message === "load-more") {
-                  return (
-                    <Button
-                      variant="ghost"
-                      className="mx-auto flex max-w-3xl mb-4 w-full"
-                      key="load-more"
-                      onClick={() => {
-                        messages.loadMore(20);
-                      }}
-                      disabled={messages.status === "LoadingMore"}
-                    >
-                      Load older messages
-                    </Button>
-                  );
-                }
-
-                return (
-                  <div
-                    key={message.key}
-                    className={cn(
-                      "mb-4 max-w-3xl mx-auto text-sm",
-                      index === uiMessages.length - 1 &&
-                        "min-h-[calc(100vh-25rem)]"
-                    )}
-                  >
-                    <Message
-                      isStreaming={isStreaming}
-                      message={message}
-                      key={message.key}
-                      nextMessage={
-                        nextMessage === "load-more" ? undefined : nextMessage
-                      }
-                    />
-                  </div>
-                );
-              })}
-            </Virtualizer>
-          </div>
-        )}
+        <ThreadMessages
+          messages={messages}
+          isStreaming={isStreaming}
+          shouldStickToBottomRef={shouldStickToBottom}
+        />
         <MessageInputField
           name="message"
           isGenerating={isStreaming}
