@@ -4,7 +4,7 @@ import { useMemo, useRef } from "react";
 import { Virtualizer, type VirtualizerHandle } from "virtua";
 import { AiConversationEditor } from "~/components/secondary-panel/ai/conversation-editor";
 import { Button } from "~/components/ui/button";
-import { Message } from "~/routes/_shell.chat.$threadId/_components/message";
+import { Message } from "~/routes/_providers._shell.chat.$threadId/_components/message";
 
 export function AiThread({ threadId }: { threadId: string }) {
   const virtualizerRef = useRef<VirtualizerHandle>(null);

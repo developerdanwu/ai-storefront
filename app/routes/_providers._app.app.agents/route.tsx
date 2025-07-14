@@ -4,7 +4,7 @@ import { useSelector } from "@xstate/store/react";
 import { api } from "convex/_generated/api";
 import { PlaygroundThreadsDialog } from "~/components/dialogs/playground-thread-dialog";
 import { useAiStore } from "~/components/secondary-panel/ai/ai-store";
-import { Playground } from "~/routes/_app.app.agents/_components/playground";
+import { Playground } from "~/routes/_providers._app.app.agents/_components/playground";
 import { AgentSwitcher } from "./_components/agent-switcher";
 import { Settings } from "./_components/settings";
 

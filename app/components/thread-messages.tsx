@@ -5,8 +5,8 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Virtualizer, type VirtualizerHandle } from "virtua";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
-import { ChatThreadSkeleton } from "~/routes/_shell.chat.$threadId/_components/chat-thread-skeleton";
-import { Message } from "~/routes/_shell.chat.$threadId/_components/message";
+import { ChatThreadSkeleton } from "~/routes/_providers._shell.chat.$threadId/_components/chat-thread-skeleton";
+import { Message } from "~/routes/_providers._shell.chat.$threadId/_components/message";
 
 export function ThreadMessages({
   messages,

@@ -11,7 +11,6 @@ import {
   SunIcon,
 } from "lucide-react";
 import { Link, NavLink, Outlet, useLocation } from "react-router";
-import { AppProviders } from "~/components/app-providers";
 import { AuthenticatedWithRedirect } from "~/components/auth/auth-provider";
 import { NavigationProgress } from "~/components/navigation-progress";
 import { SecondaryPanel } from "~/components/secondary-panel";
@@ -31,7 +30,7 @@ import {
   SidebarTrigger,
 } from "~/components/ui/sidebar";
 import { ROUTES } from "~/lib/routes";
-import { NavUser } from "~/routes/_shell/_components/nav-user";
+import { NavUser } from "~/routes/_providers._shell/_components/nav-user";
 
 export function AppDashboardInner() {
   const { user, getAccessToken } = useAuth();
@@ -118,10 +117,8 @@ export function AppDashboardInner() {
 
 export default function AppDashboardRoute() {
   return (
-    <AppProviders>
-      <AiStoreProvider>
-        <AppDashboardInner />
-      </AiStoreProvider>
-    </AppProviders>
+    <AiStoreProvider>
+      <AppDashboardInner />
+    </AiStoreProvider>
   );
 }
