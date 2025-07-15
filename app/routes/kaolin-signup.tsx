@@ -3,32 +3,20 @@ import { useMutation } from "@tanstack/react-query";
 import { api } from "convex/_generated/api";
 import { ZapIcon } from "lucide-react";
 import { useCallback } from "react";
-import { Link, type MetaFunction, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { z } from "zod";
+import { Meta } from "~/components/meta";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { useAppForm } from "~/components/ui/tanstack-form";
-import { DEFAULT_META } from "~/lib/meta";
 
 const FormSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Please enter a valid email address"),
 });
-
-export const meta: MetaFunction = () => {
-  return [
-    ...DEFAULT_META,
-    { title: "Dan Wu's personal website | Kaolin Signup" },
-    {
-      name: "description",
-      content:
-        "Sign up for early access to Kaolin, a platform to create AI agents in 60 seconds.",
-    },
-  ];
-};
 
 export default function EmailSignup() {
   const navigate = useNavigate();
@@ -74,6 +62,10 @@ export default function EmailSignup() {
 
   return (
     <div className="min-h-screen relative flex items-center justify-center p-4">
+      <Meta
+        titleSuffix="Kaolin Signup"
+        description="Sign up for early access to Kaolin, a platform to create AI agents in 60 seconds."
+      />
       <div className="relative z-10 w-full max-w-md">
         <div className="text-center space-y-8">
           <div className="flex flex-col items-center space-y-4">

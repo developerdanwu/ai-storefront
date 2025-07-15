@@ -6,26 +6,14 @@ import type { Id } from "convex/_generated/dataModel";
 import { Camera, User } from "lucide-react";
 import * as React from "react";
 import { useCallback } from "react";
-import { generatePath, type MetaFunction, useNavigate } from "react-router";
+import { generatePath, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { GithubIcon } from "~/components/icons/github";
+import { Meta } from "~/components/meta";
 import { Button } from "~/components/ui/button";
 import { MessageInputField } from "~/components/ui/message-input-field";
 import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
-import { DEFAULT_META } from "~/lib/meta";
 import { ROUTES } from "~/lib/routes";
-
-export const meta: MetaFunction = () => {
-  return [
-    ...DEFAULT_META,
-    { title: "Dan Wu's personal website | Home" },
-    {
-      name: "description",
-      content:
-        "This is Dan Wu's personal website and where he shares his thoughts and projects.",
-    },
-  ];
-};
 
 const suggestions = [
   {
@@ -182,6 +170,10 @@ export default function Index() {
 
   return (
     <div className="h-full flex flex-col">
+      <Meta
+        titleSuffix="AI-Powered Portfolio & Chat"
+        description="Dan Wu's personal website featuring an AI-powered chat assistant. Learn about his journey from ceramics to software engineering and explore his projects."
+      />
       {/* Main content area */}
       <div className="flex-1 flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-2xl space-y-6 text-center">

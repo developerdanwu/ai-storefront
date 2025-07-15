@@ -1,24 +1,16 @@
 import { CheckCircleIcon } from "lucide-react";
-import { Link, type MetaFunction } from "react-router";
+import { Link } from "react-router";
+import { Meta } from "~/components/meta";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
-import { DEFAULT_META } from "~/lib/meta";
-
-export const meta: MetaFunction = () => {
-  return [
-    ...DEFAULT_META,
-    { title: "Dan Wu's personal website | Kaolin Signup" },
-    {
-      name: "description",
-      content:
-        "Sign up for early access to Kaolin, a platform to create AI agents in 60 seconds.",
-    },
-  ];
-};
 
 export default function ThankYou() {
   return (
     <div className="min-h-screen relative flex items-center justify-center p-4">
+      <Meta
+        titleSuffix="Kaolin Signup"
+        description="Sign up for early access to Kaolin, a platform to create AI agents in 60 seconds."
+      />
       <div className="relative z-10 w-full max-w-md">
         <div className="text-center space-y-8">
           <div className="flex flex-col items-center space-y-4">
