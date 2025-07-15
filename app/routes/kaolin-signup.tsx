@@ -86,7 +86,7 @@ export default function EmailSignup() {
           </div>
 
           <div className="space-y-4">
-            <p className="text-muted-foreground text-lg leading-relaxed">
+            <p className="text-secondary-foreground text-lg leading-relaxed">
               I'm thinking about building a platform to create AI agents in{" "}
               <span className="font-bold">60 seconds.</span> It'll be the
               easiest way to create experiences like{" "}
@@ -100,12 +100,12 @@ export default function EmailSignup() {
               out there. Want to be the first to know about it? Sign up below.
             </p>
             <div className="flex items-center justify-center space-x-2">
-              <span className="text-muted-foreground">—</span>
+              <span className="text-secondary-foreground">—</span>
               <Avatar className="rounded-lg">
                 <AvatarImage src="/profile-pic.jpg" />
                 <AvatarFallback>DW</AvatarFallback>
               </Avatar>
-              <span className="text-muted-foreground">Dan</span>
+              <span className="text-secondary-foreground">Dan</span>
             </div>
           </div>
 

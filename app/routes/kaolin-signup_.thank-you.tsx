@@ -25,42 +25,52 @@ export default function ThankYou() {
             <div className="w-16 h-16 flex items-center justify-center bg-green-500/20 rounded-full">
               <CheckCircleIcon className="w-8 h-8 text-green-400" />
             </div>
-            <h1 className="text-4xl font-bold text-white">Thank You!</h1>
+            <h1 className="text-4xl font-bold text-foreground">Thank You!</h1>
           </div>
 
           <div className="space-y-4">
-            <p className="text-gray-300 text-lg leading-relaxed">
+            <p className="text-secondary-foreground text-lg leading-relaxed">
               You're all set! I've added you to the list and you'll be the first
               to know when{" "}
-              <span className="font-bold text-cyan-400">Kaolin Chat</span>{" "}
+              <span className="font-bold text-cyan-600 dark:text-cyan-400">
+                Kaolin Chat
+              </span>{" "}
               launches.
             </p>
 
-            <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 space-y-3">
-              <h3 className="text-white font-medium">What's next?</h3>
-              <ul className="text-gray-300 text-sm space-y-2">
+            <div className="bg-muted/50 border border-muted rounded-lg p-4 space-y-3">
+              <h3 className="text-secondary-foreground font-medium">
+                What's next?
+              </h3>
+              <ul className="text-secondary-foreground text-sm space-y-2">
                 <li className="flex items-start space-x-2">
-                  <span className="text-cyan-400 mt-1">•</span>
+                  <span className="text-cyan-600 dark:text-cyan-400 mt-1">
+                    •
+                  </span>
                   <span>Check your email for a welcome message</span>
                 </li>
                 <li className="flex items-start space-x-2">
-                  <span className="text-cyan-400 mt-1">•</span>
+                  <span className="text-cyan-600 dark:text-cyan-400 mt-1">
+                    •
+                  </span>
                   <span>I'll send updates as I build the platform</span>
                 </li>
                 <li className="flex items-start space-x-2">
-                  <span className="text-cyan-400 mt-1">•</span>
+                  <span className="text-cyan-600 dark:text-cyan-400 mt-1">
+                    •
+                  </span>
                   <span>You'll get early access when it's ready</span>
                 </li>
               </ul>
             </div>
 
             <div className="flex items-center justify-center space-x-2">
-              <span className="text-gray-400">—</span>
+              <span className="text-secondary-foreground">—</span>
               <Avatar className="rounded-lg">
                 <AvatarImage src="/profile-pic.jpg" />
                 <AvatarFallback>DW</AvatarFallback>
               </Avatar>
-              <span className="text-gray-400">Dan</span>
+              <span className="text-secondary-foreground">Dan</span>
             </div>
           </div>
           <Button size="lg" asChild className="w-full">
