@@ -4,11 +4,11 @@ import { render } from "@react-email/render";
 import { v } from "convex/values";
 import { ResultAsync } from "neverthrow";
 import { SubscriptionThankYouEmail } from "../../emails/kaolin-signup";
-import { action } from "../_generated/server";
+import { internalAction } from "../_generated/server";
 import * as Errors from "../errors";
 import { resend, resendBase, TEST_EMAILS } from "../resend";
 
-export const emailSubscription = action({
+export const emailSubscription = internalAction({
   args: {
     firstName: v.string(),
     lastName: v.string(),

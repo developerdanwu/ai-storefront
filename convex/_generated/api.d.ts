@@ -35,6 +35,7 @@ import type * as helpers_sendAiMessage from "../helpers/sendAiMessage.js";
 import type * as helpers_updateAiAgentPersona from "../helpers/updateAiAgentPersona.js";
 import type * as http from "../http.js";
 import type * as marketing_actionNode from "../marketing/actionNode.js";
+import type * as marketing_mutation from "../marketing/mutation.js";
 import type * as procedures from "../procedures.js";
 import type * as product_ai_action from "../product/ai/action.js";
 import type * as product_ai_actionsNode from "../product/ai/actionsNode.js";
@@ -91,6 +92,7 @@ declare const fullApi: ApiFromModules<{
   "helpers/updateAiAgentPersona": typeof helpers_updateAiAgentPersona;
   http: typeof http;
   "marketing/actionNode": typeof marketing_actionNode;
+  "marketing/mutation": typeof marketing_mutation;
   procedures: typeof procedures;
   "product/ai/action": typeof product_ai_action;
   "product/ai/actionsNode": typeof product_ai_actionsNode;

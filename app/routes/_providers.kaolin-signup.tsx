@@ -1,4 +1,4 @@
-import { useConvexAction } from "@convex-dev/react-query";
+import { useConvexMutation } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "convex/_generated/api";
 import { ZapIcon } from "lucide-react";
@@ -34,7 +34,7 @@ export default function EmailSignup() {
   const navigate = useNavigate();
 
   const { mutate: emailSubscription, isPending } = useMutation({
-    mutationFn: useConvexAction(api.marketing.actionNode.emailSubscription),
+    mutationFn: useConvexMutation(api.marketing.mutation.subscribeNewsletter),
     onSuccess: () => {
       toast.success("You've subscribed to the waitlist!");
       // Reset form on success

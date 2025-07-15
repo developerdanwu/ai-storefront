@@ -209,3 +209,10 @@ export function propogateConvexError(e: BackendErrorSchema): never {
     },
   });
 }
+
+export function actionScheduleError(context: ErrorContext) {
+  return {
+    _tag: "ActionScheduleError",
+    context,
+  } as const satisfies BackendErrorSchema;
+}

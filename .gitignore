@@ -4,6 +4,7 @@ node_modules
 /build
 .env
 /dist
+.idea
 
 .react-router
 .env.local

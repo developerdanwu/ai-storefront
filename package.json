@@ -10,7 +10,7 @@
     "format": "biome format --write .",
     "lint": "oxlint",
     "typecheck": "react-router typegen && tsc",
-    "convex:dev": "convex dev",
+    "convex:dev": "convex dev --local",
     "email:dev": "email dev",
     "email:build": "email build",
     "email:export": "email export",
