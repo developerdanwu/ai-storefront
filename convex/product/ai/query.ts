@@ -5,7 +5,10 @@ import { errAsync, ok, ResultAsync } from "neverthrow";
 import { components } from "../../_generated/api";
 import { internalQuery } from "../../_generated/server";
 import { createPlaygroundAgent } from "../../agents/playgroundAgent";
+import { createStoreAgent } from "../../agents/storeAgent";
 import * as Errors from "../../errors";
+import { getAiThreadMessages } from "../../helpers/getAiThreadMessages";
+import { getAiThreads } from "../../helpers/getAiThreads";
 import { authedQuery } from "../../procedures";
 
 export const getAiPersonas = authedQuery({
@@ -61,12 +64,19 @@ export const getPlaygroundThreads = authedQuery({
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
-    return ctx.runQuery(
-      components.playgroundAgent.threads.listThreadsByUserId,
-      {
+    return ResultAsync.fromPromise(
+      ctx.runQuery(components.playgroundAgent.threads.listThreadsByUserId, {
         userId: ctx.user._id,
         paginationOpts: args.paginationOpts,
-      }
+      }),
+      (e) =>
+        Errors.getAiThreadsFailed({
+          message: "Failed to get playground threads",
+          error: e,
+        })
+    ).match(
+      (x) => x,
+      (e) => Errors.propogateConvexError(e)
     );
   },
 });
@@ -111,5 +121,39 @@ export const getPlaygroundThreadMessages = authedQuery({
         (x) => x,
         (e) => Errors.propogateConvexError(e)
       );
+  },
+});
+
+export const getKaolinThreads = authedQuery({
+  args: {
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    return getAiThreads(ctx, components.kaolinAgent, {
+      userId: ctx.user._id,
+      paginationOpts: args.paginationOpts,
+    }).match(
+      (x) => x,
+      (e) => Errors.propogateConvexError(e)
+    );
+  },
+});
+
+export const getKaolinThreadMessages = authedQuery({
+  args: {
+    threadId: v.string(),
+    paginationOpts: paginationOptsValidator,
+    streamArgs: vStreamArgs,
+  },
+  handler: async (ctx, args) => {
+    return getAiThreadMessages(ctx, createStoreAgent(components.kaolinAgent), {
+      threadId: args.threadId,
+      paginationOpts: args.paginationOpts,
+      streamArgs: args.streamArgs,
+      userId: ctx.user._id,
+    }).match(
+      (x) => x,
+      (e) => Errors.propogateConvexError(e)
+    );
   },
 });

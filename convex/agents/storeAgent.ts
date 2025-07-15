@@ -1,8 +1,7 @@
-import { Agent, createTool } from "@convex-dev/agent";
+import { Agent, AgentComponent, createTool } from "@convex-dev/agent";
 import { LanguageModelV1Middleware, wrapLanguageModel } from "ai";
 import { ResultAsync } from "neverthrow";
 import z from "zod";
-import { components } from "../_generated/api";
 import * as Errors from "../errors";
 import { BackendErrorSchema } from "../errors";
 import { rag } from "../rag";
@@ -35,6 +34,7 @@ function agentError<T>(error: BackendErrorSchema): AgentToolError {
 }
 
 export const createStoreAgent = (
+  agentComponent: AgentComponent,
   args: {
     middleware?: LanguageModelV1Middleware | LanguageModelV1Middleware[];
     modelId?: string;
@@ -43,7 +43,7 @@ export const createStoreAgent = (
 ) => {
   const { middleware = [], modelId, providerId } = args;
 
-  return new Agent(components.agent, {
+  return new Agent(agentComponent, {
     chat: wrapLanguageModel({
       model: grok3Mini,
       middleware,

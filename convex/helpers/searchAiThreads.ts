@@ -1,6 +1,6 @@
+import { Agent } from "@convex-dev/agent";
 import { Infer, v } from "convex/values";
 import { ResultAsync } from "neverthrow";
-import { components } from "../_generated/api";
 import { QueryCtx } from "../_generated/server";
 import * as Errors from "../errors";
 
@@ -21,16 +21,14 @@ export const VSearchThreadsHandlerReturn = v.object({
   ),
 });
 
-export function searchAiThreads(
+export function searchAiThreads<TAgent extends Agent<any>>(
   ctx: QueryCtx,
+  agent: TAgent,
   args: TSearchThreadsHandlerArgs
 ) {
-  return ResultAsync.fromPromise(
-    ctx.runQuery(components.agent.threads.searchThreadTitles, args),
-    (e) => {
-      return Errors.getAiThreadsFailed({
-        message: "Failed to get AI threads",
-      });
-    }
-  );
+  return ResultAsync.fromPromise(agent.searchThreadTitles(ctx, args), (e) => {
+    return Errors.getAiThreadsFailed({
+      message: "Failed to get AI threads",
+    });
+  });
 }

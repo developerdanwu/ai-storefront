@@ -139,7 +139,7 @@ export const migrateAnonymousUser = authedMutation({
       // Update each thread's userId to the authenticated user's ID
       for (const thread of threadsPage.page) {
         await ResultAsync.fromPromise(
-          createStoreAgent().updateThreadMetadata(ctx, {
+          createStoreAgent(components.agent).updateThreadMetadata(ctx, {
             threadId: thread._id,
             patch: {
               userId: authenticatedUserId,

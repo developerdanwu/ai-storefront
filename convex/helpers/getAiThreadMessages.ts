@@ -1,9 +1,8 @@
-import { vStreamArgs } from "@convex-dev/agent";
+import { Agent, vStreamArgs } from "@convex-dev/agent";
 import { paginationOptsValidator } from "convex/server";
 import { type Infer, v } from "convex/values";
 import { errAsync, ok, ResultAsync } from "neverthrow";
 import { QueryCtx } from "../_generated/server";
-import { createStoreAgent } from "../agents/storeAgent";
 import * as Errors from "../errors";
 
 export const VGetAiThreadMessagesArgs = v.object({
@@ -15,12 +14,13 @@ export const VGetAiThreadMessagesArgs = v.object({
 
 export type TGetAiThreadMessagesArgs = Infer<typeof VGetAiThreadMessagesArgs>;
 
-export function getAiThreadMessages(
+export function getAiThreadMessages<TAgent extends Agent<any>>(
   ctx: QueryCtx,
+  agent: TAgent,
   args: TGetAiThreadMessagesArgs
 ) {
   return ResultAsync.fromPromise(
-    createStoreAgent().getThreadMetadata(ctx, {
+    agent.getThreadMetadata(ctx, {
       threadId: args.threadId,
     }),
     (e) =>
@@ -38,7 +38,7 @@ export function getAiThreadMessages(
     }
 
     return ResultAsync.fromPromise(
-      createStoreAgent().listMessages(ctx, {
+      agent.listMessages(ctx, {
         threadId: args.threadId,
         paginationOpts: args.paginationOpts,
       }),
@@ -50,7 +50,7 @@ export function getAiThreadMessages(
       }
     ).andThen((messages) => {
       return ResultAsync.fromPromise(
-        createStoreAgent().syncStreams(ctx, {
+        agent.syncStreams(ctx, {
           threadId: args.threadId,
           streamArgs: args.streamArgs,
         }),

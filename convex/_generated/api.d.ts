@@ -18,6 +18,8 @@ import type * as ai_action from "../ai/action.js";
 import type * as ai_actionsNode from "../ai/actionsNode.js";
 import type * as ai_query from "../ai/query.js";
 import type * as errors from "../errors.js";
+import type * as helpers_continueAiThread from "../helpers/continueAiThread.js";
+import type * as helpers_continueAiThreadStream from "../helpers/continueAiThreadStream.js";
 import type * as helpers_createAgentPersona from "../helpers/createAgentPersona.js";
 import type * as helpers_createThread from "../helpers/createThread.js";
 import type * as helpers_deleteAiAgentPersona from "../helpers/deleteAiAgentPersona.js";
@@ -75,6 +77,8 @@ declare const fullApi: ApiFromModules<{
   "ai/actionsNode": typeof ai_actionsNode;
   "ai/query": typeof ai_query;
   errors: typeof errors;
+  "helpers/continueAiThread": typeof helpers_continueAiThread;
+  "helpers/continueAiThreadStream": typeof helpers_continueAiThreadStream;
   "helpers/createAgentPersona": typeof helpers_createAgentPersona;
   "helpers/createThread": typeof helpers_createThread;
   "helpers/deleteAiAgentPersona": typeof helpers_deleteAiAgentPersona;

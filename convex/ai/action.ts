@@ -1,9 +1,10 @@
 import { ConvexError, v } from "convex/values";
-import { ok, ResultAsync } from "neverthrow";
 import { components } from "../_generated/api";
 import { internalAction } from "../_generated/server";
 import { createStoreAgent } from "../agents/storeAgent";
 import * as Errors from "../errors";
+import { continueAiThread } from "../helpers/continueAiThread";
+import { continueAiThreadStream } from "../helpers/continueAiThreadStream";
 import { createThread as createThreadHelper } from "../helpers/createThread";
 import { generateSummaryTitle } from "../helpers/generateSummaryTitle";
 import { rateLimit } from "../helpers/rateLimit";
@@ -22,24 +23,17 @@ export const createThread = authedAction({
       (e) => Errors.propogateConvexError(e)
     );
 
-    const { threadId } = await generateSummaryTitle(ctx, {
-      prompt: `
-            summarise the prompt below to create a title
-  \`\`\`
-  ${args.prompt}
-  \`\`\`
-            `,
-    })
-      .andThen((x) => {
-        return createThreadHelper(ctx, {
-          title: x.text,
-          userId: ctx.user._id,
-        });
-      })
-      .match(
-        (x) => x,
-        (e) => Errors.propogateConvexError(e)
-      );
+    const { threadId } = await createThreadHelper(
+      ctx,
+      createStoreAgent(components.agent),
+      {
+        prompt: args.prompt,
+        userId: ctx.user._id,
+      }
+    ).match(
+      (x) => x,
+      (e) => Errors.propogateConvexError(e)
+    );
 
     return { threadId };
   },
@@ -59,24 +53,17 @@ export const createAnonymousThread = anonymousAction({
         throw new ConvexError(e);
       }
     );
-    const { threadId } = await generateSummaryTitle(ctx, {
-      prompt: `
-            summarise the prompt below to create a title
-  \`\`\`
-  ${args.prompt}
-  \`\`\`
-            `,
-    })
-      .andThen((x) => {
-        return createThreadHelper(ctx, {
-          title: x.text,
-          userId: ctx.anonymousUserId,
-        });
-      })
-      .match(
-        (x) => x,
-        (e) => Errors.propogateConvexError(e)
-      );
+    const { threadId } = await createThreadHelper(
+      ctx,
+      createStoreAgent(components.agent),
+      {
+        prompt: args.prompt,
+        userId: ctx.anonymousUserId,
+      }
+    ).match(
+      (x) => x,
+      (e) => Errors.propogateConvexError(e)
+    );
 
     return {
       threadId: threadId,
@@ -90,6 +77,7 @@ export const continueThread = authedAction({
     threadId: v.string(),
     prompt: v.optional(v.string()),
     promptMessageId: v.optional(v.string()),
+    disableStream: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     await rateLimit(ctx, {
@@ -99,62 +87,22 @@ export const continueThread = authedAction({
       (x) => x,
       (e) => Errors.propogateConvexError(e)
     );
-    return await ResultAsync.fromPromise(
-      createStoreAgent().continueThread(ctx, {
+
+    if (args.disableStream) {
+      return continueAiThread(ctx, createStoreAgent(components.agent), {
         threadId: args.threadId,
+        prompt: args.prompt,
+        promptMessageId: args.promptMessageId,
         userId: ctx.user._id,
-      }),
-      (e) =>
-        Errors.continueThreadFailed({
-          message: "Failed to continue thread",
-          error: e,
-        })
-    )
-      .andThen((x) => {
-        return ResultAsync.fromPromise(
-          x.thread.streamText(
-            {
-              prompt: args.prompt,
-              promptMessageId: args.promptMessageId,
-              temperature: 0.3,
-              onFinish: async (x) => {},
-            },
-            {
-              saveStreamDeltas: { chunking: "word", throttleMs: 800 },
-            }
-          ),
-          (e) => {
-            console.error("ERRORRR102", e);
-            return Errors.generateAiTextFailed({
-              message: "Failed to generate AI text",
-            });
-          }
-        )
-          .andThen((streamResult) => {
-            return ResultAsync.fromPromise(
-              (async () => {
-                let fullText = "";
-                for await (const chunk of streamResult.textStream) {
-                  fullText += chunk;
-                }
-                return fullText;
-              })(),
-              (e) => {
-                console.error("ERRORRR101", e);
-                return Errors.generateAiTextFailed({
-                  message: "Failed to generate AI text",
-                });
-              }
-            );
-          })
-          .andThen((text) => {
-            return ok(text);
-          });
-      })
-      .match(
-        (x) => x,
-        (e) => Errors.propogateConvexError(e)
-      );
+      });
+    }
+
+    return continueAiThreadStream(ctx, createStoreAgent(components.agent), {
+      threadId: args.threadId,
+      prompt: args.prompt,
+      promptMessageId: args.promptMessageId,
+      userId: ctx.user._id,
+    });
   },
 });
 
@@ -190,89 +138,39 @@ export const continueAnonymousThread = anonymousAction({
       (x) => x,
       (e) => Errors.propogateConvexError(e)
     );
-    const { thread } = await ResultAsync.fromPromise(
-      createStoreAgent().continueThread(ctx, {
+
+    if (args.disableStream) {
+      const { text } = await continueAiThread(
+        ctx,
+        createStoreAgent(components.agent),
+        {
+          threadId: args.threadId,
+          prompt: args.prompt,
+          promptMessageId: args.promptMessageId,
+          userId: ctx.anonymousUserId,
+        }
+      ).match(
+        (x) => x,
+        (e) => Errors.propogateConvexError(e)
+      );
+      return text;
+    }
+
+    const text = await continueAiThreadStream(
+      ctx,
+      createStoreAgent(components.agent),
+      {
         threadId: args.threadId,
+        prompt: args.prompt,
+        promptMessageId: args.promptMessageId,
         userId: ctx.anonymousUserId,
-      }),
-      (e) =>
-        Errors.continueThreadFailed({
-          message: "Failed to continue thread",
-          error: e,
-        })
+      }
     ).match(
       (x) => x,
       (e) => Errors.propogateConvexError(e)
     );
-    if (!args.disableStream) {
-      return ResultAsync.fromPromise(
-        thread.streamText(
-          {
-            prompt: args.prompt,
-            promptMessageId: args.promptMessageId,
-            temperature: 0.3,
-          },
-          {
-            saveStreamDeltas: { chunking: "word", throttleMs: 800 },
-          }
-        ),
-        (e) => {
-          return Errors.generateAiTextFailed({
-            message: "Failed to generate AI text",
-          });
-        }
-      )
-        .andThen((streamResult) => {
-          return ResultAsync.fromPromise(
-            (async () => {
-              let fullText = "";
-              for await (const chunk of streamResult.textStream) {
-                fullText += chunk;
-              }
-              return fullText;
-            })(),
-            (e) => {
-              console.error("ERRORRR100", e);
-              return Errors.generateAiTextFailed({
-                message: "Failed to generate AI text",
-              });
-            }
-          );
-        })
-        .match(
-          (x) => x,
-          (e) => Errors.propogateConvexError(e)
-        );
-    } else {
-      return await ResultAsync.fromPromise(
-        createStoreAgent().continueThread(ctx, {
-          threadId: args.threadId,
-          userId: ctx.anonymousUserId,
-        }),
-        (e) =>
-          Errors.continueThreadFailed({
-            message: "Failed to continue thread",
-          })
-      )
-        .andThen((x) => {
-          return ResultAsync.fromPromise(
-            x.thread.generateText({
-              prompt: args.prompt,
-              promptMessageId: args.promptMessageId,
-              temperature: 0.3,
-            }),
-            (e) => {
-              return Errors.generateAiTextFailed({
-                message: "Failed to generate AI text",
-              });
-            }
-          );
-        })
-        .match(
-          (x) => x.text,
-          (e) => Errors.propogateConvexError(e)
-        );
-    }
+
+    return text;
   },
 });
 

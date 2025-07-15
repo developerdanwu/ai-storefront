@@ -1,7 +1,7 @@
+import { Agent } from "@convex-dev/agent";
 import { Infer, v } from "convex/values";
 import { ok, ResultAsync } from "neverthrow";
 import { ActionCtx } from "../_generated/server";
-import { createStoreAgent } from "../agents/storeAgent";
 import * as Errors from "../errors";
 
 export const VSendAiMessageArgs = v.object({
@@ -12,9 +12,13 @@ export const VSendAiMessageArgs = v.object({
 
 export type TSendAiMessageArgs = Infer<typeof VSendAiMessageArgs>;
 
-export function sendAiMessage(ctx: ActionCtx, args: TSendAiMessageArgs) {
+export function sendAiMessage<TAgent extends Agent<any>>(
+  ctx: ActionCtx,
+  agent: TAgent,
+  args: TSendAiMessageArgs
+) {
   return ResultAsync.fromPromise(
-    createStoreAgent().continueThread(ctx, {
+    agent.continueThread(ctx, {
       threadId: args.threadId,
       userId: args.userId,
     }),

@@ -2,7 +2,9 @@ import { vStreamArgs } from "@convex-dev/agent";
 import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import { ResultAsync } from "neverthrow";
+import { components } from "../_generated/api";
 import { query } from "../_generated/server";
+import { createStoreAgent } from "../agents/storeAgent";
 import * as Errors from "../errors";
 import { getAiThreadMessages } from "../helpers/getAiThreadMessages";
 import { getAiThreads } from "../helpers/getAiThreads";
@@ -14,7 +16,7 @@ export const getThreads = authedQuery({
     paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
-    return getAiThreads(ctx, {
+    return getAiThreads(ctx, components.agent, {
       userId: ctx.user._id,
       paginationOpts: args.paginationOpts,
     }).match(
@@ -30,7 +32,7 @@ export const searchThreads = authedQuery({
     limit: v.number(),
   },
   handler: async (ctx, args) => {
-    return searchAiThreads(ctx, {
+    return searchAiThreads(ctx, createStoreAgent(components.agent), {
       userId: ctx.user._id,
       query: args.query,
       limit: args.limit,
@@ -57,7 +59,7 @@ export const getAnonymousThreads = anonymousQuery({
       };
     }
 
-    return getAiThreads(ctx, {
+    return getAiThreads(ctx, components.agent, {
       userId: ctx.user._id,
       paginationOpts: args.paginationOpts,
     }).match(
@@ -73,7 +75,7 @@ export const searchAnonymousThreads = anonymousQuery({
     limit: v.number(),
   },
   handler: async (ctx, args) => {
-    return searchAiThreads(ctx, {
+    return searchAiThreads(ctx, createStoreAgent(components.agent), {
       userId: ctx.user._id,
       query: args.query,
       limit: args.limit,
@@ -91,7 +93,7 @@ export const getThreadMessages = authedQuery({
     streamArgs: vStreamArgs,
   },
   handler: async (ctx, args) => {
-    return getAiThreadMessages(ctx, {
+    return getAiThreadMessages(ctx, createStoreAgent(components.agent), {
       threadId: args.threadId,
       paginationOpts: args.paginationOpts,
       streamArgs: args.streamArgs,
@@ -112,7 +114,7 @@ export const getAnonymousThreadMessages = anonymousQuery({
     streamArgs: vStreamArgs,
   },
   handler: async (ctx, args) => {
-    return getAiThreadMessages(ctx, {
+    return getAiThreadMessages(ctx, createStoreAgent(components.agent), {
       threadId: args.threadId,
       paginationOpts: args.paginationOpts,
       streamArgs: args.streamArgs,
@@ -133,7 +135,7 @@ export const needMigration = authedQuery({
       return false;
     }
 
-    return await getAiThreads(ctx, {
+    return await getAiThreads(ctx, components.agent, {
       userId: args.anonymousUserId,
       paginationOpts: {
         numItems: 1,
