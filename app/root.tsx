@@ -1,6 +1,7 @@
 import type { LinksFunction } from "react-router";
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 import { AppProviders } from "~/components/app-providers";
+import { PageLoadingSpinner } from "./components/ui/page-loading-spinner";
 import "./tailwind.css";
 
 export const links: LinksFunction = () => [
@@ -15,6 +16,10 @@ export const links: LinksFunction = () => [
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
 ];
+
+export function HydrateFallback() {
+  return <PageLoadingSpinner />;
+}
 
 export default function App() {
   return (
