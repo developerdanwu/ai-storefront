@@ -172,7 +172,7 @@ export function resendError(context: ErrorContext) {
   } as const satisfies BackendErrorSchema;
 }
 
-export function propogateConvexError(e: BackendErrorSchema) {
+export function propogateConvexError(e: BackendErrorSchema): never {
   console.error(e);
   throw new ConvexError({
     _tag: e._tag,
@@ -180,4 +180,11 @@ export function propogateConvexError(e: BackendErrorSchema) {
       message: e.context.message,
     },
   });
+}
+
+export function actionScheduleError(context: ErrorContext) {
+  return {
+    _tag: "ActionScheduleError",
+    context,
+  } as const satisfies BackendErrorSchema;
 }

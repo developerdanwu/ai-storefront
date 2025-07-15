@@ -29,6 +29,7 @@ import type * as helpers_searchAiThreads from "../helpers/searchAiThreads.js";
 import type * as helpers_sendAiMessage from "../helpers/sendAiMessage.js";
 import type * as http from "../http.js";
 import type * as marketing_actionNode from "../marketing/actionNode.js";
+import type * as marketing_mutation from "../marketing/mutation.js";
 import type * as procedures from "../procedures.js";
 import type * as rag from "../rag.js";
 import type * as rateLimiter from "../rateLimiter.js";
@@ -75,6 +76,7 @@ declare const fullApi: ApiFromModules<{
   "helpers/sendAiMessage": typeof helpers_sendAiMessage;
   http: typeof http;
   "marketing/actionNode": typeof marketing_actionNode;
+  "marketing/mutation": typeof marketing_mutation;
   procedures: typeof procedures;
   rag: typeof rag;
   rateLimiter: typeof rateLimiter;
