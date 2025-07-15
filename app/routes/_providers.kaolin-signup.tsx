@@ -3,19 +3,32 @@ import { useMutation } from "@tanstack/react-query";
 import { api } from "convex/_generated/api";
 import { ZapIcon } from "lucide-react";
 import { useCallback } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, type MetaFunction, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { useAppForm } from "~/components/ui/tanstack-form";
+import { DEFAULT_META } from "~/lib/meta";
 
 const FormSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Please enter a valid email address"),
 });
+
+export const meta: MetaFunction = () => {
+  return [
+    ...DEFAULT_META,
+    { title: "Dan Wu's personal website | Kaolin Signup" },
+    {
+      name: "description",
+      content:
+        "Sign up for early access to Kaolin, a platform to create AI agents in 60 seconds.",
+    },
+  ];
+};
 
 export default function EmailSignup() {
   const navigate = useNavigate();

@@ -1,5 +1,6 @@
 import { useThreadMessages } from "@convex-dev/agent/react";
 import { useConvexAction } from "@convex-dev/react-query";
+import { useStore } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { useSelector } from "@xstate/store/react";
 import { api } from "convex/_generated/api";
@@ -34,7 +35,6 @@ function PlaygroundThread({
     onMutate: () => {
       form.reset();
     },
-    onSuccess: () => {},
     onError: (error) => {
       toast.error("Failed to send message");
       console.error(error);
@@ -45,8 +45,8 @@ function PlaygroundThread({
     defaultValues: {
       message: "",
     },
-    onSubmit: ({ value }) => {
-      continuePlaygroundThread.mutate({
+    onSubmit: async ({ value }) => {
+      await continuePlaygroundThread.mutateAsync({
         aiAgentPersonaId: activeAgent!.agentId,
         threadId: threadId,
         prompt: value.message,
@@ -72,7 +72,7 @@ function PlaygroundThread({
     }
   );
 
-  const isSubmitting = false;
+  const isSubmitting = useStore(form.store, (state) => state.isSubmitting);
 
   return (
     <>

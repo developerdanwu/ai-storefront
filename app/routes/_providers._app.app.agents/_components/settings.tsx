@@ -62,6 +62,7 @@ export function Settings({
     [form]
   );
 
+  const isSubmitting = useStore(form.store, (state) => state.isSubmitting);
   const isFormValid = useStore(form.store, (state) => state.isValid);
 
   return (
@@ -113,7 +114,7 @@ export function Settings({
         />
 
         <div className="flex gap-3">
-          <Button disabled={!isFormValid} type="submit">
+          <Button disabled={!isFormValid} loading={isSubmitting} type="submit">
             Save Settings
           </Button>
           <Button type="button" variant="outline" onClick={() => form.reset()}>

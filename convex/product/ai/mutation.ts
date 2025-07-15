@@ -53,3 +53,8 @@ export const updateAiAgentPersona = authedMutation({
     );
   },
 });
+
+export const addTextEmbeddings = authedMutation({
+  args: {},
+  handler: async (ctx) => {},
+});

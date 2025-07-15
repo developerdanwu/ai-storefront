@@ -37,6 +37,7 @@ import type * as http from "../http.js";
 import type * as marketing_actionNode from "../marketing/actionNode.js";
 import type * as procedures from "../procedures.js";
 import type * as product_ai_action from "../product/ai/action.js";
+import type * as product_ai_actionsNode from "../product/ai/actionsNode.js";
 import type * as product_ai_mutation from "../product/ai/mutation.js";
 import type * as product_ai_query from "../product/ai/query.js";
 import type * as rag from "../rag.js";
@@ -92,6 +93,7 @@ declare const fullApi: ApiFromModules<{
   "marketing/actionNode": typeof marketing_actionNode;
   procedures: typeof procedures;
   "product/ai/action": typeof product_ai_action;
+  "product/ai/actionsNode": typeof product_ai_actionsNode;
   "product/ai/mutation": typeof product_ai_mutation;
   "product/ai/query": typeof product_ai_query;
   rag: typeof rag;
