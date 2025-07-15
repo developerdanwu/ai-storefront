@@ -17,11 +17,7 @@ export const links: LinksFunction = () => [
   },
 ];
 
-export function HydrateFallback() {
-  return <PageLoadingSpinner />;
-}
-
-export default function App() {
+export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
@@ -31,12 +27,22 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <AppProviders>
-          <Outlet />
-        </AppProviders>
+        {children}
         <ScrollRestoration />
         <Scripts />
       </body>
     </html>
+  );
+}
+
+export function HydrateFallback() {
+  return <PageLoadingSpinner />;
+}
+
+export default function App() {
+  return (
+    <AppProviders>
+      <Outlet />
+    </AppProviders>
   );
 }
