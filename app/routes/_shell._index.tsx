@@ -6,6 +6,7 @@ import type { Id } from "convex/_generated/dataModel";
 import { Camera, User } from "lucide-react";
 import * as React from "react";
 import { useCallback } from "react";
+import type { MetaFunction } from "react-router";
 import { generatePath, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { GithubIcon } from "~/components/icons/github";
@@ -14,6 +15,50 @@ import { Button } from "~/components/ui/button";
 import { MessageInputField } from "~/components/ui/message-input-field";
 import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
 import { ROUTES } from "~/lib/routes";
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Dan Wu's personal website | AI-Powered Portfolio & Chat" },
+    {
+      name: "description",
+      content:
+        "Dan Wu's personal website featuring an AI-powered chat assistant. Learn about his journey from ceramics to software engineering and explore his projects.",
+    },
+    // Open Graph
+    {
+      property: "og:title",
+      content: "Dan Wu's personal website | AI-Powered Portfolio & Chat",
+    },
+    {
+      property: "og:description",
+      content:
+        "Dan Wu's personal website featuring an AI-powered chat assistant. Learn about his journey from ceramics to software engineering and explore his projects.",
+    },
+    {
+      property: "og:image",
+      content: "https://developerdanwu.com/og-image.png",
+    },
+    { property: "og:image:alt", content: "Dan Wu's personal website preview" },
+    { property: "og:type", content: "website" },
+    { property: "og:site_name", content: "Dan Wu's personal website" },
+    { property: "og:url", content: "https://developerdanwu.com" },
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    {
+      name: "twitter:title",
+      content: "Dan Wu's personal website | AI-Powered Portfolio & Chat",
+    },
+    {
+      name: "twitter:description",
+      content:
+        "Dan Wu's personal website featuring an AI-powered chat assistant. Learn about his journey from ceramics to software engineering and explore his projects.",
+    },
+    {
+      name: "twitter:image",
+      content: "https://developerdanwu.com/og-image.png",
+    },
+  ];
+};
 
 const suggestions = [
   {
