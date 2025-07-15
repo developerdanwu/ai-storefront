@@ -4,7 +4,9 @@ import { ResultAsync } from "neverthrow";
 import { internal } from "../../_generated/api";
 import { createPlaygroundAgent } from "../../agents/playgroundAgent";
 import * as Errors from "../../errors";
-import { generateSummaryTitle } from "../../helpers/generateSummaryTitle";
+import { continueAiThread } from "../../helpers/continueAiThread";
+import { continueAiThreadStream } from "../../helpers/continueAiThreadStream";
+import { createThread } from "../../helpers/createThread";
 import { authedAction } from "../../procedures";
 
 export const createPlaygroundThread = authedAction({
@@ -32,26 +34,13 @@ export const createPlaygroundThread = authedAction({
       instructions: agentPersona.customPrompt,
     });
 
-    const { threadId } = await generateSummaryTitle(ctx, {
+    const { threadId } = await createThread(ctx, agent, {
       prompt: args.prompt,
-    })
-      .andThen(({ text }) => {
-        return ResultAsync.fromPromise(
-          agent.createThread(ctx, {
-            title: text,
-            userId: ctx.user._id,
-          }),
-          (e) =>
-            Errors.createThreadFailed({
-              message: "Failed to create thread",
-              error: e,
-            })
-        );
-      })
-      .match(
-        (x) => x,
-        (e) => Errors.propogateConvexError(e)
-      );
+      userId: ctx.user._id,
+    }).match(
+      (x) => x,
+      (e) => Errors.propogateConvexError(e)
+    );
 
     return {
       threadId,
@@ -65,6 +54,7 @@ export const continuePlaygroundThread = authedAction({
     threadId: v.string(),
     prompt: v.optional(v.string()),
     promptMessageId: v.optional(v.string()),
+    disableStream: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const agentPersona = await ResultAsync.fromPromise(
@@ -86,58 +76,30 @@ export const continuePlaygroundThread = authedAction({
       instructions: agentPersona.customPrompt,
     });
 
-    const { thread } = await ResultAsync.fromPromise(
-      agent.continueThread(ctx, {
+    if (args.disableStream) {
+      const { text } = await continueAiThread(ctx, agent, {
         threadId: args.threadId,
+        prompt: args.prompt,
+        promptMessageId: args.promptMessageId,
         userId: ctx.user._id,
-      }),
-      (e) =>
-        Errors.continueThreadFailed({
-          message: "Failed to continue thread",
-          error: e,
-        })
-    ).match(
+      }).match(
+        (x) => x,
+        (e) => Errors.propogateConvexError(e)
+      );
+
+      return text;
+    }
+
+    const text = await continueAiThreadStream(ctx, agent, {
+      threadId: args.threadId,
+      prompt: args.prompt,
+      promptMessageId: args.promptMessageId,
+      userId: ctx.user._id,
+    }).match(
       (x) => x,
       (e) => Errors.propogateConvexError(e)
     );
 
-    return ResultAsync.fromPromise(
-      thread.streamText(
-        {
-          prompt: args.prompt,
-          promptMessageId: args.promptMessageId,
-          temperature: 0.3,
-        },
-        {
-          saveStreamDeltas: { chunking: "word", throttleMs: 800 },
-        }
-      ),
-      (e) => {
-        return Errors.generateAiTextFailed({
-          message: "Failed to generate AI text",
-        });
-      }
-    )
-      .andThen((streamResult) => {
-        return ResultAsync.fromPromise(
-          (async () => {
-            let fullText = "";
-            for await (const chunk of streamResult.textStream) {
-              fullText += chunk;
-            }
-            return fullText;
-          })(),
-          (e) => {
-            return Errors.generateAiTextFailed({
-              message: "Failed to generate AI text",
-              error: e,
-            });
-          }
-        );
-      })
-      .match(
-        (x) => x,
-        (e) => Errors.propogateConvexError(e)
-      );
+    return text;
   },
 });
