@@ -200,6 +200,13 @@ export function updateAiAgentPersonaFailed(context: ErrorContext) {
   } as const satisfies BackendErrorSchema;
 }
 
+export function completeToolCallFailed(context: ErrorContext) {
+  return {
+    _tag: "CompleteToolCallFailed",
+    context,
+  } as const satisfies BackendErrorSchema;
+}
+
 export function propogateConvexError(e: BackendErrorSchema): never {
   console.error(e);
   throw new ConvexError({

@@ -220,9 +220,9 @@ function NewPlaygroundThread({
           <p>Start a conversation with {activeAgent.name}</p>
         </div>
       </div>
-      <div className="p-4 border-t">
+      <div className="p-4 border-t flex justify-center items-center w-full">
         <form.AppForm>
-          <form onSubmit={handleSubmit} className="flex gap-2">
+          <form onSubmit={handleSubmit} className="flex gap-2 w-full max-w-3xl">
             <form.AppField
               name="message"
               children={(field) => (

@@ -1,7 +1,8 @@
 import { Agent } from "@convex-dev/agent";
 import { v } from "convex/values";
 import { ResultAsync } from "neverthrow";
-import { internal } from "../../_generated/api";
+import { components, internal } from "../../_generated/api";
+import { createKaolinAgent } from "../../agents/kaolinAgent";
 import { createPlaygroundAgent } from "../../agents/playgroundAgent";
 import * as Errors from "../../errors";
 import { continueAiThread } from "../../helpers/continueAiThread";
@@ -75,6 +76,65 @@ export const continuePlaygroundThread = authedAction({
       name: agentPersona.name,
       instructions: agentPersona.customPrompt,
     });
+
+    if (args.disableStream) {
+      const { text } = await continueAiThread(ctx, agent, {
+        threadId: args.threadId,
+        prompt: args.prompt,
+        promptMessageId: args.promptMessageId,
+        userId: ctx.user._id,
+      }).match(
+        (x) => x,
+        (e) => Errors.propogateConvexError(e)
+      );
+
+      return text;
+    }
+
+    const text = await continueAiThreadStream(ctx, agent, {
+      threadId: args.threadId,
+      prompt: args.prompt,
+      promptMessageId: args.promptMessageId,
+      userId: ctx.user._id,
+    }).match(
+      (x) => x,
+      (e) => Errors.propogateConvexError(e)
+    );
+
+    return text;
+  },
+});
+
+export const createKaolinThread = authedAction({
+  args: {
+    prompt: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const agent: Agent<any> = createKaolinAgent(components.kaolinAgent, {});
+
+    const { threadId } = await createThread(ctx, agent, {
+      prompt: args.prompt,
+      userId: ctx.user._id,
+    }).match(
+      (x) => x,
+      (e) => Errors.propogateConvexError(e)
+    );
+
+    return {
+      threadId,
+    };
+  },
+});
+
+export const continueKaolinThread = authedAction({
+  args: {
+    threadId: v.string(),
+    prompt: v.optional(v.string()),
+    promptMessageId: v.optional(v.string()),
+    disableStream: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const agent: Agent<any> = createKaolinAgent(components.kaolinAgent, {});
 
     if (args.disableStream) {
       const { text } = await continueAiThread(ctx, agent, {

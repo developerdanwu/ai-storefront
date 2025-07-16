@@ -29,26 +29,38 @@ export function continueAiThreadStream<TAgent extends Agent<any>>(
         error: e,
       })
   ).andThen((x) => {
+    let messageId: string | undefined;
     return ResultAsync.fromPromise(
       x.thread.streamText(
         {
           prompt: args.prompt,
           promptMessageId: args.promptMessageId,
           temperature: 0.3,
-          onFinish: async (x) => {},
+          onFinish: async ({ steps }) => {
+            if (steps.length === 10 && messageId) {
+              await agent.completeMessage(ctx, {
+                threadId: args.threadId,
+                messageId: messageId,
+                result: {
+                  kind: "error",
+                  error: "MaxStepsReached",
+                },
+              });
+            }
+          },
         },
         {
           saveStreamDeltas: { chunking: "word", throttleMs: 800 },
         }
       ),
       (e) => {
-        console.error("ERRORRR102", e);
         return Errors.generateAiTextFailed({
           message: "Failed to generate AI text",
         });
       }
     )
       .andThen((streamResult) => {
+        messageId = streamResult.messageId;
         return ResultAsync.fromPromise(
           (async () => {
             let fullText = "";

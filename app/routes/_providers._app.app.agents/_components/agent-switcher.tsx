@@ -7,7 +7,6 @@ import { useCallback } from "react";
 import { toast } from "sonner";
 import { CreateAgentPersonaDialog } from "~/components/dialogs/create-agent-persona-dialog";
 import { useAiStore } from "~/components/secondary-panel/ai/ai-store";
-import { KaolinTool } from "~/components/secondary-panel/ai/kaolin-tool";
 import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
@@ -72,23 +71,15 @@ export function AgentSwitcher({
           {/* Agent Switcher Dropdown */}
           <div className="flex items-center gap-2">
             <DropdownMenu>
-              <KaolinTool
-                name="configure-agent"
-                displayName="Configure Agent"
-                description="Kaolin AI can configure the agent"
-                context={{}}
-                callback={(llmOutput) => {}}
-              >
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <Bot className="w-4 h-4" />
-                    <span className="max-w-[150px] truncate">
-                      {activeAgent?.name || "Please select an agent"}
-                    </span>
-                    <ChevronDown className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-              </KaolinTool>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Bot className="w-4 h-4" />
+                  <span className="max-w-[150px] truncate">
+                    {activeAgent?.name || "Please select an agent"}
+                  </span>
+                  <ChevronDown className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-64">
                 <div className="p-2 text-xs text-muted-foreground font-medium">
                   SELECT AGENT

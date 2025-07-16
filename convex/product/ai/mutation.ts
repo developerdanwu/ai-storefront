@@ -1,5 +1,8 @@
 import { v } from "convex/values";
+import { components } from "../../_generated/api";
+import { createKaolinAgent } from "../../agents/kaolinAgent";
 import * as Errors from "../../errors";
+import { completeToolCall as completeToolCallHelper } from "../../helpers/completeToolCall";
 import { createAiAgentPersona as createAiAgentPersonaHelper } from "../../helpers/createAgentPersona";
 import { deleteAiAgentPersona as deleteAiAgentPersonaHelper } from "../../helpers/deleteAiAgentPersona";
 import { updateAiAgentPersona as updateAiAgentPersonaHelper } from "../../helpers/updateAiAgentPersona";
@@ -57,4 +60,31 @@ export const updateAiAgentPersona = authedMutation({
 export const addTextEmbeddings = authedMutation({
   args: {},
   handler: async (ctx) => {},
+});
+
+export const completeKaolinToolCall = authedMutation({
+  args: {
+    threadId: v.string(),
+    messageId: v.string(),
+    result: v.union(
+      v.object({
+        kind: v.literal("success"),
+      }),
+      v.object({
+        kind: v.literal("error"),
+        error: v.string(),
+      })
+    ),
+  },
+  handler: async (ctx, args) => {
+    const agent = createKaolinAgent(components.kaolinAgent, {});
+    return await completeToolCallHelper(ctx, agent, {
+      threadId: args.threadId,
+      messageId: args.messageId,
+      result: args.result,
+    }).match(
+      (x) => x,
+      (e) => Errors.propogateConvexError(e)
+    );
+  },
 });

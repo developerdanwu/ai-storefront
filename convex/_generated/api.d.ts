@@ -9,15 +9,18 @@
  */
 
 import type * as agents_customAgent from "../agents/customAgent.js";
+import type * as agents_kaolinAgent from "../agents/kaolinAgent.js";
 import type * as agents_middleware_cacheMiddleware from "../agents/middleware/cacheMiddleware.js";
 import type * as agents_models from "../agents/models.js";
 import type * as agents_playgroundAgent from "../agents/playgroundAgent.js";
 import type * as agents_storeAgent from "../agents/storeAgent.js";
 import type * as agents_summaryAgent from "../agents/summaryAgent.js";
+import type * as agents_types from "../agents/types.js";
 import type * as ai_action from "../ai/action.js";
 import type * as ai_actionsNode from "../ai/actionsNode.js";
 import type * as ai_query from "../ai/query.js";
 import type * as errors from "../errors.js";
+import type * as helpers_completeToolCall from "../helpers/completeToolCall.js";
 import type * as helpers_continueAiThread from "../helpers/continueAiThread.js";
 import type * as helpers_continueAiThreadStream from "../helpers/continueAiThreadStream.js";
 import type * as helpers_createAgentPersona from "../helpers/createAgentPersona.js";
@@ -68,15 +71,18 @@ import type {
  */
 declare const fullApi: ApiFromModules<{
   "agents/customAgent": typeof agents_customAgent;
+  "agents/kaolinAgent": typeof agents_kaolinAgent;
   "agents/middleware/cacheMiddleware": typeof agents_middleware_cacheMiddleware;
   "agents/models": typeof agents_models;
   "agents/playgroundAgent": typeof agents_playgroundAgent;
   "agents/storeAgent": typeof agents_storeAgent;
   "agents/summaryAgent": typeof agents_summaryAgent;
+  "agents/types": typeof agents_types;
   "ai/action": typeof ai_action;
   "ai/actionsNode": typeof ai_actionsNode;
   "ai/query": typeof ai_query;
   errors: typeof errors;
+  "helpers/completeToolCall": typeof helpers_completeToolCall;
   "helpers/continueAiThread": typeof helpers_continueAiThread;
   "helpers/continueAiThreadStream": typeof helpers_continueAiThreadStream;
   "helpers/createAgentPersona": typeof helpers_createAgentPersona;

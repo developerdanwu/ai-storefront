@@ -106,9 +106,8 @@ export function GenericAlertDialog() {
   const handleCancel = () => {
     if (dialogContent?.onCancel) {
       dialogContent.onCancel();
-    } else {
-      store.trigger.closeAlertDialog();
     }
+    store.trigger.closeAlertDialog();
   };
 
   if (!dialogContent) return null;

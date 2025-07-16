@@ -6,10 +6,12 @@ import type { Id } from "convex/_generated/dataModel";
 import React, { useCallback } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
+import { KaolinTool } from "~/components/secondary-panel/ai/kaolin-tool";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { useAppForm } from "~/components/ui/tanstack-form";
 import { Textarea } from "~/components/ui/textarea";
+import { useBlockNavigation } from "~/lib/use-block-navigation";
 
 export function Settings({
   defaultValues,
@@ -31,6 +33,7 @@ export function Settings({
   const updateAgent = useMutation({
     mutationFn: useConvexMutation(api.product.ai.mutation.updateAiAgentPersona),
     onSuccess: () => {
+      form.reset();
       toast.success("Agent updated");
     },
     onError: () => {
@@ -53,6 +56,11 @@ export function Settings({
     },
   });
 
+  const customPrompt = useStore(
+    form.store,
+    (state) => state.values.customPrompt
+  );
+
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
@@ -64,64 +72,92 @@ export function Settings({
 
   const isSubmitting = useStore(form.store, (state) => state.isSubmitting);
   const isFormValid = useStore(form.store, (state) => state.isValid);
+  const isDirty = useStore(form.store, (state) => state.isDirty);
+
+  useBlockNavigation({
+    shouldBlockRouteChange: isDirty,
+    shouldBlockBeforeUnload: isDirty,
+  });
 
   return (
-    <form.AppForm>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <form.AppField
-          name="name"
-          children={(field) => (
-            <field.FormItem>
-              <field.FormLabel>Agent Name</field.FormLabel>
-              <field.FormControl>
-                <Input
-                  placeholder="Enter agent name"
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  onBlur={field.handleBlur}
-                />
-              </field.FormControl>
-              <field.FormDescription>
-                This is how your agent will introduce itself to users
-              </field.FormDescription>
-              <field.FormMessage />
-            </field.FormItem>
-          )}
-        />
+    <KaolinTool
+      name="configure-agent"
+      displayName="Configure Agent"
+      description="Kaolin AI can configure the agent"
+      context={{
+        agentId,
+        customPrompt,
+      }}
+      callback={(llmOutput: { customPrompt: string }) => {
+        console.log("TESTING", llmOutput);
+        form.setFieldValue("customPrompt", llmOutput.customPrompt);
+      }}
+    >
+      <form.AppForm>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <form.AppField
+            name="name"
+            children={(field) => (
+              <field.FormItem>
+                <field.FormLabel>Agent Name</field.FormLabel>
+                <field.FormControl>
+                  <Input
+                    placeholder="Enter agent name"
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    onBlur={field.handleBlur}
+                  />
+                </field.FormControl>
+                <field.FormDescription>
+                  This is how your agent will introduce itself to users
+                </field.FormDescription>
+                <field.FormMessage />
+              </field.FormItem>
+            )}
+          />
 
-        <form.AppField
-          name="customPrompt"
-          children={(field) => (
-            <field.FormItem>
-              <field.FormLabel>Custom Prompt</field.FormLabel>
-              <field.FormControl>
-                <Textarea
-                  placeholder="Enter custom instructions for your agent"
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  onBlur={field.handleBlur}
-                  rows={16}
-                  className="font-mono text-sm"
-                />
-              </field.FormControl>
-              <field.FormDescription>
-                Define how your agent should behave, its personality, and
-                response guidelines
-              </field.FormDescription>
-              <field.FormMessage />
-            </field.FormItem>
-          )}
-        />
+          <form.AppField
+            name="customPrompt"
+            children={(field) => (
+              <field.FormItem>
+                <field.FormLabel>Custom Prompt</field.FormLabel>
+                <field.FormControl>
+                  <Textarea
+                    placeholder="Enter custom instructions for your agent"
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    onBlur={field.handleBlur}
+                    rows={16}
+                    className="font-mono text-sm"
+                  />
+                </field.FormControl>
+                <field.FormDescription>
+                  Define how your agent should behave, its personality, and
+                  response guidelines
+                </field.FormDescription>
+                <field.FormMessage />
+              </field.FormItem>
+            )}
+          />
 
-        <div className="flex gap-3">
-          <Button disabled={!isFormValid} loading={isSubmitting} type="submit">
-            Save Settings
-          </Button>
-          <Button type="button" variant="outline" onClick={() => form.reset()}>
-            Reset to Default
-          </Button>
-        </div>
-      </form>
-    </form.AppForm>
+          <div className="flex gap-3">
+            <Button
+              disabled={!isFormValid}
+              loading={isSubmitting}
+              type="submit"
+            >
+              Save Settings
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => form.reset()}
+            >
+              Reset to Default
+            </Button>
+          </div>
+        </form>
+      </form.AppForm>
+    </KaolinTool>
   );
 }

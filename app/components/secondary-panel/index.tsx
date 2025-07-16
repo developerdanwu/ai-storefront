@@ -1,8 +1,10 @@
 import { useSelector } from "@xstate/store/react";
-import { PlusIcon, XIcon } from "lucide-react";
+import { ClockIcon, PlusIcon, XIcon } from "lucide-react";
 import React from "react";
 import { NewConversation } from "~/components/secondary-panel/ai/new-conversation";
 import { AiThread } from "~/components/secondary-panel/ai/thread";
+import { useDialogStore } from "~/lib/dialog-store";
+import { KaolinThreadsDialog } from "../dialogs/kaolin-thread-dialog";
 import { IconButton } from "../ui/icon-button";
 import { useAiStore } from "./ai/ai-store";
 import { useSecondarySidebar } from "./use-secondary-sidebar";
@@ -16,7 +18,7 @@ function SecondaryPanelWrapper({
   header: React.ReactNode;
   headerActions?: React.ReactNode;
 }) {
-  const [sidebar, setSidebar] = useSecondarySidebar();
+  const [_, setSidebar] = useSecondarySidebar();
   return (
     <div className="w-[400px] flex-col flex shrink-0 border-l h-full">
       <div className="border-b p-2 flex items-center justify-between">
@@ -34,7 +36,7 @@ function SecondaryPanelWrapper({
           </IconButton>
         </div>
       </div>
-      <div className="p-2 h-full">{children}</div>
+      <div className="p-2 h-full flex flex-col">{children}</div>
     </div>
   );
 }
@@ -42,8 +44,12 @@ function SecondaryPanelWrapper({
 function SecondaryPanelContent() {
   const [sidebar] = useSecondarySidebar();
   const aiSidebar = useAiStore();
-  const threadId = useSelector(aiSidebar, (s) => s.context.threadId);
-
+  const kaolinThreadId = useSelector(
+    aiSidebar,
+    (s) => s.context.kaolinThreadId
+  );
+  console.log("kaolinThreadId", kaolinThreadId);
+  const dialogStore = useDialogStore();
   if (!sidebar) {
     return null;
   }
@@ -54,16 +60,47 @@ function SecondaryPanelContent() {
         header={"Kaolin AI"}
         headerActions={
           <>
-            {!threadId ? (
+            <IconButton
+              variant={"ghost"}
+              size="sm"
+              onClick={() => {
+                dialogStore.trigger.openKaolinThreadsDialog();
+              }}
+            >
+              <ClockIcon />
+            </IconButton>
+            {!kaolinThreadId ? (
               <IconButton variant={"ghost"} size="sm">
                 <PlusIcon />
               </IconButton>
-            ) : null}
+            ) : (
+              <IconButton
+                variant={"ghost"}
+                size="sm"
+                onClick={() => {
+                  aiSidebar.trigger.setKaolinThreadId({
+                    kaolinThreadId: null,
+                  });
+                }}
+              >
+                <PlusIcon />
+              </IconButton>
+            )}
           </>
         }
       >
-        {threadId ? <AiThread threadId={threadId} /> : null}
-        {!threadId ? <NewConversation /> : null}
+        {kaolinThreadId ? <AiThread threadId={kaolinThreadId} /> : null}
+        {!kaolinThreadId ? <NewConversation /> : null}
+        <KaolinThreadsDialog
+          onSelect={(threadId) => {
+            console.log("Selected Kaolin thread:", threadId);
+            // Handle Kaolin thread selection
+            aiSidebar.trigger.setKaolinThreadId({
+              kaolinThreadId: threadId,
+            });
+          }}
+          onClose={() => {}}
+        />
       </SecondaryPanelWrapper>
     );
   }

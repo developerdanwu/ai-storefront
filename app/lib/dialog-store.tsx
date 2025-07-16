@@ -32,6 +32,8 @@ const dialogStore = createStore({
     createAgentPersonaDialogClosed: () => {},
     playgroundThreadsDialogOpened: () => {},
     playgroundThreadsDialogClosed: () => {},
+    kaolinThreadsDialogOpened: () => {},
+    kaolinThreadsDialogClosed: () => {},
   },
   context: {
     dialog: undefined as "alert" | "alertWithConfirmKeyword" | undefined,
@@ -117,6 +119,14 @@ const dialogStore = createStore({
     },
     closeCreateAgentPersonaDialog: (context, _props, { emit }) => {
       emit.createAgentPersonaDialogClosed();
+      return { ...context };
+    },
+    openKaolinThreadsDialog: (context, _props, { emit }) => {
+      emit.kaolinThreadsDialogOpened();
+      return { ...context };
+    },
+    closeKaolinThreadsDialog: (context, _props, { emit }) => {
+      emit.kaolinThreadsDialogClosed();
       return { ...context };
     },
   },

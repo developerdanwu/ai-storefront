@@ -4,6 +4,7 @@ import { useMemo, useRef } from "react";
 import { Virtualizer, type VirtualizerHandle } from "virtua";
 import { AiConversationEditor } from "~/components/secondary-panel/ai/conversation-editor";
 import { Button } from "~/components/ui/button";
+import { cn } from "~/lib/utils";
 import { Message } from "~/routes/_providers._shell.chat.$threadId/_components/message";
 
 export function AiThread({ threadId }: { threadId: string }) {
@@ -11,7 +12,7 @@ export function AiThread({ threadId }: { threadId: string }) {
   const shouldStickToBottom = useRef(true);
 
   const messages = useThreadMessages(
-    api.ai.query.getThreadMessages,
+    api.product.ai.query.getKaolinThreadMessages,
     {
       threadId,
     },
@@ -36,7 +37,7 @@ export function AiThread({ threadId }: { threadId: string }) {
   }, [messages.results]);
   return (
     <>
-      <div className="flex-[1_1_0px] overflow-y-auto h-0 w-full overscroll-none">
+      <div className="p-4 flex-[1_1_0px] overflow-y-auto h-0 w-full overscroll-none">
         <Virtualizer
           shift={false}
           ref={virtualizerRef}

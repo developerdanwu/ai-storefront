@@ -159,7 +159,6 @@ export const createStoreAgent = (
           query: z.string().describe("Search Dan's career transition story"),
         }),
         handler: async (ctx, args) => {
-          console.log("Searching for", args.query);
           return await ResultAsync.fromPromise(
             rag.search(ctx, {
               namespace: "career_transition_story",

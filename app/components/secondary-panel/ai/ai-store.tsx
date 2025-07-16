@@ -29,8 +29,8 @@ const createAiStore = ({
     context: {
       toolMap: {} as Record<string, ToolDefinition>,
       activeAgentId: initialActiveAgentId,
-      threadId: null as string | null,
       playgroundThreadId: null as string | null,
+      kaolinThreadId: null as string | null,
     },
     emits: {
       activeAgentChanged: (payload: { agentId: Id<"aiAgentPersona"> }) => {},
@@ -65,12 +65,6 @@ const createAiStore = ({
           toolMap: newState,
         };
       },
-      setThreadId: (context, { threadId }: { threadId: string | null }) => {
-        return {
-          ...context,
-          threadId,
-        };
-      },
       setPlaygroundThreadId: (
         context,
         { playgroundThreadId }: { playgroundThreadId: string | null }
@@ -78,6 +72,15 @@ const createAiStore = ({
         return {
           ...context,
           playgroundThreadId,
+        };
+      },
+      setKaolinThreadId: (
+        context,
+        { kaolinThreadId }: { kaolinThreadId: string | null }
+      ) => {
+        return {
+          ...context,
+          kaolinThreadId,
         };
       },
     },

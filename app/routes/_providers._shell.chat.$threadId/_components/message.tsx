@@ -26,6 +26,7 @@ import { LoadingSpinner } from "~/components/ui/loading-spinner";
 import { MemoizedMarkdown } from "~/components/ui/markdown";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { cn } from "~/lib/utils";
+import { ConfigureAgentTool } from "~/routes/_providers._shell.chat.$threadId/_components/configure-agent-tool";
 import { StepStartMessage } from "./step-start-message";
 import { ToolResultWrapper } from "./tool-result-wrapper";
 
@@ -370,7 +371,26 @@ function _Message({
                 );
               }
             )
-            .otherwise(() => null);
+            .with(
+              {
+                type: "tool-invocation",
+                toolInvocation: {
+                  state: "call",
+                  toolName: "configure-agent",
+                },
+              },
+              (part) => {
+                return (
+                  <ConfigureAgentTool
+                    key={`${message.key}-${index}`}
+                    part={part}
+                    threadId={message.originalMessage!.threadId!}
+                    messageId={message.id}
+                  />
+                );
+              }
+            )
+            .otherwise(() => <div>not implemented</div>);
         })}
       </MessageWrapper>
       {error ? (
