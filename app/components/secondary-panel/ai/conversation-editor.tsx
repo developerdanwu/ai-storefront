@@ -22,6 +22,7 @@ const KaolinMessageSchema = z.object({
 export function AiConversationEditor() {
   const aiStore = useAiStore();
   const toolsAvailable = useSelector(aiStore, (s) => s.context.toolMap);
+  console.log("toolsAvailable", toolsAvailable);
   const kaolinThreadId = useSelector(aiStore, (s) => s.context.kaolinThreadId);
   const form = useAppForm({
     validators: {
@@ -33,8 +34,19 @@ export function AiConversationEditor() {
     },
     onSubmit: async ({ value }) => {
       if (kaolinThreadId) {
+        const tools = Object.entries(toolsAvailable).reduce(
+          (acc, [key, tool]) => {
+            acc[key] = {
+              name: tool.displayName,
+              context: tool.context,
+            };
+            return acc;
+          },
+          {} as Record<string, { name: string; context: any }>
+        );
         // Continue existing thread
         await continueKaolinThread.mutateAsync({
+          tools,
           threadId: kaolinThreadId,
           prompt: value.message,
         });
@@ -61,8 +73,20 @@ export function AiConversationEditor() {
         kaolinThreadId: result.threadId,
       });
 
+      const tools = Object.entries(toolsAvailable).reduce(
+        (acc, [key, tool]) => {
+          acc[key] = {
+            name: tool.displayName,
+            context: tool.context,
+          };
+          return acc;
+        },
+        {} as Record<string, { name: string; context: any }>
+      );
+
       // Continue with the initial prompt
       continueKaolinThread.mutate({
+        tools,
         threadId: result.threadId,
         prompt,
       });

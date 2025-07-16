@@ -48,7 +48,6 @@ function SecondaryPanelContent() {
     aiSidebar,
     (s) => s.context.kaolinThreadId
   );
-  console.log("kaolinThreadId", kaolinThreadId);
   const dialogStore = useDialogStore();
   if (!sidebar) {
     return null;

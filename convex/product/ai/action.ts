@@ -128,6 +128,13 @@ export const createKaolinThread = authedAction({
 
 export const continueKaolinThread = authedAction({
   args: {
+    tools: v.record(
+      v.string(),
+      v.object({
+        name: v.string(),
+        context: v.any(),
+      })
+    ),
     threadId: v.string(),
     prompt: v.optional(v.string()),
     promptMessageId: v.optional(v.string()),
