@@ -9,7 +9,15 @@ export function useBlockNavigation({
   shouldBlockRouteChange: BlockerFunction | boolean;
   shouldBlockBeforeUnload: boolean;
 }) {
-  const { state, proceed, reset } = useBlocker(shouldBlockRouteChange);
+  const { state, proceed, reset } = useBlocker((e) => {
+    if (e.currentLocation.pathname === e.nextLocation.pathname) {
+      return false;
+    }
+
+    return typeof shouldBlockRouteChange === "boolean"
+      ? shouldBlockRouteChange
+      : shouldBlockRouteChange(e);
+  });
   const blockedRef = useRef(false);
   console.log("state", state);
   blockedRef.current = state === "blocked";

@@ -13,7 +13,7 @@ import {
   LightbulbIcon,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { memo, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { match, P } from "ts-pattern";
 import { AnimatingEllipsis } from "~/components/ui/animating-ellipsis";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
@@ -216,7 +216,6 @@ function _Message({
     originalMessage?: MessageDoc;
   };
 }) {
-  console.log("MESSAGE", message);
   const error = match({
     role: message.role,
     error: message.originalMessage?.error,
@@ -403,4 +402,4 @@ function _Message({
   );
 }
 
-export const Message = memo(_Message);
+export const Message = _Message;

@@ -66,6 +66,8 @@ export const completeKaolinToolCall = authedMutation({
   args: {
     threadId: v.string(),
     messageId: v.string(),
+    toolCallId: v.string(),
+    toolName: v.string(),
     result: v.union(
       v.object({
         kind: v.literal("success"),
@@ -81,6 +83,9 @@ export const completeKaolinToolCall = authedMutation({
     return await completeToolCallHelper(ctx, agent, {
       threadId: args.threadId,
       messageId: args.messageId,
+      toolCallId: args.toolCallId,
+      toolName: args.toolName,
+      userId: ctx.user._id,
       result: args.result,
     }).match(
       (x) => x,

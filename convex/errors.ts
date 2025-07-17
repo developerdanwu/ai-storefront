@@ -24,11 +24,14 @@ export type BackendErrors =
   | UserNotFound
   | SummaryGenerationFailed
   | CreateThreadFailed
-  | RateLimitExceeded;
+  | RateLimitExceeded
+  | ContinueThreadFailed;
 
 export type RateLimitExceeded = ReturnType<typeof rateLimitExceeded>;
 
 export type CreateThreadFailed = ReturnType<typeof createThreadFailed>;
+
+export type ContinueThreadFailed = ReturnType<typeof continueThreadFailed>;
 
 export function notAuthenticated(context: ErrorContext) {
   return {
@@ -220,6 +223,13 @@ export function propogateConvexError(e: BackendErrorSchema): never {
 export function actionScheduleError(context: ErrorContext) {
   return {
     _tag: "ActionScheduleError",
+    context,
+  } as const satisfies BackendErrorSchema;
+}
+
+export function deleteThreadFailed(context: ErrorContext) {
+  return {
+    _tag: "DeleteThreadFailed",
     context,
   } as const satisfies BackendErrorSchema;
 }

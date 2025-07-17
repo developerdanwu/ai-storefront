@@ -24,22 +24,57 @@ export function ConfigureAgentTool({
     mutationFn: useConvexMutation(
       api.product.ai.mutation.completeKaolinToolCall
     ),
+
+    onSuccess: () => {
+      configureAgentTool.callback({
+        customPrompt: part.toolInvocation.args.uiPayload.customPrompt,
+      });
+    },
   });
+
+  // useEffect(() => {
+  //   if (calledToolRef.current === toolInvocation.toolCallId) {
+  //     return;
+  //   }
+
+  //   if (
+  //     !toolInvocation.toolCallId ||
+  //     !toolInvocation.toolName ||
+  //     !messageId ||
+  //     !threadId
+  //   ) {
+  //     return;
+  //   }
+
+  //   calledToolRef.current = toolInvocation.toolCallId;
+  //   setTimeout(() => {
+  //     completeToolCall.mutate({
+  //       threadId,
+
+  //       messageId,
+  //       toolCallId: toolInvocation.toolCallId,
+  //       toolName: toolInvocation.toolName,
+  //       result: {
+  //         kind: "success",
+  //       },
+  //     });
+  //   }, 1000);
+  // }, [messageId, threadId, toolInvocation.toolCallId, toolInvocation.toolName]);
+
   const configureAgentTool = useSelector(
     aiStore,
     (s) => s.context.toolMap["configure-agent"]
   );
-
+  console.log("MESSAGE", messageId);
   return (
     <ToolResultWrapper toolName={toolInvocation.toolName} success="pending">
       <Button
         onClick={() => {
-          configureAgentTool.callback({
-            customPrompt: part.toolInvocation.args.customPrompt,
-          });
           completeToolCall.mutate({
             threadId,
             messageId,
+            toolCallId: toolInvocation.toolCallId,
+            toolName: toolInvocation.toolName,
             result: {
               kind: "success",
             },

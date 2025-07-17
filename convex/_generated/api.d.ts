@@ -26,6 +26,7 @@ import type * as helpers_continueAiThreadStream from "../helpers/continueAiThrea
 import type * as helpers_createAgentPersona from "../helpers/createAgentPersona.js";
 import type * as helpers_createThread from "../helpers/createThread.js";
 import type * as helpers_deleteAiAgentPersona from "../helpers/deleteAiAgentPersona.js";
+import type * as helpers_deleteAiThread from "../helpers/deleteAiThread.js";
 import type * as helpers_generateSummaryTitle from "../helpers/generateSummaryTitle.js";
 import type * as helpers_getAiAgentPersona from "../helpers/getAiAgentPersona.js";
 import type * as helpers_getAiThreadMessages from "../helpers/getAiThreadMessages.js";
@@ -88,6 +89,7 @@ declare const fullApi: ApiFromModules<{
   "helpers/createAgentPersona": typeof helpers_createAgentPersona;
   "helpers/createThread": typeof helpers_createThread;
   "helpers/deleteAiAgentPersona": typeof helpers_deleteAiAgentPersona;
+  "helpers/deleteAiThread": typeof helpers_deleteAiThread;
   "helpers/generateSummaryTitle": typeof helpers_generateSummaryTitle;
   "helpers/getAiAgentPersona": typeof helpers_getAiAgentPersona;
   "helpers/getAiThreadMessages": typeof helpers_getAiThreadMessages;

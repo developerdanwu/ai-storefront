@@ -149,6 +149,9 @@ importers:
       convex-helpers:
         specifier: ^0.1.99
         version: 0.1.99(convex@1.25.2(react@18.3.1))(hono@4.8.4)(react@18.3.1)(typescript@5.8.3)(zod@3.25.74)
+      diff:
+        specifier: ^8.0.2
+        version: 8.0.2
       is-hotkey:
         specifier: ^0.2.0
         version: 0.2.0
@@ -4682,6 +4685,10 @@ packages:
 
   diff-match-patch@1.0.5:
     resolution: {integrity: sha512-IayShXAgj/QMXgB0IWmKx+rOPuGMhqm5w6jvFxmVenXKIzRqTAAsbBPT3kWQeGANj3jGgvcvv4yK6SxqYmikgw==}
+
+  diff@8.0.2:
+    resolution: {integrity: sha512-sSuxWU5j5SR9QQji/o2qMvqRNYRDOcBTgsJ/DeCf4iSN4gW+gNMXM7wFIP+fdXZxoNiAnHUTGjCr+TSWXdRDKg==}
+    engines: {node: '>=0.3.1'}
 
   difflib@0.2.4:
     resolution: {integrity: sha512-9YVwmMb0wQHQNr5J9m6BSj6fk4pfGITGQOOs+D9Fl+INODWFOfvhIU1hNv6GgR1RBoC/9NJcwu77zShxV0kT7w==}
@@ -12550,6 +12557,8 @@ snapshots:
   didyoumean@1.2.2: {}
 
   diff-match-patch@1.0.5: {}
+
+  diff@8.0.2: {}
 
   difflib@0.2.4:
     dependencies:

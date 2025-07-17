@@ -2,12 +2,14 @@ import { Agent } from "@convex-dev/agent";
 import { v } from "convex/values";
 import { ResultAsync } from "neverthrow";
 import { components, internal } from "../../_generated/api";
+import { internalAction } from "../../_generated/server";
 import { createKaolinAgent } from "../../agents/kaolinAgent";
 import { createPlaygroundAgent } from "../../agents/playgroundAgent";
 import * as Errors from "../../errors";
 import { continueAiThread } from "../../helpers/continueAiThread";
 import { continueAiThreadStream } from "../../helpers/continueAiThreadStream";
 import { createThread } from "../../helpers/createThread";
+import { deleteAiThread } from "../../helpers/deleteAiThread";
 import { authedAction } from "../../procedures";
 
 export const createPlaygroundThread = authedAction({
@@ -168,5 +170,69 @@ export const continueKaolinThread = authedAction({
     );
 
     return text;
+  },
+});
+
+export const _continueKaolinThread = internalAction({
+  args: {
+    userId: v.id("users"),
+    tools: v.record(
+      v.string(),
+      v.object({
+        name: v.string(),
+        context: v.any(),
+      })
+    ),
+    maxSteps: v.optional(v.number()),
+    threadId: v.string(),
+    prompt: v.optional(v.string()),
+    promptMessageId: v.optional(v.string()),
+    disableStream: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const agent: Agent<any> = createKaolinAgent(components.kaolinAgent, {
+      ...(args.maxSteps ? { maxSteps: args.maxSteps } : {}),
+    });
+
+    if (args.disableStream) {
+      const { text } = await continueAiThread(ctx, agent, {
+        threadId: args.threadId,
+        prompt: args.prompt,
+        promptMessageId: args.promptMessageId,
+        userId: args.userId,
+      }).match(
+        (x) => x,
+        (e) => Errors.propogateConvexError(e)
+      );
+
+      return text;
+    }
+
+    const text = await continueAiThreadStream(ctx, agent, {
+      threadId: args.threadId,
+      prompt: args.prompt,
+      promptMessageId: args.promptMessageId,
+      userId: args.userId,
+    }).match(
+      (x) => x,
+      (e) => Errors.propogateConvexError(e)
+    );
+
+    return text;
+  },
+});
+
+export const deleteKaolinThread = authedAction({
+  args: {
+    threadId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const agent = createKaolinAgent(components.kaolinAgent, {});
+    await deleteAiThread(ctx, agent, {
+      threadId: args.threadId,
+    }).match(
+      (x) => x,
+      (e) => Errors.propogateConvexError(e)
+    );
   },
 });

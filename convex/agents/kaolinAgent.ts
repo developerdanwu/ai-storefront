@@ -36,7 +36,11 @@ export function createKaolinAgent<AgentTools extends ToolSet>(
         description:
           "This tool allows Kaolin to help the user configure a custom AI agent with a custom prompt",
         parameters: z.object({
-          customPrompt: z.string(),
+          uiPayload: z.object({
+            customPrompt: z
+              .string()
+              .describe("The custom prompt to use for the agent"),
+          }),
         }),
       }),
     },
