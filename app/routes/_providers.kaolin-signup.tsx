@@ -6,6 +6,7 @@ import { useCallback } from "react";
 import { Link, type MetaFunction, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { z } from "zod";
+import { Meta } from "~/components/meta";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -74,34 +75,42 @@ export default function EmailSignup() {
 
   return (
     <div className="min-h-screen relative flex items-center justify-center p-4">
+      <Meta
+        titleSuffix="Kaolin Signup"
+        description="Sign up for early access to Kaolin, a platform to create AI agents in 60 seconds."
+      />
       <div className="relative z-10 w-full max-w-md">
         <div className="text-center space-y-8">
           <div className="flex flex-col items-center space-y-4">
             <div className="w-12 h-12 flex items-center justify-center">
-              <ZapIcon className="w-8 h-8 text-white" />
+              <ZapIcon className="w-8 h-8 text-foreground" />
             </div>
-            <h1 className="text-4xl font-bold text-white">
+            <h1 className="text-4xl font-bold text-foreground">
               Kaolin <span className="font-normal">Chat</span>
             </h1>
           </div>
 
           <div className="space-y-4">
-            <p className="text-gray-300 text-lg leading-relaxed">
+            <p className="text-secondary-foreground text-lg leading-relaxed">
               I'm thinking about building a platform to create AI agents in{" "}
               <span className="font-bold">60 seconds.</span> It'll be the
               easiest way to create experiences like{" "}
-              <Link target="_blank" to="/" className="text-cyan-400">
+              <Link
+                target="_blank"
+                to="/"
+                className="text-cyan-600 dark:text-cyan-400"
+              >
                 this
               </Link>{" "}
               out there. Want to be the first to know about it? Sign up below.
             </p>
             <div className="flex items-center justify-center space-x-2">
-              <span className="text-gray-400">—</span>
+              <span className="text-secondary-foreground">—</span>
               <Avatar className="rounded-lg">
                 <AvatarImage src="/profile-pic.jpg" />
                 <AvatarFallback>DW</AvatarFallback>
               </Avatar>
-              <span className="text-gray-400">Dan</span>
+              <span className="text-secondary-foreground">Dan</span>
             </div>
           </div>
 
@@ -123,7 +132,6 @@ export default function EmailSignup() {
                         value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
                         onBlur={field.handleBlur}
-                        className="bg-slate-800/50 border-slate-700 text-white placeholder:text-gray-500 focus:border-cyan-400 focus:ring-cyan-400"
                       />
                     </field.FormControl>
                     <field.FormMessage />
@@ -146,7 +154,6 @@ export default function EmailSignup() {
                         value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
                         onBlur={field.handleBlur}
-                        className="bg-slate-800/50 border-slate-700 text-white placeholder:text-gray-500 focus:border-cyan-400 focus:ring-cyan-400"
                       />
                     </field.FormControl>
                     <field.FormMessage />
@@ -169,7 +176,6 @@ export default function EmailSignup() {
                         value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
                         onBlur={field.handleBlur}
-                        className="bg-slate-800/50 border-slate-700 text-white placeholder:text-gray-500 focus:border-cyan-400 focus:ring-cyan-400"
                       />
                     </field.FormControl>
                     <field.FormMessage />

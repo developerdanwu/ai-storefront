@@ -1,5 +1,6 @@
 import type { LinksFunction } from "react-router";
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
+import { PageLoadingSpinner } from "./components/ui/page-loading-spinner";
 import "./tailwind.css";
 
 export const links: LinksFunction = () => [
@@ -31,6 +32,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </body>
     </html>
   );
+}
+
+export function HydrateFallback() {
+  return <PageLoadingSpinner />;
 }
 
 export default function App() {
