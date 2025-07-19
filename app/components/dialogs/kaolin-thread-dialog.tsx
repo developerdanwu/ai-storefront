@@ -1,3 +1,6 @@
+import { useConvexAction } from "@convex-dev/react-query";
+import { useMutation } from "@tanstack/react-query";
+import { useCommandState } from "cmdk";
 import { usePaginatedQuery } from "convex-helpers/react";
 import { api } from "convex/_generated/api";
 import { MessageCircle } from "lucide-react";
@@ -24,6 +27,11 @@ export function KaolinThreadsActionDialog({
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
 }) {
+  const { mutate: deleteThread } = useMutation({
+    mutationFn: useConvexAction(api.product.ai.action.deleteKaolinThread),
+  });
+  const selectedItemId = useCommandState((s) => s.value);
+  console.log("SELECTED ITEM ID", selectedItemId);
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
@@ -50,7 +58,19 @@ export function KaolinThreadsActionDialog({
               Create new thread
               <CommandShortcut>↵</CommandShortcut>
             </CommandItem>
-
+            {selectedItemId && (
+              <CommandItem
+                onSelect={() => {
+                  deleteThread({
+                    threadId: selectedItemId,
+                  });
+                }}
+                value="delete-thread"
+              >
+                Delete thread
+                <CommandShortcut>↵</CommandShortcut>
+              </CommandItem>
+            )}
             <CommandEmpty className="py-4">No results</CommandEmpty>
           </CommandList>
           <CommandInput placeholder="Search..." />

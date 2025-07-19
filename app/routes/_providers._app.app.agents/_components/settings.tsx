@@ -132,9 +132,9 @@ export function Settings({
         agentId,
         customPrompt,
       }}
-      callback={(llmOutput: { customPrompt: string }) => {
+      callback={(llmOutput) => {
         const oldPrompt = customPrompt;
-        const newPrompt = llmOutput.customPrompt;
+        const newPrompt = llmOutput.uiPayload.customPrompt;
 
         if (oldPrompt !== newPrompt) {
           setDiffPreview({
@@ -162,9 +162,7 @@ export function Settings({
                     onBlur={field.handleBlur}
                   />
                 </field.FormControl>
-                <field.FormDescription>
-                  This is how your agent will introduce itself to users
-                </field.FormDescription>
+                <field.FormDescription>Name of the agent</field.FormDescription>
                 <field.FormMessage />
               </field.FormItem>
             )}

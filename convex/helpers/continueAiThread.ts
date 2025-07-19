@@ -9,6 +9,9 @@ export const VContinueAiThreadArgs = v.object({
   prompt: v.optional(v.string()),
   promptMessageId: v.optional(v.string()),
   userId: v.string(),
+  context: v.optional(v.string()),
+  activeTools: v.optional(v.array(v.string())),
+  systemPrompt: v.optional(v.string()),
 });
 
 export type TContinueAiThreadArgs = Infer<typeof VContinueAiThreadArgs>;
@@ -31,6 +34,8 @@ export function continueAiThread<TAgent extends Agent<any>>(
   ).andThen((x) => {
     return ResultAsync.fromPromise(
       x.thread.generateText({
+        system: args.systemPrompt,
+        experimental_activeTools: args.activeTools,
         prompt: args.prompt,
         promptMessageId: args.promptMessageId,
         temperature: 0.3,

@@ -42,12 +42,12 @@ export const MemoizedMarkdownBlock = memo(
           ),
           em: ({ children }) => <em className="italic">{children}</em>,
           code: ({ children }) => (
-            <code className="bg-gray-100 px-1 py-0.5 rounded text-sm font-mono">
+            <code className="px-1 py-0.5 rounded text-sm font-mono">
               {children}
             </code>
           ),
           pre: ({ children }) => (
-            <pre className="bg-gray-100 p-4 rounded overflow-x-auto mb-4">
+            <pre className="text-white bg-background rounded overflow-x-auto mb-4">
               {children}
             </pre>
           ),

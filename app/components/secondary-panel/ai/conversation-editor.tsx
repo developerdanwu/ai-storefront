@@ -1,7 +1,7 @@
 import { useConvexAction } from "@convex-dev/react-query";
 import { useStore } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
-import { useSelector } from "@xstate/store/react";
+import { useSelector } from "@xstate/react";
 import { api } from "convex/_generated/api";
 import { isHotkey } from "is-hotkey";
 import { Send, Wrench } from "lucide-react";
@@ -69,7 +69,8 @@ export function AiConversationEditor() {
       form.reset();
 
       // Set the thread ID in the store
-      aiStore.trigger.setKaolinThreadId({
+      aiStore.send({
+        type: "setKaolinThreadId",
         kaolinThreadId: result.threadId,
       });
 
@@ -196,7 +197,10 @@ export function AiConversationEditor() {
                 return (
                   <span className="px-0.5 italic" key={key}>
                     {tool.icon ? (
-                      tool.icon
+                      <tool.icon
+                        size={16}
+                        className="mx-1.5 align-middle inline-block"
+                      />
                     ) : (
                       <Wrench
                         size={16}

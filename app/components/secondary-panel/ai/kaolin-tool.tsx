@@ -15,7 +15,8 @@ export function KaolinTool({
 } & ToolDefinition) {
   const aiStore = useAiStore();
   useEffect(() => {
-    aiStore.trigger.registerTool({
+    aiStore.send({
+      type: "registerTool",
       tool: {
         name,
         displayName,
@@ -23,11 +24,12 @@ export function KaolinTool({
         icon,
         context,
         callback,
-      },
+      } as ToolDefinition,
     });
 
     return () => {
-      aiStore.trigger.unregisterTool({
+      aiStore.send({
+        type: "unregisterTool",
         key: "configure-agent",
       });
     };

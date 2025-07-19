@@ -1,6 +1,6 @@
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
-import { useSelector } from "@xstate/store/react";
+import { useSelector } from "@xstate/react";
 import { api } from "convex/_generated/api";
 import { PlaygroundThreadsDialog } from "~/components/dialogs/playground-thread-dialog";
 import { useAiStore } from "~/components/secondary-panel/ai/ai-store";
@@ -58,7 +58,8 @@ export default function AppAgentsRoute() {
       />
       <PlaygroundThreadsDialog
         onSelect={(threadId) => {
-          aiStore.trigger.setPlaygroundThreadId({
+          aiStore.send({
+            type: "setPlaygroundThreadId",
             playgroundThreadId: threadId,
           });
         }}

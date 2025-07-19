@@ -61,7 +61,8 @@ export function AgentSwitcher({
     <>
       <CreateAgentPersonaDialog
         onSuccess={({ agentId }) => {
-          aiStore.trigger.setActiveAgent({
+          aiStore.send({
+            type: "setActiveAgent",
             agentId,
           });
         }}
@@ -88,7 +89,8 @@ export function AgentSwitcher({
                   <DropdownMenuItem
                     key={agent.agentId}
                     onSelect={() => {
-                      aiStore.trigger.setActiveAgent({
+                      aiStore.send({
+                        type: "setActiveAgent",
                         agentId: agent.agentId,
                       });
                     }}

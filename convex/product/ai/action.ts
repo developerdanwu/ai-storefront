@@ -3,7 +3,10 @@ import { v } from "convex/values";
 import { ResultAsync } from "neverthrow";
 import { components, internal } from "../../_generated/api";
 import { internalAction } from "../../_generated/server";
-import { createKaolinAgent } from "../../agents/kaolinAgent";
+import {
+  createKaolinAgent,
+  getKaolinSystemPrompt,
+} from "../../agents/kaolinAgent";
 import { createPlaygroundAgent } from "../../agents/playgroundAgent";
 import * as Errors from "../../errors";
 import { continueAiThread } from "../../helpers/continueAiThread";
@@ -149,6 +152,8 @@ export const continueKaolinThread = authedAction({
       const { text } = await continueAiThread(ctx, agent, {
         threadId: args.threadId,
         prompt: args.prompt,
+        context: JSON.stringify(args.tools),
+        activeTools: Object.keys(args.tools),
         promptMessageId: args.promptMessageId,
         userId: ctx.user._id,
       }).match(
@@ -163,6 +168,9 @@ export const continueKaolinThread = authedAction({
       threadId: args.threadId,
       prompt: args.prompt,
       promptMessageId: args.promptMessageId,
+      systemPrompt: getKaolinSystemPrompt({
+        context: JSON.stringify(args.tools),
+      }),
       userId: ctx.user._id,
     }).match(
       (x) => x,
@@ -200,6 +208,7 @@ export const _continueKaolinThread = internalAction({
         prompt: args.prompt,
         promptMessageId: args.promptMessageId,
         userId: args.userId,
+        activeTools: Object.keys(args.tools),
       }).match(
         (x) => x,
         (e) => Errors.propogateConvexError(e)
@@ -213,6 +222,7 @@ export const _continueKaolinThread = internalAction({
       prompt: args.prompt,
       promptMessageId: args.promptMessageId,
       userId: args.userId,
+      activeTools: Object.keys(args.tools),
     }).match(
       (x) => x,
       (e) => Errors.propogateConvexError(e)

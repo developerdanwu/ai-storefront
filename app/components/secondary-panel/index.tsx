@@ -1,4 +1,4 @@
-import { useSelector } from "@xstate/store/react";
+import { useSelector } from "@xstate/react";
 import { ClockIcon, PlusIcon, XIcon } from "lucide-react";
 import React from "react";
 import { NewConversation } from "~/components/secondary-panel/ai/new-conversation";
@@ -77,7 +77,8 @@ function SecondaryPanelContent() {
                 variant={"ghost"}
                 size="sm"
                 onClick={() => {
-                  aiSidebar.trigger.setKaolinThreadId({
+                  aiSidebar.send({
+                    type: "setKaolinThreadId",
                     kaolinThreadId: null,
                   });
                 }}
@@ -94,7 +95,8 @@ function SecondaryPanelContent() {
           onSelect={(threadId) => {
             console.log("Selected Kaolin thread:", threadId);
             // Handle Kaolin thread selection
-            aiSidebar.trigger.setKaolinThreadId({
+            aiSidebar.send({
+              type: "setKaolinThreadId",
               kaolinThreadId: threadId,
             });
           }}

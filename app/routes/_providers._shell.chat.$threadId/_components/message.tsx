@@ -245,7 +245,6 @@ function _Message({
     });
   const MessageWrapper =
     message.role === "user" ? UserMessageWrapper : AssistantMessageWrapper;
-
   return (
     <div className="flex flex-col gap-2">
       <MessageWrapper>
@@ -309,7 +308,7 @@ function _Message({
                     <ScrollArea>
                       <div
                         className={cn(
-                          "p-3 bg-muted/80 whitespace-pre rounded text-xs font-mono",
+                          "p-3 text-foreground whitespace-pre rounded text-xs font-mono",
                           !toolInvocation.result.success && "text-red-600"
                         )}
                       >
@@ -340,7 +339,7 @@ function _Message({
                     <ScrollArea>
                       <div
                         className={cn(
-                          "p-3 bg-muted/80 whitespace-pre rounded text-xs font-mono",
+                          "p-3 bg-black whitespace-pre rounded text-xs font-mono",
                           !toolInvocation.result.success && "text-red-600"
                         )}
                       >
@@ -383,8 +382,6 @@ function _Message({
                   <ConfigureAgentTool
                     key={`${message.key}-${index}`}
                     part={part}
-                    threadId={message.originalMessage!.threadId!}
-                    messageId={message.id}
                   />
                 );
               }

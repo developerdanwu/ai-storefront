@@ -1,88 +1,17 @@
-import { useConvexMutation } from "@convex-dev/react-query";
-import { useMutation } from "@tanstack/react-query";
-import { useSelector } from "@xstate/store/react";
 import type { UIMessage } from "ai";
-import { api } from "convex/_generated/api";
-import { useAiStore } from "~/components/secondary-panel/ai/ai-store";
-import { Button } from "~/components/ui/button";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { cn } from "~/lib/utils";
 import { ToolResultWrapper } from "~/routes/_providers._shell.chat.$threadId/_components/tool-result-wrapper";
 
 export function ConfigureAgentTool({
   part,
-  threadId,
-  messageId,
 }: {
-  threadId: string;
-  messageId: string;
   part: Extract<UIMessage["parts"][number], { type: "tool-invocation" }>;
 }) {
   const { toolInvocation } = part;
-  const aiStore = useAiStore();
-  const completeToolCall = useMutation({
-    mutationFn: useConvexMutation(
-      api.product.ai.mutation.completeKaolinToolCall
-    ),
 
-    onSuccess: () => {
-      configureAgentTool.callback({
-        customPrompt: part.toolInvocation.args.uiPayload.customPrompt,
-      });
-    },
-  });
-
-  // useEffect(() => {
-  //   if (calledToolRef.current === toolInvocation.toolCallId) {
-  //     return;
-  //   }
-
-  //   if (
-  //     !toolInvocation.toolCallId ||
-  //     !toolInvocation.toolName ||
-  //     !messageId ||
-  //     !threadId
-  //   ) {
-  //     return;
-  //   }
-
-  //   calledToolRef.current = toolInvocation.toolCallId;
-  //   setTimeout(() => {
-  //     completeToolCall.mutate({
-  //       threadId,
-
-  //       messageId,
-  //       toolCallId: toolInvocation.toolCallId,
-  //       toolName: toolInvocation.toolName,
-  //       result: {
-  //         kind: "success",
-  //       },
-  //     });
-  //   }, 1000);
-  // }, [messageId, threadId, toolInvocation.toolCallId, toolInvocation.toolName]);
-
-  const configureAgentTool = useSelector(
-    aiStore,
-    (s) => s.context.toolMap["configure-agent"]
-  );
-  console.log("MESSAGE", messageId);
   return (
     <ToolResultWrapper toolName={toolInvocation.toolName} success="pending">
-      <Button
-        onClick={() => {
-          completeToolCall.mutate({
-            threadId,
-            messageId,
-            toolCallId: toolInvocation.toolCallId,
-            toolName: toolInvocation.toolName,
-            result: {
-              kind: "success",
-            },
-          });
-        }}
-      >
-        testing
-      </Button>
       <ScrollArea>
         <div
           className={cn(

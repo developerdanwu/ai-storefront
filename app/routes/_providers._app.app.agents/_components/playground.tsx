@@ -2,7 +2,7 @@ import { useThreadMessages } from "@convex-dev/agent/react";
 import { useConvexAction } from "@convex-dev/react-query";
 import { useStore } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
-import { useSelector } from "@xstate/store/react";
+import { useSelector } from "@xstate/react";
 import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";
 import { isHotkey } from "is-hotkey";
@@ -164,7 +164,8 @@ function NewPlaygroundThread({
       form.reset();
 
       // Set the thread ID in the store so the PlaygroundThread component can render
-      aiStore.trigger.setPlaygroundThreadId({
+      aiStore.send({
+        type: "setPlaygroundThreadId",
         playgroundThreadId: result.threadId,
       });
 
@@ -303,7 +304,8 @@ export function Playground({
               <TooltipTrigger>
                 <IconButton
                   onClick={() => {
-                    aiStore.trigger.setPlaygroundThreadId({
+                    aiStore.send({
+                      type: "setPlaygroundThreadId",
                       playgroundThreadId: null,
                     });
                   }}
