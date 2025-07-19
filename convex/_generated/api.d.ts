@@ -1122,13 +1122,13 @@ export declare const components: {
         "internal",
         {
           beforeMessageId?: string;
+          embedding?: Array<number>;
+          embeddingModel?: string;
           limit: number;
           messageRange?: { after: number; before: number };
           searchAllMessagesForUserId?: string;
           text?: string;
           threadId?: string;
-          vector?: Array<number>;
-          vectorModel?: string;
           vectorScoreThreshold?: number;
         },
         Array<{
@@ -1679,6 +1679,18 @@ export declare const components: {
       >;
     };
     streams: {
+      abort: FunctionReference<
+        "mutation",
+        "internal",
+        { reason: string; streamId: string },
+        boolean
+      >;
+      abortByOrder: FunctionReference<
+        "mutation",
+        "internal",
+        { order: number; reason: string; threadId: string },
+        boolean
+      >;
       addDelta: FunctionReference<
         "mutation",
         "internal",
@@ -1834,13 +1846,18 @@ export declare const components: {
       list: FunctionReference<
         "query",
         "internal",
-        { threadId: string },
+        {
+          startOrder?: number;
+          statuses?: Array<"streaming" | "finished" | "aborted">;
+          threadId: string;
+        },
         Array<{
           agentName?: string;
           model?: string;
           order: number;
           provider?: string;
           providerOptions?: Record<string, Record<string, any>>;
+          status: "streaming" | "finished" | "aborted";
           stepOrder: number;
           streamId: string;
           userId?: string;
@@ -3191,13 +3208,13 @@ export declare const components: {
         "internal",
         {
           beforeMessageId?: string;
+          embedding?: Array<number>;
+          embeddingModel?: string;
           limit: number;
           messageRange?: { after: number; before: number };
           searchAllMessagesForUserId?: string;
           text?: string;
           threadId?: string;
-          vector?: Array<number>;
-          vectorModel?: string;
           vectorScoreThreshold?: number;
         },
         Array<{
@@ -3748,6 +3765,18 @@ export declare const components: {
       >;
     };
     streams: {
+      abort: FunctionReference<
+        "mutation",
+        "internal",
+        { reason: string; streamId: string },
+        boolean
+      >;
+      abortByOrder: FunctionReference<
+        "mutation",
+        "internal",
+        { order: number; reason: string; threadId: string },
+        boolean
+      >;
       addDelta: FunctionReference<
         "mutation",
         "internal",
@@ -3903,13 +3932,18 @@ export declare const components: {
       list: FunctionReference<
         "query",
         "internal",
-        { threadId: string },
+        {
+          startOrder?: number;
+          statuses?: Array<"streaming" | "finished" | "aborted">;
+          threadId: string;
+        },
         Array<{
           agentName?: string;
           model?: string;
           order: number;
           provider?: string;
           providerOptions?: Record<string, Record<string, any>>;
+          status: "streaming" | "finished" | "aborted";
           stepOrder: number;
           streamId: string;
           userId?: string;
@@ -5260,13 +5294,13 @@ export declare const components: {
         "internal",
         {
           beforeMessageId?: string;
+          embedding?: Array<number>;
+          embeddingModel?: string;
           limit: number;
           messageRange?: { after: number; before: number };
           searchAllMessagesForUserId?: string;
           text?: string;
           threadId?: string;
-          vector?: Array<number>;
-          vectorModel?: string;
           vectorScoreThreshold?: number;
         },
         Array<{
@@ -5817,6 +5851,18 @@ export declare const components: {
       >;
     };
     streams: {
+      abort: FunctionReference<
+        "mutation",
+        "internal",
+        { reason: string; streamId: string },
+        boolean
+      >;
+      abortByOrder: FunctionReference<
+        "mutation",
+        "internal",
+        { order: number; reason: string; threadId: string },
+        boolean
+      >;
       addDelta: FunctionReference<
         "mutation",
         "internal",
@@ -5972,13 +6018,18 @@ export declare const components: {
       list: FunctionReference<
         "query",
         "internal",
-        { threadId: string },
+        {
+          startOrder?: number;
+          statuses?: Array<"streaming" | "finished" | "aborted">;
+          threadId: string;
+        },
         Array<{
           agentName?: string;
           model?: string;
           order: number;
           provider?: string;
           providerOptions?: Record<string, Record<string, any>>;
+          status: "streaming" | "finished" | "aborted";
           stepOrder: number;
           streamId: string;
           userId?: string;

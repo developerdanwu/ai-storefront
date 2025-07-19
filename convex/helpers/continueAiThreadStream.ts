@@ -1,4 +1,5 @@
 import { Agent } from "@convex-dev/agent";
+import { smoothStream } from "ai";
 import { Infer, v } from "convex/values";
 import { ok, ResultAsync } from "neverthrow";
 import { ActionCtx } from "../_generated/server";
@@ -40,6 +41,9 @@ export function continueAiThreadStream<TAgent extends Agent<any>>(
           prompt: args.prompt,
           promptMessageId: args.promptMessageId,
           temperature: 0.3,
+          experimental_transform: smoothStream({
+            chunking: "word",
+          }),
           onFinish: async ({ steps }) => {
             if (steps.length === 10 && messageId) {
               await agent.completeMessage(ctx, {

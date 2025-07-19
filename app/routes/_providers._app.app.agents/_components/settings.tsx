@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";
 import { diffWordsWithSpace } from "diff";
+import { SparklesIcon } from "lucide-react";
 import React, { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -12,6 +13,11 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { useAppForm } from "~/components/ui/tanstack-form";
 import { Textarea } from "~/components/ui/textarea";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
 import { useBlockNavigation } from "~/lib/use-block-navigation";
 import { cn } from "~/lib/utils";
 
@@ -21,6 +27,7 @@ export function Settings({
 }: {
   defaultValues: {
     name: string;
+    description: string;
     customPrompt: string;
   };
   agentId: Id<"aiAgentPersona">;
@@ -37,6 +44,7 @@ export function Settings({
 
   const formSchema = z.object({
     name: z.string().min(1, "Agent name is required"),
+    description: z.string(),
     customPrompt: z.string(),
     agentId: z.custom(() => {
       return !!agentId;
@@ -64,6 +72,7 @@ export function Settings({
       await updateAgent.mutateAsync({
         agentId,
         name: value.name,
+        description: value.description,
         customPrompt: value.customPrompt,
       });
     },
@@ -73,6 +82,8 @@ export function Settings({
     form.store,
     (state) => state.values.customPrompt
   );
+  const description = useStore(form.store, (state) => state.values.description);
+  const name = useStore(form.store, (state) => state.values.name);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
@@ -124,55 +135,88 @@ export function Settings({
   }, []);
 
   return (
-    <KaolinTool
-      name="configure-agent"
-      displayName="Configure Agent"
-      description="Kaolin AI can configure the agent"
-      context={{
-        agentId,
-        customPrompt,
-      }}
-      callback={(llmOutput) => {
-        const oldPrompt = customPrompt;
-        const newPrompt = llmOutput.uiPayload.customPrompt;
+    <form.AppForm>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <form.AppField
+          name="name"
+          children={(field) => (
+            <field.FormItem>
+              <field.FormLabel>Agent Name</field.FormLabel>
+              <field.FormControl>
+                <Input
+                  placeholder="Enter agent name"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={field.handleBlur}
+                />
+              </field.FormControl>
+              <field.FormDescription>Name of the agent</field.FormDescription>
+              <field.FormMessage />
+            </field.FormItem>
+          )}
+        />
 
-        if (oldPrompt !== newPrompt) {
-          setDiffPreview({
-            oldPrompt,
-            newPrompt,
-            isShowing: true,
-          });
-        } else {
-          toast.info("No changes detected in the prompt");
-        }
-      }}
-    >
-      <form.AppForm>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <form.AppField
-            name="name"
-            children={(field) => (
-              <field.FormItem>
-                <field.FormLabel>Agent Name</field.FormLabel>
-                <field.FormControl>
-                  <Input
-                    placeholder="Enter agent name"
-                    value={field.state.value}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    onBlur={field.handleBlur}
-                  />
-                </field.FormControl>
-                <field.FormDescription>Name of the agent</field.FormDescription>
-                <field.FormMessage />
-              </field.FormItem>
-            )}
-          />
+        <form.AppField
+          name="description"
+          children={(field) => (
+            <field.FormItem>
+              <field.FormLabel>Description</field.FormLabel>
+              <field.FormControl>
+                <Textarea
+                  placeholder="Brief description of what this agent does"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  onBlur={field.handleBlur}
+                  rows={3}
+                />
+              </field.FormControl>
+              <field.FormDescription>
+                A brief description of the agent's purpose and capabilities
+              </field.FormDescription>
+              <field.FormMessage />
+            </field.FormItem>
+          )}
+        />
+        <KaolinTool
+          name="configure-agent"
+          displayName="Configure Agent"
+          description="Kaolin AI can configure the agent"
+          context={{
+            agentId,
+            name,
+            description,
+            customPrompt,
+          }}
+          callback={(llmOutput) => {
+            const oldPrompt = customPrompt;
+            const newPrompt = llmOutput.uiPayload.customPrompt;
 
+            if (oldPrompt !== newPrompt) {
+              setDiffPreview({
+                oldPrompt,
+                newPrompt,
+                isShowing: true,
+              });
+            } else {
+              toast.info("No changes detected in the prompt");
+            }
+          }}
+        >
           <form.AppField
             name="customPrompt"
             children={(field) => (
               <field.FormItem>
-                <field.FormLabel>Custom Prompt</field.FormLabel>
+                <field.FormLabel>
+                  Custom Prompt
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <SparklesIcon className="size-4 text-purple-500 dark:text-purple-400" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      Kaolin AI can use the configure agent tool here
+                    </TooltipContent>
+                  </Tooltip>
+                </field.FormLabel>
                 {diffPreview.isShowing ? (
                   <div className="space-y-4 p-4 border-2 border-amber-200 dark:border-amber-800 rounded-lg bg-amber-50/50 dark:bg-amber-950/20">
                     <div className="flex items-center gap-2 mb-3">
@@ -228,27 +272,26 @@ export function Settings({
               </field.FormItem>
             )}
           />
-
-          {!diffPreview.isShowing && (
-            <div className="flex gap-3">
-              <Button
-                disabled={!isFormValid}
-                loading={isSubmitting}
-                type="submit"
-              >
-                Save Settings
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => form.reset()}
-              >
-                Reset to Default
-              </Button>
-            </div>
-          )}
-        </form>
-      </form.AppForm>
-    </KaolinTool>
+        </KaolinTool>
+        {!diffPreview.isShowing && (
+          <div className="flex gap-3">
+            <Button
+              disabled={!isFormValid}
+              loading={isSubmitting}
+              type="submit"
+            >
+              Save Settings
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => form.reset()}
+            >
+              Reset to Default
+            </Button>
+          </div>
+        )}
+      </form>
+    </form.AppForm>
   );
 }

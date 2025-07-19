@@ -6,6 +6,7 @@ import * as Errors from "../errors";
 export const VUpdateAiAgentPersonaArgs = v.object({
   agentId: v.id("aiAgentPersona"),
   name: v.optional(v.string()),
+  description: v.optional(v.string()),
   customPrompt: v.optional(v.string()),
 });
 
@@ -17,9 +18,9 @@ export function updateAiAgentPersona(
 ) {
   return ResultAsync.fromPromise(
     ctx.db.patch(args.agentId, {
-      name: args.name,
-      ...(args.customPrompt && { customPrompt: args.customPrompt }),
       ...(args.name && { name: args.name }),
+      ...(args.description !== undefined && { description: args.description }),
+      ...(args.customPrompt && { customPrompt: args.customPrompt }),
     }),
     (e) =>
       Errors.updateAiAgentPersonaFailed({

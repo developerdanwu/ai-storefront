@@ -43,12 +43,14 @@ export const updateAiAgentPersona = authedMutation({
   args: {
     agentId: v.id("aiAgentPersona"),
     name: v.optional(v.string()),
+    description: v.optional(v.string()),
     customPrompt: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     return updateAiAgentPersonaHelper(ctx, {
       agentId: args.agentId,
       name: args.name,
+      description: args.description,
       customPrompt: args.customPrompt,
     }).match(
       (x) => x,

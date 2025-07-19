@@ -3,6 +3,7 @@ import { v } from "convex/values";
 import { ResultAsync } from "neverthrow";
 import { components, internal } from "../../_generated/api";
 import { internalAction } from "../../_generated/server";
+import { createCustomAgent } from "../../agents/customAgent";
 import {
   createKaolinAgent,
   getKaolinSystemPrompt,
@@ -238,6 +239,23 @@ export const deleteKaolinThread = authedAction({
   },
   handler: async (ctx, args) => {
     const agent = createKaolinAgent(components.kaolinAgent, {});
+    await deleteAiThread(ctx, agent, {
+      threadId: args.threadId,
+    }).match(
+      (x) => x,
+      (e) => Errors.propogateConvexError(e)
+    );
+  },
+});
+
+export const deletePlaygroundThread = authedAction({
+  args: {
+    threadId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const agent = createCustomAgent(components.playgroundAgent, {
+      name: "Playground",
+    });
     await deleteAiThread(ctx, agent, {
       threadId: args.threadId,
     }).match(

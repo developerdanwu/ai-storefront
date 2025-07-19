@@ -25,7 +25,7 @@ export function RightNavbar() {
               });
             }}
           >
-            <SparklesIcon />
+            <SparklesIcon className="text-purple-500 dark:text-purple-400" />
           </IconButton>
         </TooltipTrigger>
         <TooltipContent side="left">Ask Kaolin AI</TooltipContent>

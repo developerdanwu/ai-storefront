@@ -1,12 +1,16 @@
 import { useConvexAction } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
+import { useSelector } from "@xstate/react";
 import { useCommandState } from "cmdk";
 import { usePaginatedQuery } from "convex-helpers/react";
 import { api } from "convex/_generated/api";
 import { MessageCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
+import { toast } from "sonner";
+import { CommandActionDialog } from "~/components/ui/command";
 import { useDialogStore } from "~/lib/dialog-store";
+import { useAiStore } from "../secondary-panel/ai/ai-store";
 import { Button } from "../ui/button";
 import {
   Command,
@@ -16,67 +20,71 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandShortcut,
 } from "../ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 export function KaolinThreadsActionDialog({
-  isOpen,
-  setIsOpen,
+  mainInputRef,
 }: {
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
+  mainInputRef: React.RefObject<HTMLInputElement>;
 }) {
+  const aiStore = useAiStore();
+  const dialogStore = useDialogStore();
+  const kaolinThreadId = useSelector(
+    aiStore,
+    (state) => state.context.kaolinThreadId
+  );
   const { mutate: deleteThread } = useMutation({
+    mutationKey: ["delete-kaolin-thread"],
     mutationFn: useConvexAction(api.product.ai.action.deleteKaolinThread),
+    onMutate: ({ threadId }: { threadId: string }) => {
+      if (kaolinThreadId === threadId) {
+        aiStore.send({
+          type: "setKaolinThreadId",
+          kaolinThreadId: null,
+        });
+      }
+    },
+    onSuccess: () => {
+      dialogStore.trigger.closeAlertDialogWithConfirmKeyword();
+      toast.success("Thread deleted");
+    },
   });
   const selectedItemId = useCommandState((s) => s.value);
-  console.log("SELECTED ITEM ID", selectedItemId);
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger asChild>
-        <Button variant="ghost" size="sm">
-          Actions
-          <kbd
-            className={
-              "shadow-xs ml-2 text-xs font-medium bg-background-subtle whitespace-nowrap border-secondary border text-background-emphasis font-sans h-min w-min px-1.5 py-0.5 rounded-lg"
-            }
-          >
-            ⌘K
-          </kbd>
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent
-        onCloseAutoFocus={(e) => e.preventDefault()}
-        className="p-0 w-xs"
-        align="end"
-        side="top"
-      >
-        <Command>
-          <CommandList className="p-2">
-            <CommandItem onSelect={() => {}} value="create-thread">
-              Create new thread
-              <CommandShortcut>↵</CommandShortcut>
-            </CommandItem>
-            {selectedItemId && (
-              <CommandItem
-                onSelect={() => {
-                  deleteThread({
-                    threadId: selectedItemId,
+    <CommandActionDialog
+      mainInputRef={mainInputRef}
+      commands={[
+        {
+          label: "Create new thread",
+          value: "create-thread",
+          onSelect: () => {
+            console.log("CREATE THREAD");
+          },
+        },
+        ...(selectedItemId
+          ? [
+              {
+                label: "Delete thread",
+                value: "delete-thread",
+                onSelect: () => {
+                  dialogStore.trigger.openAlertDialogWithConfirmKeyword({
+                    confirmKeyword: "DELETE",
+                    disableCloseOnConfirm: true,
+                    confirmButtonMutationKeys: [["delete-kaolin-thread"]],
+                    title: "Delete thread",
+                    description: "Are you sure you want to delete this thread?",
+                    onConfirm: () => {
+                      deleteThread({
+                        threadId: selectedItemId,
+                      });
+                    },
                   });
-                }}
-                value="delete-thread"
-              >
-                Delete thread
-                <CommandShortcut>↵</CommandShortcut>
-              </CommandItem>
-            )}
-            <CommandEmpty className="py-4">No results</CommandEmpty>
-          </CommandList>
-          <CommandInput placeholder="Search..." />
-        </Command>
-      </PopoverContent>
-    </Popover>
+                },
+              },
+            ]
+          : []),
+      ]}
+    />
   );
 }
 
@@ -93,14 +101,7 @@ export function KaolinThreadsDialog({
   const store = useDialogStore();
   const [searchParams, setSearchParams] = useSearchParams();
   const isOpen = searchParams.get("dialog") === DIALOG_NAME;
-  const [moreActionsOpen, setMoreActionsOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (inputRef.current && !moreActionsOpen) {
-      inputRef.current.focus();
-    }
-  }, [moreActionsOpen]);
 
   // Fetch all Kaolin AI threads for the user
   const threads = usePaginatedQuery(
@@ -193,10 +194,7 @@ export function KaolinThreadsDialog({
               ↵
             </kbd>
           </Button>
-          <KaolinThreadsActionDialog
-            isOpen={moreActionsOpen}
-            setIsOpen={setMoreActionsOpen}
-          />
+          <KaolinThreadsActionDialog mainInputRef={inputRef} />
         </div>
       </Command>
     </CommandDialog>

@@ -40,6 +40,7 @@ export default function AppAgentsRoute() {
           <Settings
             defaultValues={{
               name: activeAgent.name,
+              description: activeAgent.description || "",
               customPrompt: activeAgent.customPrompt || "",
             }}
             agentId={activeAgent._id}

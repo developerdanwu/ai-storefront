@@ -26,7 +26,7 @@
     "@ai-sdk/xai": "^1.2.16",
     "@auth/core": "0.37.0",
     "@convex-dev/action-cache": "^0.2.10",
-    "@convex-dev/agent": "^0.1.14",
+    "@convex-dev/agent": "^0.1.15",
     "@convex-dev/auth": "^0.0.87",
     "@convex-dev/rag": "^0.1.7",
     "@convex-dev/rate-limiter": "^0.2.10",

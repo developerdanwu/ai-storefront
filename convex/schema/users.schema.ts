@@ -11,4 +11,5 @@ export const Users = Table("users", {
   lastName: v.union(v.string(), v.null()),
   emailVerified: v.boolean(),
   profilePictureUrl: v.optional(v.union(v.string(), v.null())),
+  baseUrl: v.optional(v.string()),
 });

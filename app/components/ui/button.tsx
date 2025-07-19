@@ -28,8 +28,45 @@ const buttonVariants = cva(
         lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
         icon: "size-9",
       },
+      pressed: {
+        true: "",
+        false: "",
+      },
     },
+    compoundVariants: [
+      {
+        variant: "default",
+        pressed: true,
+        className:
+          "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 hover:text-primary-foreground  dark:hover:bg-primary/90",
+      },
+      {
+        variant: "secondary",
+        pressed: true,
+        className:
+          "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80 hover:text-secondary-foreground",
+      },
+      {
+        variant: "destructive",
+        pressed: true,
+        className:
+          "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+      },
+      {
+        variant: "outline",
+        pressed: true,
+        className:
+          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
+      },
+      {
+        variant: "ghost",
+        pressed: true,
+        className:
+          "hover:bg-accent bg-accent hover:text-accent-foreground dark:hover:bg-accent",
+      },
+    ],
     defaultVariants: {
+      pressed: false,
       variant: "default",
       size: "default",
     },
@@ -52,6 +89,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       loading = false,
       disabled,
       children,
+      pressed,
       ...props
     },
     ref
@@ -62,7 +100,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <Comp
         data-slot="button"
         className={cn(
-          buttonVariants({ variant, size, className }),
+          buttonVariants({ variant, size, className, pressed }),
           loading && "relative"
         )}
         disabled={loading || disabled}

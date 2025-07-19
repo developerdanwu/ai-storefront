@@ -3,7 +3,7 @@ import { matchMutation, useIsMutating } from "@tanstack/react-query";
 import { shallowEqual } from "@xstate/react";
 import { useSelector } from "@xstate/store/react";
 import { Loader2 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import z from "zod";
 import { useDialogStore } from "~/lib/dialog-store";
 import {
@@ -33,7 +33,10 @@ type DialogContent = {
   disableCloseOnConfirm?: boolean;
 };
 
-function DialogContent({ dialogContent }: { dialogContent: DialogContent }) {
+const DialogContent = forwardRef<
+  HTMLFormElement,
+  { dialogContent: DialogContent }
+>(function DialogContent({ dialogContent, ...rest }, ref) {
   const store = useDialogStore();
   const confirmButtonMutations = useIsMutating({
     predicate: (mutation) => {
@@ -86,6 +89,7 @@ function DialogContent({ dialogContent }: { dialogContent: DialogContent }) {
       if (!dialogContent?.disableCloseOnConfirm) {
         store.trigger.closeAlertDialog();
       }
+      form.reset();
     },
   });
   const isFormValid = useStore(form.store, (state) => state.isValid);
@@ -98,83 +102,80 @@ function DialogContent({ dialogContent }: { dialogContent: DialogContent }) {
   };
 
   return (
-    <form.AppForm>
-      <AlertDialogContent
-        asChild
-        onEscapeKeyDown={(e) => {
-          e.stopPropagation();
-        }}
-      >
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            form.handleSubmit();
-          }}
-        >
-          <AlertDialogHeader>
-            <AlertDialogTitle>{dialogContent.title}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {dialogContent.description}
-              <form.AppField
-                name="confirmKeyword"
-                children={(field) => (
-                  <field.FormItem className="py-2">
-                    <field.FormLabel>
-                      Type{" "}
-                      <span className="font-bold">
-                        {dialogContent.confirmKeyword}
-                      </span>{" "}
-                      to confirm
-                    </field.FormLabel>
-                    <field.FormControl>
-                      <Input
-                        placeholder="confirm keyword"
-                        value={field.state.value}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        onBlur={field.handleBlur}
-                      />
-                    </field.FormControl>
-                  </field.FormItem>
-                )}
-              />
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={handleCancel}
-              disabled={isConfirmButtonLoading || isCancelButtonLoading}
-            >
-              {isCancelButtonLoading ? (
-                <div className="flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  {dialogContent.cancelText ?? "Cancel"}
-                </div>
-              ) : (
-                dialogContent.cancelText ?? "Cancel"
+    <form
+      ref={ref}
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+      {...rest}
+    >
+      <form.AppForm>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{dialogContent.title}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {dialogContent.description}
+            <form.AppField
+              name="confirmKeyword"
+              children={(field) => (
+                <field.FormItem className="py-2">
+                  <field.FormLabel>
+                    Type{" "}
+                    <span className="font-bold">
+                      {dialogContent.confirmKeyword}
+                    </span>{" "}
+                    to confirm
+                  </field.FormLabel>
+                  <field.FormControl>
+                    <Input
+                      placeholder="confirm keyword"
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      onBlur={field.handleBlur}
+                    />
+                  </field.FormControl>
+                </field.FormItem>
               )}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              type="submit"
-              disabled={
-                isConfirmButtonLoading || isCancelButtonLoading || !isFormValid
-              }
-            >
-              {isConfirmButtonLoading ? (
-                <div className="flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  {dialogContent.confirmText ?? "Continue"}
-                </div>
-              ) : (
-                dialogContent.confirmText ?? "Continue"
-              )}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </form>
-      </AlertDialogContent>
-    </form.AppForm>
+            />
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel
+            onClick={handleCancel}
+            disabled={isConfirmButtonLoading || isCancelButtonLoading}
+          >
+            {isCancelButtonLoading ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                {dialogContent.cancelText ?? "Cancel"}
+              </div>
+            ) : (
+              dialogContent.cancelText ?? "Cancel"
+            )}
+          </AlertDialogCancel>
+          <AlertDialogAction
+            type="submit"
+            disabled={
+              isConfirmButtonLoading || isCancelButtonLoading || !isFormValid
+            }
+          >
+            {isConfirmButtonLoading ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                {dialogContent.confirmText ?? "Continue"}
+              </div>
+            ) : (
+              dialogContent.confirmText ?? "Continue"
+            )}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </form.AppForm>
+    </form>
   );
-}
+});
+
+DialogContent.displayName = "DialogContent";
 
 export function AlertDialogWithConfirmKeyword() {
   const [dialogContent, setDialogContent] = useState<DialogContent | null>(
@@ -218,7 +219,17 @@ export function AlertDialogWithConfirmKeyword() {
 
   return (
     <AlertDialog open={open}>
-      <DialogContent dialogContent={dialogContent} />
+      <AlertDialogContent
+        asChild
+        onEscapeKeyDown={(e) => {
+          e.stopPropagation();
+        }}
+      >
+        <DialogContent
+          dialogContent={dialogContent}
+          key={JSON.stringify(dialogContent)}
+        />
+      </AlertDialogContent>
     </AlertDialog>
   );
 }

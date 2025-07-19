@@ -1,6 +1,5 @@
 import { Agent, AgentComponent } from "@convex-dev/agent";
 import { LanguageModelV1Middleware, tool, wrapLanguageModel } from "ai";
-import React from "react";
 import z from "zod";
 import { grok3Mini } from "./models";
 
@@ -25,7 +24,7 @@ export const getKaolinSystemPrompt = ({ context }: { context?: string }) => {
 export const tools = {
   "configure-agent": tool({
     description:
-      "This tool allows Kaolin to help the user configure a custom AI agent with a custom prompt",
+      "This tool allows Kaolin to help the user configure a custom AI agent with a custom prompt, name and description",
     parameters: z.object({
       uiPayload: z.object({
         customPrompt: z
@@ -45,19 +44,6 @@ export const tools = {
       }),
     }),
   }),
-};
-
-type ToolDef = {
-  [K in keyof typeof tools]: {
-    name: K;
-    displayName: string;
-    description: string;
-    icon?: React.ReactNode;
-    context: Record<string, any>;
-    callback: (
-      toolOutput: z.infer<(typeof tools)[K]["parameters"]>
-    ) => void | Promise<void>;
-  };
 };
 
 export function createKaolinAgent(

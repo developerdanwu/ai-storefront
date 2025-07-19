@@ -1,9 +1,14 @@
+import { useConvexAction } from "@convex-dev/react-query";
+import { useMutation } from "@tanstack/react-query";
+import { useCommandState } from "cmdk";
 import { usePaginatedQuery } from "convex-helpers/react";
 import { api } from "convex/_generated/api";
 import { MessageCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
+import { toast } from "sonner";
 import { useDialogStore } from "~/lib/dialog-store";
+import { useAiStore } from "../secondary-panel/ai/ai-store";
 import { Button } from "../ui/button";
 import {
   Command,
@@ -13,9 +18,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandShortcut,
 } from "../ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 export function PlaygroundThreadsActionDialog({
   isOpen,
@@ -24,6 +27,28 @@ export function PlaygroundThreadsActionDialog({
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
 }) {
+  const selectedThread = useCommandState((s) => s.value);
+  const selectedItemId = useCommandState((s) => s.selectedItemId);
+  console.log("SELECTED ITEM ID", selectedThread);
+  const dialogStore = useDialogStore();
+  const aiStore = useAiStore();
+  const { mutate: deleteThread } = useMutation({
+    mutationKey: ["delete-playground-thread"],
+    mutationFn: useConvexAction(api.product.ai.action.deletePlaygroundThread),
+    onMutate: (args: { threadId: string }) => {
+      if (selectedThread === args.threadId) {
+        aiStore.send({
+          type: "setPlaygroundThreadId",
+          playgroundThreadId: null,
+        });
+      }
+    },
+    onSuccess: () => {
+      dialogStore.trigger.closeAlertDialogWithConfirmKeyword();
+      toast.success("Thread deleted");
+    },
+  });
+
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
@@ -46,6 +71,24 @@ export function PlaygroundThreadsActionDialog({
       >
         <Command>
           <CommandList className="p-2">
+            <CommandItem
+              onSelect={() => {
+                dialogStore.trigger.openAlertDialogWithConfirmKeyword({
+                  confirmButtonMutationKeys: [["delete-playground-thread"]],
+                  confirmKeyword: "DELETE",
+                  title: "Delete thread",
+                  disableCloseOnConfirm: true,
+                  description: "Are you sure you want to delete this thread?",
+                  onConfirm: () => {
+                    deleteThread({ threadId: selectedThread });
+                  },
+                });
+              }}
+              value="delete-thread"
+            >
+              Delete thread
+              <CommandShortcut>↵</CommandShortcut>
+            </CommandItem>
             <CommandItem onSelect={() => {}} value="create-thread">
               Create new thread
               <CommandShortcut>↵</CommandShortcut>
@@ -75,14 +118,6 @@ export function PlaygroundThreadsDialog({
   const isOpen = searchParams.get("dialog") === DIALOG_NAME;
   const [moreActionsOpen, setMoreActionsOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  //   useBaseHotkeys({
-  //     handleKeyDown: (event) => {
-  //       if (isHotkey(AI_THREADS_DIALOG_HOT_KEYS.actionsMenu.key)(event)) {
-  //         setMoreActionsOpen((prev) => !prev);
-  //       }
-  //     },
-  //   });
 
   useEffect(() => {
     if (inputRef.current && !moreActionsOpen) {
@@ -126,6 +161,7 @@ export function PlaygroundThreadsDialog({
   }, [store, onClose]);
 
   const handleSelect = (threadId: string) => {
+    console.log("SELECT", threadId);
     onSelect(threadId);
     store.trigger.closePlaygroundThreadsDialog();
   };
