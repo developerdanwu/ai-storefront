@@ -25,6 +25,8 @@ interface WrappedCardProps {
   direction: number;
   gradient?: string;
   className?: string;
+  /** If true, skips the gradient and decorative elements - use for custom backgrounds */
+  customBackground?: boolean;
 }
 
 export function WrappedCard({
@@ -32,6 +34,7 @@ export function WrappedCard({
   direction,
   gradient = "from-violet-600 via-purple-600 to-fuchsia-600",
   className,
+  customBackground = false,
 }: WrappedCardProps) {
   return (
     <motion.div
@@ -47,18 +50,20 @@ export function WrappedCard({
       }}
       className={cn(
         "absolute inset-0 flex flex-col items-center justify-center p-8 md:p-12",
-        "bg-gradient-to-br",
-        gradient,
+        !customBackground && "bg-gradient-to-br",
+        !customBackground && gradient,
         "overflow-hidden",
         className
       )}
     >
-      {/* Decorative background elements */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
-        <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-black/10 blur-3xl" />
-        <div className="absolute left-1/2 top-1/2 h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/5 blur-2xl" />
-      </div>
+      {/* Decorative background elements - only show if not custom background */}
+      {!customBackground && (
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
+          <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-black/10 blur-3xl" />
+          <div className="absolute left-1/2 top-1/2 h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/5 blur-2xl" />
+        </div>
+      )}
 
       {/* Content */}
       <div className="relative z-10 flex h-full w-full max-w-lg flex-col items-center justify-center text-center text-white">
