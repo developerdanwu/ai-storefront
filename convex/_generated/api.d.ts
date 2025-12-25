@@ -16,6 +16,8 @@ import type * as ai_action from "../ai/action.js";
 import type * as ai_actionsNode from "../ai/actionsNode.js";
 import type * as ai_query from "../ai/query.js";
 import type * as errors from "../errors.js";
+import type * as github_action from "../github/action.js";
+import type * as github_nodeAction from "../github/nodeAction.js";
 import type * as helpers_createThread from "../helpers/createThread.js";
 import type * as helpers_generateSummaryTitle from "../helpers/generateSummaryTitle.js";
 import type * as helpers_getAiThreadMessages from "../helpers/getAiThreadMessages.js";
@@ -63,6 +65,8 @@ declare const fullApi: ApiFromModules<{
   "ai/actionsNode": typeof ai_actionsNode;
   "ai/query": typeof ai_query;
   errors: typeof errors;
+  "github/action": typeof github_action;
+  "github/nodeAction": typeof github_nodeAction;
   "helpers/createThread": typeof helpers_createThread;
   "helpers/generateSummaryTitle": typeof helpers_generateSummaryTitle;
   "helpers/getAiThreadMessages": typeof helpers_getAiThreadMessages;
@@ -1090,13 +1094,13 @@ export declare const components: {
         "internal",
         {
           beforeMessageId?: string;
-          embedding?: Array<number>;
-          embeddingModel?: string;
           limit: number;
           messageRange?: { after: number; before: number };
           searchAllMessagesForUserId?: string;
           text?: string;
           threadId?: string;
+          vector?: Array<number>;
+          vectorModel?: string;
           vectorScoreThreshold?: number;
         },
         Array<{
@@ -1647,18 +1651,6 @@ export declare const components: {
       >;
     };
     streams: {
-      abort: FunctionReference<
-        "mutation",
-        "internal",
-        { reason: string; streamId: string },
-        boolean
-      >;
-      abortByOrder: FunctionReference<
-        "mutation",
-        "internal",
-        { order: number; reason: string; threadId: string },
-        boolean
-      >;
       addDelta: FunctionReference<
         "mutation",
         "internal",
@@ -1814,18 +1806,13 @@ export declare const components: {
       list: FunctionReference<
         "query",
         "internal",
-        {
-          startOrder?: number;
-          statuses?: Array<"streaming" | "finished" | "aborted">;
-          threadId: string;
-        },
+        { threadId: string },
         Array<{
           agentName?: string;
           model?: string;
           order: number;
           provider?: string;
           providerOptions?: Record<string, Record<string, any>>;
-          status: "streaming" | "finished" | "aborted";
           stepOrder: number;
           streamId: string;
           userId?: string;
@@ -2192,6 +2179,27 @@ export declare const components: {
         "internal",
         { workflowId: string },
         {
+          inProgress: Array<{
+            _creationTime: number;
+            _id: string;
+            step: {
+              args: any;
+              argsSize: number;
+              completedAt?: number;
+              functionType: "query" | "mutation" | "action";
+              handle: string;
+              inProgress: boolean;
+              name: string;
+              runResult?:
+                | { kind: "success"; returnValue: any }
+                | { error: string; kind: "failed" }
+                | { kind: "canceled" };
+              startedAt: number;
+              workId?: string;
+            };
+            stepNumber: number;
+            workflowId: string;
+          }>;
           journalEntries: Array<{
             _creationTime: number;
             _id: string;
@@ -2311,6 +2319,7 @@ export declare const components: {
         "internal",
         {
           generationNumber: number;
+          now: number;
           runResult:
             | { kind: "success"; returnValue: any }
             | { error: string; kind: "failed" }
@@ -2325,7 +2334,7 @@ export declare const components: {
         {
           maxParallelism?: number;
           onComplete?: { context?: any; fnHandle: string };
-          startAsync?: boolean;
+          validateAsync?: boolean;
           workflowArgs: any;
           workflowHandle: string;
           workflowName: string;

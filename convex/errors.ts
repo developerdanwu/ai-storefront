@@ -188,3 +188,17 @@ export function actionScheduleError(context: ErrorContext) {
     context,
   } as const satisfies BackendErrorSchema;
 }
+
+export function githubConnectionNotFound(context: ErrorContext) {
+  return {
+    _tag: "GitHubConnectionNotFound",
+    context,
+  } as const satisfies BackendErrorSchema;
+}
+
+export function githubApiFailed(context: ErrorContext) {
+  return {
+    _tag: "GitHubApiFailed",
+    context,
+  } as const satisfies BackendErrorSchema;
+}
