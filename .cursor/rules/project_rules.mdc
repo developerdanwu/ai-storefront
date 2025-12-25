@@ -5,17 +5,76 @@ alwaysApply: true
 ---
 The default configuration for this project:
 
-## general
-- this project is using pnpm as its package manager
-- The convex app and react share a package.json file
+## General
+- This project is using pnpm as its package manager
+- The Convex backend and React frontend share a single `package.json` file
+- Node.js version 22+ is required
 
-## React app
-- when creating new variants of components, ALWAYS use cva to do so as this is the shadcn way.
-- ALWAYS use lucide-icons for icons, DO NOT create your own SVGs please
-- use zod for validation (it is already installed)
-- tanstack form is already installed.
+## React App
 
-When creating forms, use the tanstack-form component. Below is an example of how this compoennt works with zod.
+### Framework & Routing
+- Uses React Router 7 with file-based routing in `app/routes/`
+- Route file naming conventions:
+  - `_shell/route.tsx` - Layout routes (underscore prefix creates a pathless layout)
+  - `_shell._index.tsx` - Index route for the shell layout
+  - `_shell.chat.$threadId/route.tsx` - Dynamic route with `$param` syntax
+  - `kaolin-signup_.thank-you.tsx` - Dot notation for nested paths, underscore escapes the parent layout
+- Route-specific components go in `_components/` folders within the route directory
+- Root layout and providers are in `app/root.tsx`
+
+### Data Fetching & State Management
+- Uses TanStack Query with `@convex-dev/react-query` adapter for data fetching
+- Query pattern:
+```tsx
+import { convexQuery, useConvexMutation, useConvexAction } from "@convex-dev/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { api } from "convex/_generated/api";
+
+// For queries
+const { data } = useQuery(convexQuery(api.ai.query.getThreads, { paginationOpts }));
+
+// For mutations
+const mutation = useMutation({
+  mutationFn: useConvexMutation(api.users.mutation.migrateAnonymousUser),
+});
+
+// For actions
+const action = useMutation({
+  mutationFn: useConvexAction(api.ai.action.createThread),
+});
+```
+- Use `xstate/store` for local UI state management (e.g., dialog stores in `app/lib/dialog-store.tsx`)
+
+### Authentication
+- Uses WorkOS AuthKit for authentication (`@workos-inc/authkit-react`)
+- Custom Convex auth integration in `app/components/auth/auth-provider.tsx`
+- Auth-aware components:
+  - `<Authenticated>` - Renders children only when authenticated
+  - `<Unauthenticated>` - Renders children only when not authenticated
+  - `<AuthLoading>` - Renders during auth state resolution
+  - `<AnonymousUser>` - Custom component for anonymous user handling
+
+### Provider Hierarchy
+The provider hierarchy in `app/components/app-providers.tsx` is:
+1. `CustomErrorBoundary`
+2. `AuthKitProvider` (WorkOS)
+3. `ConvexProviderWithAuth`
+4. `QueryClientProvider` (TanStack Query)
+5. `ThemeProvider`
+6. `DialogStoreContextProvider`
+7. `BaseProviders` (handles Authenticated/Unauthenticated/AuthLoading)
+
+### UI Components
+- When creating new variants of components, ALWAYS use `cva` (class-variance-authority) as this is the shadcn way
+- ALWAYS use `lucide-react` for icons, DO NOT create your own SVGs
+- Use `zod` for validation (it is already installed)
+- Use `motion` library for animations
+- Use `sonner` for toast notifications
+
+### Forms
+- TanStack Form is installed for form handling
+- Use the custom `useAppForm` hook from `@/components/ui/tanstack-form`
+
 ```tsx
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -76,4 +135,36 @@ export function InputForm() {
 }
 ```
 
+### Error Handling
+- Use `react-error-boundary` for component error boundaries
+- Backend errors from Convex use typed error schemas - handle with `ts-pattern` matching:
+```tsx
+import { match } from "ts-pattern";
+import type { BackendErrors } from "convex/errors";
+
+match(error.data as BackendErrors)
+  .with({ _tag: "NotAuthenticated" }, () => { /* handle */ })
+  .with({ _tag: "RateLimitExceeded" }, (e) => { /* handle with e.context.retryAfter */ })
+  .otherwise(() => { /* fallback */ });
+```
+
+### File Organization
+```
+app/
+├── components/
+│   ├── ui/           # shadcn/ui components
+│   ├── auth/         # Auth-related components
+│   ├── dialogs/      # Dialog components
+│   └── icons/        # Custom icon components (prefer lucide-react)
+├── hooks/            # Global custom hooks
+├── lib/
+│   ├── hooks/        # Feature-specific hooks
+│   ├── utils.ts      # Utility functions (cn, etc.)
+│   └── routes.ts     # Route constants
+└── routes/           # React Router 7 file-based routes
+    └── _shell/
+        └── _components/  # Route-specific components
+```
+
 ## Convex (Backend)
+See `convex_rules.mdc` for detailed Convex guidelines specific to this project.

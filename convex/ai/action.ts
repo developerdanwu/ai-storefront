@@ -109,6 +109,7 @@ export const continueThread = authedAction({
         throw new ConvexError(e);
       }
     );
+    console.log("args.prompt", args.prompt);
     return await ResultAsync.fromPromise(
       createStoreAgent().continueThread(ctx, {
         threadId: args.threadId,
