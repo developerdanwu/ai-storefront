@@ -15,6 +15,7 @@ import type * as agents_summaryAgent from "../agents/summaryAgent.js";
 import type * as ai_action from "../ai/action.js";
 import type * as ai_actionsNode from "../ai/actionsNode.js";
 import type * as ai_query from "../ai/query.js";
+import type * as auth from "../auth.js";
 import type * as errors from "../errors.js";
 import type * as github_action from "../github/action.js";
 import type * as github_nodeAction from "../github/nodeAction.js";
@@ -37,10 +38,8 @@ import type * as rag from "../rag.js";
 import type * as rateLimiter from "../rateLimiter.js";
 import type * as resend from "../resend.js";
 import type * as users_mutation from "../users/mutation.js";
-import type * as users_nodeAction from "../users/nodeAction.js";
 import type * as users_query from "../users/query.js";
 import type * as workflowManager from "../workflowManager.js";
-import type * as workos from "../workos.js";
 
 import type {
   ApiFromModules,
@@ -64,6 +63,7 @@ declare const fullApi: ApiFromModules<{
   "ai/action": typeof ai_action;
   "ai/actionsNode": typeof ai_actionsNode;
   "ai/query": typeof ai_query;
+  auth: typeof auth;
   errors: typeof errors;
   "github/action": typeof github_action;
   "github/nodeAction": typeof github_nodeAction;
@@ -86,10 +86,8 @@ declare const fullApi: ApiFromModules<{
   rateLimiter: typeof rateLimiter;
   resend: typeof resend;
   "users/mutation": typeof users_mutation;
-  "users/nodeAction": typeof users_nodeAction;
   "users/query": typeof users_query;
   workflowManager: typeof workflowManager;
-  workos: typeof workos;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 
@@ -2230,7 +2228,14 @@ export declare const components: {
             generationNumber: number;
             logLevel?: any;
             name?: string;
-            onComplete?: { context?: any; fnHandle: string };
+            onComplete?: {
+              context: any;
+              result:
+                | { kind: "success"; returnValue: any }
+                | { error: string; kind: "failed" }
+                | { kind: "canceled" };
+              workId: string;
+            };
             runResult?:
               | { kind: "success"; returnValue: any }
               | { error: string; kind: "failed" }
@@ -2333,7 +2338,14 @@ export declare const components: {
         "internal",
         {
           maxParallelism?: number;
-          onComplete?: { context?: any; fnHandle: string };
+          onComplete?: {
+            context: any;
+            result:
+              | { kind: "success"; returnValue: any }
+              | { error: string; kind: "failed" }
+              | { kind: "canceled" };
+            workId: string;
+          };
           validateAsync?: boolean;
           workflowArgs: any;
           workflowHandle: string;
@@ -2375,7 +2387,14 @@ export declare const components: {
             generationNumber: number;
             logLevel?: any;
             name?: string;
-            onComplete?: { context?: any; fnHandle: string };
+            onComplete?: {
+              context: any;
+              result:
+                | { kind: "success"; returnValue: any }
+                | { error: string; kind: "failed" }
+                | { kind: "canceled" };
+              workId: string;
+            };
             runResult?:
               | { kind: "success"; returnValue: any }
               | { error: string; kind: "failed" }
@@ -2945,6 +2964,43 @@ export declare const components: {
           to: string;
         },
         string
+      >;
+    };
+  };
+  workOSAuthKit: {
+    lib: {
+      enqueueWebhookEvent: FunctionReference<
+        "mutation",
+        "internal",
+        {
+          apiKey: string;
+          event: string;
+          eventId: string;
+          eventTypes?: Array<string>;
+          logLevel?: "DEBUG";
+          onEventHandle?: string;
+          updatedAt?: string;
+        },
+        any
+      >;
+      getAuthUser: FunctionReference<
+        "query",
+        "internal",
+        { id: string },
+        {
+          createdAt: string;
+          email: string;
+          emailVerified: boolean;
+          externalId?: null | string;
+          firstName?: null | string;
+          id: string;
+          lastName?: null | string;
+          lastSignInAt?: null | string;
+          locale?: null | string;
+          metadata: Record<string, any>;
+          profilePictureUrl?: null | string;
+          updatedAt: string;
+        } | null
       >;
     };
   };

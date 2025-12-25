@@ -5,6 +5,7 @@ import { Users } from "./schema/users.schema";
 const schema = defineSchema({
   users: Users.table
     .index("externalId", ["externalId"])
+    .index("authId", ["authId"])
     .index("email", ["email"]),
   aiAgentPersona: AiAgentPersona.table.index("agentId", ["agentId"]),
 });
