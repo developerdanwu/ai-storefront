@@ -2,7 +2,7 @@ import { useAuth } from "@workos-inc/authkit-react";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { AnimatePresence } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useIsMobile } from "~/hooks/use-mobile";
+import { Button } from "~/components/ui/button";
 import { ActivityCard } from "./_components/activity-card";
 import { IntroCard } from "./_components/intro-card";
 import { LanguagesCard } from "./_components/languages-card";
@@ -26,7 +26,6 @@ export default function WrappedRoute() {
   const [direction, setDirection] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const pauseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const isMobile = useIsMobile();
 
   // Get GitHub username for authenticated users
   const { username: githubUsername, fetchUsername } = useGitHubUsername();
@@ -147,39 +146,52 @@ export default function WrappedRoute() {
     );
   }
 
+  // Mobile frame wrapper component
+  const MobileFrame = ({ children }: { children: React.ReactNode }) => (
+    <div className="flex h-screen w-full items-center justify-center bg-neutral-950">
+      <div className="relative w-full h-full sm:w-[450px] sm:h-auto sm:aspect-[450/780] overflow-hidden sm:rounded-3xl bg-black shadow-2xl shadow-black/50 sm:ring-1 sm:ring-white/10">
+        {children}
+      </div>
+    </div>
+  );
+
   // Loading state
   if (isLoading) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-gradient-to-br from-slate-900 to-black">
-        <div className="flex flex-col items-center gap-4 text-white">
-          <Loader2 className="h-12 w-12 animate-spin" />
-          <p className="text-lg">Loading {username}'s GitHub stats...</p>
+      <MobileFrame>
+        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-slate-900 to-black">
+          <div className="flex flex-col items-center gap-4 text-white">
+            <Loader2 className="h-12 w-12 animate-spin" />
+            <p className="text-lg">Loading {username}'s GitHub stats...</p>
+          </div>
         </div>
-      </div>
+      </MobileFrame>
     );
   }
 
   // Error state
   if (isError) {
     return (
-      <div className="flex h-screen w-full flex-col items-center justify-center bg-gradient-to-br from-red-900 to-black">
-        <div className="flex flex-col items-center gap-4 text-white">
-          <p className="text-xl font-bold">Oops! Something went wrong</p>
-          <p className="text-white/70">
-            {error?.message || "Failed to load GitHub data"}
-          </p>
-          <button
-            type="button"
-            onClick={() => {
-              setHasStarted(false);
-              setUsername("");
-            }}
-            className="mt-4 rounded-lg bg-white/10 px-6 py-2 text-white transition-colors hover:bg-white/20"
-          >
-            Try another username
-          </button>
+      <MobileFrame>
+        <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-red-900 to-black">
+          <div className="flex flex-col items-center gap-4 text-white">
+            <p className="text-xl font-bold">Oops! Something went wrong</p>
+            <p className="text-white/70">
+              {error?.message || "Failed to load GitHub data"}
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setHasStarted(false);
+                setUsername("");
+              }}
+              className="mt-4 rounded-lg bg-white/10 px-6 py-2 text-white transition-colors hover:bg-white/20"
+            >
+              Try another username
+            </button>
+          </div>
         </div>
-      </div>
+      </MobileFrame>
     );
   }
 
@@ -216,67 +228,63 @@ export default function WrappedRoute() {
   };
 
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-black">
-      {/* Story progress bars at top */}
-      <div className="absolute inset-x-0 top-0 z-20 p-3 pt-4">
-        <StoryProgress
-          total={TOTAL_SLIDES}
-          current={currentSlide}
-          isPaused={isPaused}
-          onSegmentClick={goToSlide}
-          onComplete={handleProgressComplete}
-        />
-      </div>
-
-      {/* Main card area - tap left/right halves to navigate */}
-      <div
-        className="relative h-full w-full"
-        onClick={(e) => {
-          const rect = e.currentTarget.getBoundingClientRect();
-          const clickX = e.clientX - rect.left;
-          const halfWidth = rect.width / 2;
-
-          if (clickX < halfWidth) {
-            prevSlide();
-          } else {
-            nextSlide();
-          }
-        }}
+    <div className="flex h-screen w-full items-center justify-center bg-neutral-950">
+      {/* Navigation arrow - left (outside the box) */}
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={prevSlide}
+        disabled={currentSlide === 0}
+        className="mr-4 hidden h-9 w-9 rounded-full bg-white/10 text-white backdrop-blur-sm hover:bg-white/20 disabled:opacity-0 sm:flex"
+        aria-label="Previous slide"
       >
-        <AnimatePresence mode="wait" custom={direction}>
-          <div key={currentSlide}>{renderSlide()}</div>
-        </AnimatePresence>
+        <ChevronLeft className="h-6 w-6" />
+      </Button>
+
+      <div className="relative w-full h-full sm:w-[450px] sm:h-auto sm:aspect-[450/780] overflow-hidden sm:rounded-3xl bg-black shadow-2xl shadow-black/50 sm:ring-1 sm:ring-white/10">
+        {/* Story progress bars at top */}
+        <div className="absolute inset-x-0 top-0 z-20 p-3 pt-4">
+          <StoryProgress
+            total={TOTAL_SLIDES}
+            current={currentSlide}
+            isPaused={isPaused}
+            onSegmentClick={goToSlide}
+            onComplete={handleProgressComplete}
+          />
+        </div>
+
+        {/* Main card area - tap left/right halves to navigate */}
+        <div
+          className="relative h-full w-full"
+          onClick={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const halfWidth = rect.width / 2;
+
+            if (clickX < halfWidth) {
+              prevSlide();
+            } else {
+              nextSlide();
+            }
+          }}
+        >
+          <AnimatePresence mode="wait" custom={direction}>
+            <div key={currentSlide}>{renderSlide()}</div>
+          </AnimatePresence>
+        </div>
       </div>
 
-      {/* Navigation arrows - hidden on mobile */}
-      {!isMobile && (
-        <div className="pointer-events-none absolute inset-x-0 top-1/2 z-20 flex -translate-y-1/2 justify-between px-4">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              prevSlide();
-            }}
-            disabled={currentSlide === 0}
-            className="pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-all hover:bg-white/20 disabled:opacity-0"
-            aria-label="Previous slide"
-          >
-            <ChevronLeft className="h-6 w-6" />
-          </button>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              nextSlide();
-            }}
-            disabled={currentSlide === TOTAL_SLIDES - 1}
-            className="pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-all hover:bg-white/20 disabled:opacity-0"
-            aria-label="Next slide"
-          >
-            <ChevronRight className="h-6 w-6" />
-          </button>
-        </div>
-      )}
+      {/* Navigation arrow - right (outside the box) */}
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={nextSlide}
+        disabled={currentSlide === TOTAL_SLIDES - 1}
+        className="ml-4 hidden h-9 w-9 rounded-full bg-white/10 text-white backdrop-blur-sm hover:bg-white/20 disabled:opacity-0 sm:flex"
+        aria-label="Next slide"
+      >
+        <ChevronRight className="h-6 w-6" />
+      </Button>
     </div>
   );
 }
