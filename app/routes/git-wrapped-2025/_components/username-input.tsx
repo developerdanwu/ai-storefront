@@ -17,14 +17,6 @@ const UsernameSchema = z.object({
 
 type UsernameFormValues = z.infer<typeof UsernameSchema>;
 
-interface UsernameInputProps {
-  onSubmit: (username: string) => void;
-  onSignIn: () => void;
-  isLoading?: boolean;
-  isAuthenticated?: boolean;
-  authenticatedUsername?: string;
-}
-
 // Color palette for particles
 const PARTICLE_COLORS = [
   "bg-purple-400",
@@ -281,11 +273,10 @@ function GridOverlay() {
 
 export function UsernameInput({
   onSubmit,
-  onSignIn,
-  isLoading,
-  isAuthenticated,
-  authenticatedUsername,
-}: UsernameInputProps) {
+}: {
+  onSubmit: (username: string) => void;
+  isLoading?: boolean;
+}) {
   const [isFocused, setIsFocused] = useState(false);
 
   const form = useAppForm({
@@ -293,7 +284,7 @@ export function UsernameInput({
     defaultValues: {
       username: "",
     },
-    onSubmit: ({ value }: { value: UsernameFormValues }) => {
+    onSubmit: ({ value }) => {
       onSubmit(value.username.trim());
     },
   });
@@ -451,7 +442,7 @@ export function UsernameInput({
                     ]) => (
                       <motion.button
                         type="submit"
-                        disabled={isLoading || !canSubmit}
+                        disabled={!canSubmit}
                         className={cn(
                           "group relative flex w-full items-center justify-center gap-2 rounded-xl py-3 text-base font-semibold transition-all",
                           "bg-gradient-to-r from-cyan-600 via-teal-600 to-cyan-600 text-white hover:from-cyan-500 hover:via-teal-500 hover:to-cyan-500"
@@ -459,22 +450,7 @@ export function UsernameInput({
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                       >
-                        {isLoading ? (
-                          <>
-                            <motion.div
-                              className="h-5 w-5 rounded-full border-2 border-white/30 border-t-white"
-                              animate={{ rotate: 360 }}
-                              transition={{
-                                duration: 1,
-                                repeat: Infinity,
-                                ease: "linear",
-                              }}
-                            />
-                            <span>Loading stats...</span>
-                          </>
-                        ) : (
-                          <span>Generate github wrapped</span>
-                        )}
+                        <span>Generate github wrapped</span>
                       </motion.button>
                     )}
                   />
