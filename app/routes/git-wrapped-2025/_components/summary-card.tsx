@@ -191,9 +191,9 @@ export function SummaryCard({
               {/* Inner dark background */}
               <div className="rounded-full overflow-hidden bg-[#0a0f18] p-1">
                 {/* Avatar */}
-                {user?.avatar_url && (
+                {user?.avatarUrl && (
                   <img
-                    src={user.avatar_url}
+                    src={user.avatarUrl}
                     alt={user.name || user.login}
                     className="h-16 w-16 rounded-full object-cover"
                   />

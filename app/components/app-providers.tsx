@@ -120,6 +120,7 @@ function BaseProviders({ children }: { children: React.ReactNode }) {
 
   const [cacheChecked, setCacheChecked] = useState(false);
 
+  // check for schema changes in cache, if changed, bust the cache
   if (!cacheChecked) {
     const queries = queryClient.getQueriesData({
       predicate({ queryKey, meta, state }) {

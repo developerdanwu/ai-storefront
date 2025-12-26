@@ -296,9 +296,9 @@ export function IntroCard({ user, direction }: IntroCardProps) {
             >
               {/* Avatar badge */}
               <div className="relative">
-                {user?.avatar_url ? (
+                {user?.avatarUrl ? (
                   <img
-                    src={user.avatar_url}
+                    src={user.avatarUrl}
                     alt={user.name || user.login}
                     className="h-12 w-12 rounded-full border-2 border-cyan-400/50 shadow-lg shadow-cyan-500/30"
                   />

@@ -68,15 +68,21 @@ export interface ContributionsCollection {
 export const getGitHubContributions = action({
   args: {
     username: v.string(),
+    /** ISO 8601 date string for the start of the date range (e.g., "2024-01-01T00:00:00Z") */
+    from: v.string(),
+    /** ISO 8601 date string for the end of the date range (e.g., "2024-12-31T23:59:59Z") */
+    to: v.string(),
   },
   returns: v.union(contributionsCollectionValidator, v.null()),
   handler: async (
     ctx,
-    { username }
+    { username, from, to }
   ): Promise<ContributionsCollection | null> => {
     return await ResultAsync.fromPromise(
       _cachedGetGitHubContributions.fetch(ctx, {
         username,
+        from,
+        to,
       }),
       (e) =>
         Errors.githubApiFailed({

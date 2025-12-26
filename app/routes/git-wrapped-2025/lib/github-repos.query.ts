@@ -22,25 +22,27 @@ const ZGitHubRepo = z.object({
 type TGitHubRepo = z.infer<typeof ZGitHubRepo>;
 
 export const ZReturnGitHubReposQuery = z.array(
-  z.object({
-    ownerName: z.string(),
-    repoName: z.string(),
-    stargazersCount: z.number(),
-    forksCount: z.number(),
-    pushedAt: z.string(),
-  })
+  z
+    .object({
+      ownerName: z.string(),
+      repoName: z.string(),
+      stargazersCount: z.number(),
+      forksCount: z.number(),
+      pushedAt: z.string(),
+    })
+    .strict()
 );
 
 export type TReturnGitHubReposQuery = z.infer<typeof ZReturnGitHubReposQuery>;
 
 export const githubReposQuery = ({ username }: { username: string }) =>
   queryOptions({
+    queryKey: ["github-repos", username] as const,
+    gcTime: 1000 * 60 * 60 * 24, // 24 hour
+    staleTime: 1000 * 60 * 60 * 24, // 24 hour
     meta: {
       persist: true,
     },
-    queryKey: ["hydrate:github-repos", username] as const,
-    gcTime: 1000 * 60 * 60 * 24, // 24 hour
-    staleTime: 1000 * 60 * 60 * 24, // 24 hour
     queryFn: async ({ queryKey }) => {
       const perPage = 100;
       let page = 1;
@@ -82,6 +84,6 @@ export const githubReposQuery = ({ username }: { username: string }) =>
         page += 1;
       }
 
-      return all;
+      return ZReturnGitHubReposQuery.parse(all);
     },
   });

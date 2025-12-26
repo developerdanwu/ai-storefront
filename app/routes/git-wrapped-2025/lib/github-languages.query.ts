@@ -34,7 +34,7 @@ export const ZLanguageStats = z.object({
 
 export type TLanguageStats = z.infer<typeof ZLanguageStats>;
 
-export const ZReturnGitHubLanguagesQuery = z.array(ZLanguageStats);
+export const ZReturnGitHubLanguagesQuery = z.array(ZLanguageStats.strict());
 
 const ZGitHubRepoCleansed = z.object({
   ownerName: z.string(),
@@ -57,7 +57,7 @@ export const githubLanguagesQuery = ({
     meta: {
       persist: true,
     },
-    queryKey: ["hydrate:github-languages", username] as const,
+    queryKey: ["github-languages", username] as const,
     gcTime: 1000 * 60 * 60 * 24, // 24 hour
     staleTime: 1000 * 60 * 60 * 24, // 24 hour
     throwOnError: false,
@@ -92,6 +92,8 @@ export const githubLanguagesQuery = ({
       );
 
       // Sort by count descending
-      return stats.sort((a, b) => b.count - a.count);
+      return ZReturnGitHubLanguagesQuery.parse(
+        stats.sort((a, b) => b.count - a.count)
+      );
     },
   });

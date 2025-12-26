@@ -1,9 +1,9 @@
 import { motion } from "motion/react";
-import type { LanguageStats } from "./use-github-stats";
+import type { TLanguageStats } from "../lib/github-languages.query";
 import { WrappedCard } from "./wrapped-card";
 
 interface LanguagesCardProps {
-  languageStats: LanguageStats[];
+  languageStats: TLanguageStats[];
   direction: number;
 }
 
@@ -135,7 +135,7 @@ function LanguageBar({
   maxPercentage,
   isTop,
 }: {
-  lang: LanguageStats;
+  lang: TLanguageStats;
   index: number;
   maxPercentage: number;
   isTop: boolean;

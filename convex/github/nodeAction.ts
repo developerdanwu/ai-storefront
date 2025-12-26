@@ -3,79 +3,56 @@
 import { Infer, v } from "convex/values";
 import { internalAction } from "../_generated/server";
 
-// Types for GitHub GraphQL API response
-interface ContributionDay {
-  contributionCount: number;
-  date: string;
-  color: string;
-}
-
-interface ContributionWeek {
-  contributionDays: ContributionDay[];
-}
-
-interface ContributionCalendar {
-  totalContributions: number;
-  weeks: ContributionWeek[];
-}
-
-interface ContributionsCollection {
-  totalCommitContributions: number;
-  totalIssueContributions: number;
-  totalPullRequestContributions: number;
-  totalPullRequestReviewContributions: number;
-  totalRepositoriesWithContributedCommits: number;
-  contributionCalendar: ContributionCalendar;
-}
+type TContributionsCollection = Infer<typeof VReturn_GetGithubContributions>;
 
 interface GitHubGraphQLResponse {
   data?: {
     user?: {
-      contributionsCollection: ContributionsCollection;
+      contributionsCollection: TContributionsCollection;
     };
   };
   errors?: Array<{ message: string }>;
 }
 
-// Convex validators for the return type
-const contributionDayValidator = v.object({
-  contributionCount: v.number(),
-  date: v.string(),
-  color: v.string(),
-});
-
-const contributionWeekValidator = v.object({
-  contributionDays: v.array(contributionDayValidator),
-});
-
-const contributionCalendarValidator = v.object({
-  totalContributions: v.number(),
-  weeks: v.array(contributionWeekValidator),
-});
-
-const contributionsCollectionValidator = v.object({
+const VReturn_GetGithubContributions = v.object({
+  contributionYears: v.array(v.number()),
   totalCommitContributions: v.number(),
   totalIssueContributions: v.number(),
   totalPullRequestContributions: v.number(),
   totalPullRequestReviewContributions: v.number(),
   totalRepositoriesWithContributedCommits: v.number(),
-  contributionCalendar: contributionCalendarValidator,
+  contributionCalendar: v.object({
+    totalContributions: v.number(),
+    weeks: v.array(
+      v.object({
+        contributionDays: v.array(
+          v.object({
+            contributionCount: v.number(),
+            date: v.string(),
+            color: v.string(),
+          })
+        ),
+      })
+    ),
+  }),
 });
 
-export type T_getGitHubContributions = Infer<
-  typeof contributionsCollectionValidator
+export type TReturn_getGitHubContributions = Infer<
+  typeof VReturn_GetGithubContributions
 >;
 
 // GraphQL query for user contributions
+// Note: contributionsCollection requires from/to dates, otherwise it defaults to last 365 days
 const CONTRIBUTIONS_QUERY = `
-  query($username: String!) {
+  query($username: String!, $from: DateTime!, $to: DateTime!) {
     user(login: $username) {
-      contributionsCollection {
+      contributionsCollection(from: $from, to: $to) {
         totalCommitContributions
         totalIssueContributions
         totalPullRequestContributions
         totalPullRequestReviewContributions
         totalRepositoriesWithContributedCommits
+        constributionYears
         contributionCalendar {
           totalContributions
           weeks {
@@ -95,9 +72,13 @@ const CONTRIBUTIONS_QUERY = `
 export const _getGitHubContributions = internalAction({
   args: {
     username: v.string(),
+    /** ISO 8601 date string for the start of the date range (e.g., "2024-01-01T00:00:00Z") */
+    from: v.string(),
+    /** ISO 8601 date string for the end of the date range (e.g., "2024-12-31T23:59:59Z") */
+    to: v.string(),
   },
-  returns: v.union(contributionsCollectionValidator, v.null()),
-  handler: async (ctx, { username }) => {
+  returns: v.union(VReturn_GetGithubContributions, v.null()),
+  handler: async (ctx, { username, from, to }) => {
     const githubPat = process.env.GITHUB_PAT;
 
     if (!githubPat) {
@@ -114,7 +95,7 @@ export const _getGitHubContributions = internalAction({
         },
         body: JSON.stringify({
           query: CONTRIBUTIONS_QUERY,
-          variables: { username },
+          variables: { username, from, to },
         }),
       });
 

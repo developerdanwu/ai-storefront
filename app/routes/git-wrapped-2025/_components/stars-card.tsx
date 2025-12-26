@@ -1,5 +1,6 @@
 import { Sparkle } from "lucide-react";
 import { motion } from "motion/react";
+import { cn } from "~/lib/utils";
 import type { RepoStats } from "./use-github-stats";
 import { AnimatedNumber, WrappedCard } from "./wrapped-card";
 
@@ -113,7 +114,11 @@ export function StarsCard({ repoStats, direction }: StarsCardProps) {
 
         {/* Main number - neon glow effect */}
         <span
-          className="relative text-[10rem] font-black leading-none md:text-[12rem]"
+          className={cn("relative font-black leading-none", {
+            "text-[10rem]": repoStats.totalStars < 100,
+            "text-[5rem]": repoStats.totalStars >= 100,
+            "text-[4rem]": repoStats.totalStars >= 1000,
+          })}
           style={{
             fontFamily: "system-ui, sans-serif",
             color: "#fef3c7",
