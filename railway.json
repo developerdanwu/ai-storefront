@@ -2,7 +2,7 @@
   "$schema": "https://railway.com/railway.schema.json",
   "build": {
     "builder": "RAILPACK",
-    "buildCommand": "pnpm build"
+    "buildCommand": "pnpm convex:deploy"
   },
   "deploy": {
     "startCommand": "serve build/client -s -p $PORT"
