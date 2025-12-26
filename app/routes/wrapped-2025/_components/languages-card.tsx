@@ -249,7 +249,7 @@ export function LanguagesCard({
   return (
     <WrappedCard
       direction={direction}
-      customBackground
+      noise="xl"
       className="rounded-[28px]
     bg-[rgb(2,6,23)]
     bg-[radial-gradient(circle_at_top_left,rgb(148,163,253,0.35),transparent_55%),radial-gradient(circle_at_center_right,rgb(56,189,248,0.25),transparent_55%)]"

@@ -18,36 +18,6 @@ const PARTICLES = Array.from({ length: 30 }, (_, i) => ({
   delay: (((i * 19) % 10) / 10) * 5,
 }));
 
-// Animated floating particles for atmosphere
-function FloatingParticles() {
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {PARTICLES.map((particle) => (
-        <motion.div
-          key={particle.id}
-          className="absolute rounded-full bg-cyan-400/30"
-          style={{
-            width: particle.size,
-            height: particle.size,
-            left: `${particle.x}%`,
-            top: `${particle.y}%`,
-          }}
-          animate={{
-            y: [0, -30, 0],
-            opacity: [0.2, 0.6, 0.2],
-          }}
-          transition={{
-            duration: particle.duration,
-            delay: particle.delay,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: "easeInOut",
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
 // Glowing GitHub Octocat with neon ring effect
 function GlowingOctocat() {
   return (
@@ -57,8 +27,6 @@ function GlowingOctocat() {
 
       {/* Outer ambient glow - cyan at bottom */}
       <div className="absolute -bottom-8 h-[160px] w-[240px] rounded-full bg-cyan-400/15 blur-3xl" />
-
-      {/* Glow layer behind the stroke - this creates the aura */}
 
       {/* Second glow layer - tighter */}
       <GithubOutline
@@ -91,6 +59,7 @@ export function IntroCard({ user, direction }: IntroCardProps) {
     <WrappedCard
       direction={direction}
       customBackground
+      noise="xl"
       className="
     rounded-[28px]
     bg-[rgb(2,6,23)]

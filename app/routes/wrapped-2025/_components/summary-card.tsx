@@ -1,4 +1,4 @@
-import { Shield, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type {
@@ -86,7 +86,7 @@ export function SummaryCard({
   }, [contributionCalendar]);
 
   return (
-    <WrappedCard direction={direction} customBackground>
+    <WrappedCard noise="xl" direction={direction}>
       {/* Custom dark background with neon glow effects */}
       <div className="absolute inset-0 overflow-hidden bg-[#030712]">
         {/* Main diagonal laser beams - top right */}
@@ -165,13 +165,13 @@ export function SummaryCard({
       </div>
 
       {/* Main content */}
-      <div className="relative z-10 flex h-full w-full flex-col items-center justify-center px-4 py-6 text-white">
+      <div className="relative z-10 flex h-full w-full gap-7 flex-col items-center justify-center px-4 py-6 text-white">
         {/* Main content box */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.15, duration: 0.4 }}
-          className="relative w-full max-w-[280px] overflow-hidden rounded-2xl border border-cyan-500/20 bg-[#0a1018]/80 p-5 shadow-[0_0_40px_rgba(6,182,212,0.08)] backdrop-blur-sm"
+          className="relative w-full rounded-2xl border border-cyan-500/20 bg-[#0a1018]/80 p-5 shadow-[0_0_40px_rgba(6,182,212,0.08)] backdrop-blur-sm"
         >
           {/* Inner glow effect at top */}
           <div className="absolute -top-20 left-1/2 h-40 w-40 -translate-x-1/2 rounded-full bg-cyan-500/10 blur-3xl" />
@@ -181,29 +181,24 @@ export function SummaryCard({
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: "spring", delay: 0.2, duration: 0.6 }}
-            className="relative mx-auto mb-3 w-fit"
+            className="relative mx-auto mb-3 -mt-14 w-fit"
           >
             {/* Outer glow */}
-            <div className="absolute -inset-3 rounded-2xl bg-gradient-to-br from-pink-500/40 via-purple-500/30 to-cyan-500/40 blur-xl" />
+            <div className="absolute -inset-3 rounded-full bg-gradient-to-br from-pink-500/40 via-purple-500/30 to-cyan-500/40 blur-xl" />
 
             {/* Gradient border container */}
-            <div className="relative rounded-xl bg-gradient-to-br from-pink-500 via-purple-500 to-fuchsia-500 p-[3px]">
+            <div className="relative rounded-full bg-gradient-to-br from-pink-500 via-purple-500 to-fuchsia-500 p-[3px]">
               {/* Inner dark background */}
-              <div className="rounded-[10px] bg-[#0a0f18] p-1">
+              <div className="rounded-full overflow-hidden bg-[#0a0f18] p-1">
                 {/* Avatar */}
                 {user?.avatar_url && (
                   <img
                     src={user.avatar_url}
                     alt={user.name || user.login}
-                    className="h-14 w-14 rounded-lg object-cover"
+                    className="h-16 w-16 rounded-full object-cover"
                   />
                 )}
               </div>
-            </div>
-
-            {/* Badge overlay */}
-            <div className="absolute -bottom-1.5 -right-1.5 flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-br from-pink-500 to-purple-600 shadow-lg shadow-pink-500/40">
-              <Shield className="h-3.5 w-3.5 text-white" />
             </div>
           </motion.div>
 
@@ -212,7 +207,7 @@ export function SummaryCard({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35 }}
-            className="mb-4 text-center text-lg font-bold tracking-wide"
+            className="mb-6 text-center text-md font-bold tracking-wide"
           >
             {user?.name || user?.login}
           </motion.h2>
@@ -222,10 +217,10 @@ export function SummaryCard({
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.45 }}
-            className="mb-4 flex items-center justify-center gap-6"
+            className="mb-6 flex items-center justify-between px-2"
           >
             <div className="text-center">
-              <p className="text-xl font-bold text-white">
+              <p className="text-3xl font-bold text-white">
                 {repoStats.totalRepos}
               </p>
               <p className="text-[9px] font-medium uppercase tracking-widest text-white/40">
@@ -233,7 +228,7 @@ export function SummaryCard({
               </p>
             </div>
             <div className="text-center">
-              <p className="text-xl font-bold text-white">
+              <p className="text-3xl font-bold text-white">
                 {repoStats.totalStars}
               </p>
               <p className="text-[9px] font-medium uppercase tracking-widest text-white/40">
@@ -241,7 +236,7 @@ export function SummaryCard({
               </p>
             </div>
             <div className="text-center">
-              <p className="text-xl font-bold text-white">
+              <p className="text-3xl font-bold text-white">
                 {activityStats.totalCommits}
               </p>
               <p className="text-[9px] font-medium uppercase tracking-widest text-white/40">
@@ -255,7 +250,7 @@ export function SummaryCard({
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.55 }}
-            className="mb-4 text-center"
+            className="mb-5 text-center"
           >
             <span className="rounded-md border border-cyan-500/30 bg-cyan-950/50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.15)]">
               {topLanguage?.name || "Code"}
@@ -269,7 +264,7 @@ export function SummaryCard({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.65, duration: 0.4 }}
-              className="mb-4 w-full overflow-hidden rounded-lg border border-emerald-500/10 bg-[#060a10]/80 p-2"
+              className="mb-2 w-full overflow-hidden rounded-lg border border-emerald-500/10 bg-[#060a10]/80 p-2"
             >
               {/* Graph wrapper - dynamically scales to fit container */}
               <div
@@ -314,21 +309,19 @@ export function SummaryCard({
               </div>
             </motion.div>
           )}
-
-          {/* Share Button */}
-          <motion.button
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
-            className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-full border border-cyan-500/30 bg-gradient-to-r from-[#0d1f2d] to-[#0a1628] px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.15em] text-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.15)] transition-all hover:border-cyan-400/40 hover:shadow-[0_0_30px_rgba(6,182,212,0.25)]"
-          >
-            <span>Share Your Wrapped</span>
-            <Sparkles className="h-3 w-3 text-cyan-400" />
-
-            {/* Shine effect on hover */}
-            <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
-          </motion.button>
         </motion.div>
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-lg border border-cyan-500/30 bg-gradient-to-r from-[#0d1f2d] to-[#0a1628] px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.15em] text-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.15)] transition-all hover:border-cyan-400/40 hover:shadow-[0_0_30px_rgba(6,182,212,0.25)]"
+        >
+          <span>Share Your Wrapped</span>
+          <Sparkles className="h-3 w-3 text-cyan-400" />
+
+          {/* Shine effect on hover */}
+          <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
+        </motion.button>
       </div>
     </WrappedCard>
   );

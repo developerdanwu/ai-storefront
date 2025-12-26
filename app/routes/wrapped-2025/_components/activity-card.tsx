@@ -162,7 +162,7 @@ export function ActivityCard({ activityStats, direction }: ActivityCardProps) {
   return (
     <WrappedCard
       direction={direction}
-      customBackground
+      noise="xl"
       className="rounded-[28px] bg-[rgb(2,6,23)] bg-[radial-gradient(circle_at_top_right,rgb(148,163,253,0.25),transparent_55%),radial-gradient(circle_at_bottom_left,rgb(56,189,248,0.2),transparent_55%)]"
     >
       {/* Subtle grid pattern */}

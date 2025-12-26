@@ -28,7 +28,7 @@ function FourPointStar({
 
 export function ReposCard({ repoStats, direction }: ReposCardProps) {
   return (
-    <WrappedCard direction={direction} customBackground>
+    <WrappedCard noise="xl" direction={direction}>
       {/* Deep dark background with cyan/purple radial gradients */}
       <div className="absolute inset-0 bg-[#030712]" />
       <div

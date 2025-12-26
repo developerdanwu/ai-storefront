@@ -42,9 +42,8 @@ export function StarsCard({ repoStats, direction }: StarsCardProps) {
   return (
     <WrappedCard
       direction={direction}
-      customBackground
       noise="md"
-      className="rounded-[28px]
+      className="
     bg-[rgb(70,42,12)]
     bg-[radial-gradient(circle_at_top_right,rgb(255,235,160,1)_0%,rgb(220,190,110,0.8)_10%,rgb(180,140,60,0.5)_22%,rgb(130,90,35,0.25)_32%,transparent_45%),radial-gradient(circle_at_bottom_left,rgb(255,235,160,1)_0%,rgb(220,190,110,0.8)_10%,rgb(180,140,60,0.5)_22%,rgb(130,90,35,0.25)_32%,transparent_45%)]"
     >
@@ -85,11 +84,12 @@ export function StarsCard({ repoStats, direction }: StarsCardProps) {
       </div>
 
       {/* Main content */}
+
       <motion.p
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="mb-6 text-xl font-bold uppercase tracking-[0.3em] text-white/90 md:text-2xl"
+        className="mb-6 text-3xl font-bold uppercase tracking-[0.3em] text-white/90"
       >
         Stars Received
       </motion.p>
@@ -111,15 +111,18 @@ export function StarsCard({ repoStats, direction }: StarsCardProps) {
           }}
         />
 
-        {/* Main number with gradient */}
+        {/* Main number - neon glow effect */}
         <span
-          className="relative font-serif text-[10rem] font-black leading-none md:text-[12rem]"
+          className="relative text-[10rem] font-black leading-none md:text-[12rem]"
           style={{
-            background:
-              "linear-gradient(180deg, #fde047 0%, #fbbf24 25%, #f97316 55%, #ea580c 75%, #c2410c 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
+            fontFamily: "system-ui, sans-serif",
+            color: "#fef3c7",
+            textShadow: `
+              0 0 10px rgba(251,191,36,0.7),
+              0 0 25px rgba(245,158,11,0.5),
+              0 0 50px rgba(234,88,12,0.35),
+              0 0 80px rgba(234,88,12,0.2)
+            `,
           }}
         >
           <AnimatedNumber value={repoStats.totalStars} />
@@ -223,11 +226,9 @@ export function StarsCard({ repoStats, direction }: StarsCardProps) {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5, duration: 0.4 }}
-        className="relative z-10 mb-8 text-center text-lg text-white/70"
+        className="relative z-10 mb-8 text-center text-white/70 text-2xl"
       >
-        across all your
-        <br />
-        repositories
+        across all your repositories
       </motion.p>
 
       {/* Frosted glass button */}
@@ -235,7 +236,7 @@ export function StarsCard({ repoStats, direction }: StarsCardProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.7 }}
-        className="relative overflow-hidden rounded-full border border-white/20 bg-white/10 px-8 py-3 backdrop-blur-md"
+        className="relative rounded-lg border border-white/20 bg-white/10 px-8 py-3 backdrop-blur-md"
       >
         {/* Inner glow */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
