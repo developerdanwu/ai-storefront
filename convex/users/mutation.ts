@@ -7,42 +7,6 @@ import { createStoreAgent } from "../agents/storeAgent";
 import * as Errors from "../errors";
 import { getAnonymousUser } from "../helpers/getAnonymousUser";
 import { authedMutation } from "../procedures";
-import { Users } from "../schema/users.schema";
-
-export const _upsertFromWorkos = internalMutation({
-  args: Users.withoutSystemFields,
-  async handler(ctx, args) {
-    const user = await ctx.db
-      .query("users")
-      .withIndex("externalId", (q) => q.eq("externalId", args.externalId))
-      .first();
-
-    if (user === null) {
-      return await ctx.db.insert("users", args);
-    }
-    await ctx.db.patch(user._id, args);
-
-    return user._id;
-  },
-});
-
-export const _deleteFromWorkos = internalMutation({
-  args: { externalId: v.string() },
-  async handler(ctx, { externalId }) {
-    const user = await ctx.db
-      .query("users")
-      .withIndex("externalId", (q) => q.eq("externalId", externalId))
-      .first();
-
-    if (user !== null) {
-      await ctx.db.delete(user._id);
-    } else {
-      console.warn(
-        `Can't delete user, there is none for user ID: ${externalId}`
-      );
-    }
-  },
-});
 
 export const _upsertAnonymousUser = internalMutation({
   args: {

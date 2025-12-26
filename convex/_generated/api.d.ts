@@ -15,7 +15,10 @@ import type * as agents_summaryAgent from "../agents/summaryAgent.js";
 import type * as ai_action from "../ai/action.js";
 import type * as ai_actionsNode from "../ai/actionsNode.js";
 import type * as ai_query from "../ai/query.js";
+import type * as auth from "../auth.js";
 import type * as errors from "../errors.js";
+import type * as github_action from "../github/action.js";
+import type * as github_nodeAction from "../github/nodeAction.js";
 import type * as helpers_createThread from "../helpers/createThread.js";
 import type * as helpers_generateSummaryTitle from "../helpers/generateSummaryTitle.js";
 import type * as helpers_getAiThreadMessages from "../helpers/getAiThreadMessages.js";
@@ -35,10 +38,8 @@ import type * as rag from "../rag.js";
 import type * as rateLimiter from "../rateLimiter.js";
 import type * as resend from "../resend.js";
 import type * as users_mutation from "../users/mutation.js";
-import type * as users_nodeAction from "../users/nodeAction.js";
 import type * as users_query from "../users/query.js";
 import type * as workflowManager from "../workflowManager.js";
-import type * as workos from "../workos.js";
 
 import type {
   ApiFromModules,
@@ -62,7 +63,10 @@ declare const fullApi: ApiFromModules<{
   "ai/action": typeof ai_action;
   "ai/actionsNode": typeof ai_actionsNode;
   "ai/query": typeof ai_query;
+  auth: typeof auth;
   errors: typeof errors;
+  "github/action": typeof github_action;
+  "github/nodeAction": typeof github_nodeAction;
   "helpers/createThread": typeof helpers_createThread;
   "helpers/generateSummaryTitle": typeof helpers_generateSummaryTitle;
   "helpers/getAiThreadMessages": typeof helpers_getAiThreadMessages;
@@ -82,10 +86,8 @@ declare const fullApi: ApiFromModules<{
   rateLimiter: typeof rateLimiter;
   resend: typeof resend;
   "users/mutation": typeof users_mutation;
-  "users/nodeAction": typeof users_nodeAction;
   "users/query": typeof users_query;
   workflowManager: typeof workflowManager;
-  workos: typeof workos;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 
@@ -1090,13 +1092,13 @@ export declare const components: {
         "internal",
         {
           beforeMessageId?: string;
-          embedding?: Array<number>;
-          embeddingModel?: string;
           limit: number;
           messageRange?: { after: number; before: number };
           searchAllMessagesForUserId?: string;
           text?: string;
           threadId?: string;
+          vector?: Array<number>;
+          vectorModel?: string;
           vectorScoreThreshold?: number;
         },
         Array<{
@@ -1647,18 +1649,6 @@ export declare const components: {
       >;
     };
     streams: {
-      abort: FunctionReference<
-        "mutation",
-        "internal",
-        { reason: string; streamId: string },
-        boolean
-      >;
-      abortByOrder: FunctionReference<
-        "mutation",
-        "internal",
-        { order: number; reason: string; threadId: string },
-        boolean
-      >;
       addDelta: FunctionReference<
         "mutation",
         "internal",
@@ -1814,18 +1804,13 @@ export declare const components: {
       list: FunctionReference<
         "query",
         "internal",
-        {
-          startOrder?: number;
-          statuses?: Array<"streaming" | "finished" | "aborted">;
-          threadId: string;
-        },
+        { threadId: string },
         Array<{
           agentName?: string;
           model?: string;
           order: number;
           provider?: string;
           providerOptions?: Record<string, Record<string, any>>;
-          status: "streaming" | "finished" | "aborted";
           stepOrder: number;
           streamId: string;
           userId?: string;
@@ -2192,6 +2177,27 @@ export declare const components: {
         "internal",
         { workflowId: string },
         {
+          inProgress: Array<{
+            _creationTime: number;
+            _id: string;
+            step: {
+              args: any;
+              argsSize: number;
+              completedAt?: number;
+              functionType: "query" | "mutation" | "action";
+              handle: string;
+              inProgress: boolean;
+              name: string;
+              runResult?:
+                | { kind: "success"; returnValue: any }
+                | { error: string; kind: "failed" }
+                | { kind: "canceled" };
+              startedAt: number;
+              workId?: string;
+            };
+            stepNumber: number;
+            workflowId: string;
+          }>;
           journalEntries: Array<{
             _creationTime: number;
             _id: string;
@@ -2222,7 +2228,14 @@ export declare const components: {
             generationNumber: number;
             logLevel?: any;
             name?: string;
-            onComplete?: { context?: any; fnHandle: string };
+            onComplete?: {
+              context: any;
+              result:
+                | { kind: "success"; returnValue: any }
+                | { error: string; kind: "failed" }
+                | { kind: "canceled" };
+              workId: string;
+            };
             runResult?:
               | { kind: "success"; returnValue: any }
               | { error: string; kind: "failed" }
@@ -2311,6 +2324,7 @@ export declare const components: {
         "internal",
         {
           generationNumber: number;
+          now: number;
           runResult:
             | { kind: "success"; returnValue: any }
             | { error: string; kind: "failed" }
@@ -2324,8 +2338,15 @@ export declare const components: {
         "internal",
         {
           maxParallelism?: number;
-          onComplete?: { context?: any; fnHandle: string };
-          startAsync?: boolean;
+          onComplete?: {
+            context: any;
+            result:
+              | { kind: "success"; returnValue: any }
+              | { error: string; kind: "failed" }
+              | { kind: "canceled" };
+            workId: string;
+          };
+          validateAsync?: boolean;
           workflowArgs: any;
           workflowHandle: string;
           workflowName: string;
@@ -2366,7 +2387,14 @@ export declare const components: {
             generationNumber: number;
             logLevel?: any;
             name?: string;
-            onComplete?: { context?: any; fnHandle: string };
+            onComplete?: {
+              context: any;
+              result:
+                | { kind: "success"; returnValue: any }
+                | { error: string; kind: "failed" }
+                | { kind: "canceled" };
+              workId: string;
+            };
             runResult?:
               | { kind: "success"; returnValue: any }
               | { error: string; kind: "failed" }
@@ -2936,6 +2964,43 @@ export declare const components: {
           to: string;
         },
         string
+      >;
+    };
+  };
+  workOSAuthKit: {
+    lib: {
+      enqueueWebhookEvent: FunctionReference<
+        "mutation",
+        "internal",
+        {
+          apiKey: string;
+          event: string;
+          eventId: string;
+          eventTypes?: Array<string>;
+          logLevel?: "DEBUG";
+          onEventHandle?: string;
+          updatedAt?: string;
+        },
+        any
+      >;
+      getAuthUser: FunctionReference<
+        "query",
+        "internal",
+        { id: string },
+        {
+          createdAt: string;
+          email: string;
+          emailVerified: boolean;
+          externalId?: null | string;
+          firstName?: null | string;
+          id: string;
+          lastName?: null | string;
+          lastSignInAt?: null | string;
+          locale?: null | string;
+          metadata: Record<string, any>;
+          profilePictureUrl?: null | string;
+          updatedAt: string;
+        } | null
       >;
     };
   };
