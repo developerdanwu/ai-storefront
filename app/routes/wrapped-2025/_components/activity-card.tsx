@@ -13,108 +13,15 @@ interface ActivityCardProps {
   direction: number;
 }
 
-// Decorative cyan tech lines in the background
-function TechLines() {
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {/* Top-right curved lines */}
-      <svg
-        className="absolute -right-8 -top-8 h-48 w-48 opacity-30"
-        viewBox="0 0 200 200"
-        fill="none"
-      >
-        <path
-          d="M 180 20 Q 160 80 100 100"
-          stroke="url(#cyan-gradient-1)"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
-        <path
-          d="M 200 40 Q 170 100 90 130"
-          stroke="url(#cyan-gradient-1)"
-          strokeWidth="1"
-          strokeLinecap="round"
-        />
-        <path
-          d="M 200 10 Q 150 60 110 70"
-          stroke="url(#cyan-gradient-1)"
-          strokeWidth="1"
-          strokeLinecap="round"
-        />
-        <defs>
-          <linearGradient
-            id="cyan-gradient-1"
-            x1="0%"
-            y1="0%"
-            x2="100%"
-            y2="100%"
-          >
-            <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.8" />
-            <stop offset="100%" stopColor="#06b6d4" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-      </svg>
-
-      {/* Bottom-left curved lines */}
-      <svg
-        className="absolute -bottom-8 -left-8 h-48 w-48 opacity-30"
-        viewBox="0 0 200 200"
-        fill="none"
-      >
-        <path
-          d="M 20 180 Q 80 160 100 100"
-          stroke="url(#cyan-gradient-2)"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
-        <path
-          d="M 0 160 Q 60 130 110 90"
-          stroke="url(#cyan-gradient-2)"
-          strokeWidth="1"
-          strokeLinecap="round"
-        />
-        <path
-          d="M 10 200 Q 60 150 70 110"
-          stroke="url(#cyan-gradient-2)"
-          strokeWidth="1"
-          strokeLinecap="round"
-        />
-        <defs>
-          <linearGradient
-            id="cyan-gradient-2"
-            x1="100%"
-            y1="100%"
-            x2="0%"
-            y2="0%"
-          >
-            <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.8" />
-            <stop offset="100%" stopColor="#06b6d4" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-      </svg>
-
-      {/* Subtle grid pattern overlay */}
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: `
-            linear-gradient(rgba(6, 182, 212, 0.3) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(6, 182, 212, 0.3) 1px, transparent 1px)
-          `,
-          backgroundSize: "40px 40px",
-        }}
-      />
-    </div>
-  );
-}
-
-// Stat card component for the 2x2 grid
+// Stat card component with glowing effects
 interface StatCardProps {
   icon: React.ElementType;
   value: number;
   label: string;
-  iconColor: string;
-  iconBgColor: string;
+  color: string;
+  glowColor: string;
+  gradientFrom: string;
+  gradientTo: string;
   delay: number;
 }
 
@@ -122,71 +29,133 @@ function StatCard({
   icon: Icon,
   value,
   label,
-  iconColor,
-  iconBgColor,
+  color,
+  glowColor,
+  gradientFrom,
+  gradientTo,
   delay,
 }: StatCardProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, x: -20 }}
+      initial={{ opacity: 0, x: -40 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ delay, duration: 0.4, ease: "easeOut" }}
-      className="flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur-sm md:px-5 md:py-4"
+      transition={{ delay, duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
+      className="group relative"
     >
-      {/* Circular icon container */}
-      <div
-        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full md:h-12 md:w-12 ${iconBgColor}`}
-      >
-        <Icon className={`h-5 w-5 md:h-6 md:w-6 ${iconColor}`} />
-      </div>
+      {/* Outer glow effect */}
+      <motion.div
+        className="absolute -inset-1 rounded-2xl blur-xl"
+        style={{ background: glowColor }}
+        animate={{ opacity: [0.15, 0.3, 0.15] }}
+        transition={{
+          duration: 3,
+          repeat: Number.POSITIVE_INFINITY,
+          delay,
+        }}
+      />
 
-      {/* Value and Label */}
-      <div className="flex flex-col">
-        <motion.span
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: delay + 0.15, type: "spring", stiffness: 200 }}
-          className="text-2xl font-bold text-white md:text-3xl"
-        >
-          {value.toLocaleString()}
-        </motion.span>
-        <span className="text-xs font-medium text-white/60 md:text-sm">
-          {label}
-        </span>
+      {/* Gradient border */}
+      <div
+        className="absolute -inset-[1px] rounded-2xl"
+        style={{
+          background: `linear-gradient(135deg, ${gradientFrom}50, transparent 50%, ${gradientTo}50)`,
+          opacity: 0.6,
+        }}
+      />
+
+      {/* Card content */}
+      <div className="relative flex items-center gap-5 rounded-2xl bg-[rgb(15,23,42)]/90 px-6 py-5 backdrop-blur-sm">
+        {/* Glowing icon - no container */}
+        <div className="relative shrink-0 flex h-12 w-12 items-center justify-center">
+          {/* Subtle glow behind icon */}
+          <div
+            className="absolute inset-0 rounded-full blur-md opacity-40"
+            style={{ background: glowColor }}
+          />
+
+          {/* The icon itself with subtle glow */}
+          <Icon
+            className="relative h-8 w-8"
+            strokeWidth={1.75}
+            style={{
+              color,
+              filter: `drop-shadow(0 0 8px ${color})`,
+            }}
+          />
+        </div>
+
+        {/* Value and Label */}
+        <div className="flex flex-col gap-0.5">
+          <motion.span
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: delay + 0.15, type: "spring", stiffness: 200 }}
+            className="text-4xl font-bold tabular-nums tracking-tight text-white"
+            style={{
+              textShadow: `0 0 40px ${glowColor}`,
+            }}
+          >
+            {value.toLocaleString()}
+          </motion.span>
+          <span className="text-sm font-medium text-white/40">{label}</span>
+        </div>
+
+        {/* Accent line on the right */}
+        <div
+          className="absolute right-0 top-1/2 h-8 w-1 -translate-y-1/2 rounded-l-full"
+          style={{
+            background: `linear-gradient(180deg, ${gradientFrom}, ${gradientTo})`,
+            boxShadow: `0 0 15px ${glowColor}`,
+          }}
+        />
       </div>
     </motion.div>
   );
 }
 
 export function ActivityCard({ activityStats, direction }: ActivityCardProps) {
+  const totalContributions =
+    activityStats.totalCommits +
+    activityStats.totalPullRequests +
+    activityStats.totalIssues +
+    activityStats.totalCodeReviews;
+
   const stats = [
     {
       icon: GitCommitHorizontal,
       label: "Commits",
       value: activityStats.totalCommits,
-      iconColor: "text-green-400",
-      iconBgColor: "bg-green-500/20",
+      color: "#22d3ee",
+      glowColor: "rgba(34, 211, 238, 0.5)",
+      gradientFrom: "#06b6d4",
+      gradientTo: "#0891b2",
     },
     {
       icon: GitPullRequest,
-      label: "Pull Request",
+      label: "Pull Requests",
       value: activityStats.totalPullRequests,
-      iconColor: "text-purple-400",
-      iconBgColor: "bg-purple-500/20",
+      color: "#a78bfa",
+      glowColor: "rgba(167, 139, 250, 0.5)",
+      gradientFrom: "#8b5cf6",
+      gradientTo: "#7c3aed",
     },
     {
       icon: CircleDot,
       label: "Issues",
       value: activityStats.totalIssues,
-      iconColor: "text-emerald-400",
-      iconBgColor: "bg-emerald-500/20",
+      color: "#4ade80",
+      glowColor: "rgba(74, 222, 128, 0.5)",
+      gradientFrom: "#22c55e",
+      gradientTo: "#16a34a",
     },
     {
       icon: CheckCircle2,
-      label: "Code Review",
+      label: "Code Reviews",
       value: activityStats.totalCodeReviews,
-      iconColor: "text-yellow-400",
-      iconBgColor: "bg-yellow-500/20",
+      color: "#c084fc",
+      glowColor: "rgba(192, 132, 252, 0.5)",
+      gradientFrom: "#a855f7",
+      gradientTo: "#9333ea",
     },
   ];
 
@@ -194,37 +163,78 @@ export function ActivityCard({ activityStats, direction }: ActivityCardProps) {
     <WrappedCard
       direction={direction}
       customBackground
-      className="bg-[#0d1117]"
+      className="rounded-[28px] bg-[rgb(2,6,23)] bg-[radial-gradient(circle_at_top_right,rgb(148,163,253,0.25),transparent_55%),radial-gradient(circle_at_bottom_left,rgb(56,189,248,0.2),transparent_55%)]"
     >
-      {/* Background decorations */}
-      <TechLines />
+      {/* Subtle grid pattern */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.02]"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: "32px 32px",
+        }}
+      />
 
       {/* Content */}
-      <div className="relative z-10 flex h-full w-full flex-col items-center justify-center">
+      <div className="relative z-10 flex h-full w-full flex-col justify-center px-6 py-8">
         {/* Title */}
-        <motion.h2
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.4 }}
-          className="mb-6 text-center text-lg font-semibold uppercase tracking-[0.2em] text-white/80 md:mb-8 md:text-xl"
+          className="mb-6 text-center"
         >
-          Your Contributions
-        </motion.h2>
+          <span className="text-xs font-medium uppercase tracking-[0.3em] text-white/40">
+            2025 Stats
+          </span>
+          <h2 className="mt-1 text-2xl font-bold uppercase tracking-wide text-white">
+            Your Contributions
+          </h2>
+        </motion.div>
 
-        {/* Stacked stats - 1 per row */}
-        <div className="flex w-full max-w-xs flex-col gap-3 md:max-w-sm md:gap-4">
+        {/* Stacked stats - full width */}
+        <div className="flex w-full flex-col gap-3">
           {stats.map((stat, index) => (
             <StatCard
               key={stat.label}
               icon={stat.icon}
               value={stat.value}
               label={stat.label}
-              iconColor={stat.iconColor}
-              iconBgColor={stat.iconBgColor}
-              delay={0.2 + index * 0.1}
+              color={stat.color}
+              glowColor={stat.glowColor}
+              gradientFrom={stat.gradientFrom}
+              gradientTo={stat.gradientTo}
+              delay={0.2 + index * 0.12}
             />
           ))}
         </div>
+
+        {/* Total contributions footer */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8, duration: 0.5 }}
+          className="mt-6 text-center"
+        >
+          <div className="inline-flex items-baseline gap-2">
+            <motion.span
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 1, type: "spring", stiffness: 200 }}
+              className="text-3xl font-bold tabular-nums text-white"
+              style={{
+                textShadow: "0 0 30px rgba(139, 92, 246, 0.5)",
+              }}
+            >
+              {totalContributions.toLocaleString()}
+            </motion.span>
+            <span className="text-sm font-medium text-white/40">
+              total contributions
+            </span>
+          </div>
+        </motion.div>
       </div>
     </WrappedCard>
   );

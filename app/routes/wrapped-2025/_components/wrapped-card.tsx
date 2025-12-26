@@ -25,6 +25,7 @@ interface WrappedCardProps {
   direction: number;
   gradient?: string;
   className?: string;
+  noise?: "xl" | "md" | "sm";
   /** If true, skips the gradient and decorative elements - use for custom backgrounds */
   customBackground?: boolean;
 }
@@ -35,6 +36,7 @@ export function WrappedCard({
   gradient = "from-violet-600 via-purple-600 to-fuchsia-600",
   className,
   customBackground = false,
+  noise,
 }: WrappedCardProps) {
   return (
     <motion.div
@@ -67,7 +69,14 @@ export function WrappedCard({
 
       {/* Content */}
       {children}
-      <div className="noise-bg absolute w-full h-full" />
+
+      <div
+        className={cn("absolute w-full h-full", {
+          "bg-noise-xl": noise === "xl",
+          "bg-noise-md": noise === "md",
+          "bg-noise-sm": noise === "sm",
+        })}
+      />
     </motion.div>
   );
 }

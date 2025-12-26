@@ -262,12 +262,23 @@ export default function WrappedRoute() {
           }}
         >
           <AnimatePresence mode="wait" custom={direction}>
-            <LanguagesCard
+            <SummaryCard
+              user={user}
+              repoStats={repoStats}
               languageStats={languageStats}
+              activityStats={activityStats}
+              contributionCalendar={contributionCalendar}
               direction={direction}
             />
+            {/* <ReposCard repoStats={repoStats} direction={direction} /> */}
+            {/* <ActivityCard activityStats={activityStats} direction={direction} /> */}
+            {/* <StarsCard repoStats={repoStats} direction={direction} /> */}
+            {/* <LanguagesCard
+              languageStats={languageStats}
+              direction={direction}
+            /> */}
             {/* <IntroCard user={user} direction={direction} />; */}
-            {/* <div key={currentSlide}>{renderSlide()}</div> */}
+            {/* {renderSlide()} */}
           </AnimatePresence>
         </div>
       </div>

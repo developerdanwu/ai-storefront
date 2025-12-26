@@ -177,8 +177,13 @@ body {
 
   }
 
-  .noise-bg {
-    background-image: url("/noise.svg"); 
+  .bg-noise-xl {
+    background-image: url("/noise-xl.svg"); 
+    mix-blend-mode: multiply;
+  }
+
+  .bg-noise-md {
+    background-image: url("/noise-md.svg"); 
     mix-blend-mode: multiply;
   }
 }
