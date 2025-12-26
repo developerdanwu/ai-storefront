@@ -25,7 +25,9 @@ export function StoryProgress({
     // Reset progress when slide changes
     setProgress(0);
 
-    if (isPaused) return;
+    if (isPaused) {
+      return;
+    }
 
     const startTime = Date.now();
     let animationFrame: number;

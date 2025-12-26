@@ -1,7 +1,7 @@
-import { ArrowRight, Github, Lock, Sparkles } from "lucide-react";
 import { motion } from "motion/react";
 import { useCallback, useState } from "react";
 import { z } from "zod";
+import GithubOutline from "~/components/icons/github-outline";
 import { useAppForm } from "~/components/ui/tanstack-form";
 import { cn } from "~/lib/utils";
 
@@ -23,6 +23,260 @@ interface UsernameInputProps {
   isLoading?: boolean;
   isAuthenticated?: boolean;
   authenticatedUsername?: string;
+}
+
+// Color palette for particles
+const PARTICLE_COLORS = [
+  "bg-purple-400",
+  "bg-purple-500",
+  "bg-cyan-400",
+  "bg-cyan-300",
+  "bg-pink-400",
+  "bg-blue-400",
+  "bg-violet-400",
+  "bg-teal-400",
+];
+
+// Pre-generated particle data to avoid re-randomizing on each render
+const PARTICLES = Array.from({ length: 40 }, (_, i) => ({
+  id: i,
+  size: (((i * 7) % 10) / 10) * 4 + 2,
+  x: (i * 13) % 100,
+  y: (i * 17) % 100,
+  duration: (((i * 11) % 10) / 10) * 8 + 12,
+  delay: (((i * 19) % 10) / 10) * 8,
+  color: PARTICLE_COLORS[i % PARTICLE_COLORS.length],
+  opacity: (((i * 23) % 10) / 10) * 0.5 + 0.3,
+}));
+
+function DiagonalBeam() {
+  return (
+    <div className="pointer-events-none absolute inset-0">
+      <svg
+        className="absolute inset-0 h-full w-full"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+      >
+        <defs>
+          {/* Gradient for top-left beam - neon blue at edge, purple toward center */}
+          <linearGradient id="beam-tl" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="rgb(56, 189, 248)" stopOpacity="1" />
+            <stop
+              offset="20%"
+              stopColor="rgb(56, 189, 248)"
+              stopOpacity="0.9"
+            />
+            <stop
+              offset="50%"
+              stopColor="rgb(139, 92, 246)"
+              stopOpacity="0.7"
+            />
+            <stop
+              offset="80%"
+              stopColor="rgb(168, 85, 247)"
+              stopOpacity="0.4"
+            />
+            <stop offset="100%" stopColor="rgb(168, 85, 247)" stopOpacity="0" />
+          </linearGradient>
+          {/* Gradient for bottom-right beam - purple from center, neon blue at edge */}
+          <linearGradient id="beam-br" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="rgb(168, 85, 247)" stopOpacity="0" />
+            <stop
+              offset="20%"
+              stopColor="rgb(168, 85, 247)"
+              stopOpacity="0.4"
+            />
+            <stop
+              offset="50%"
+              stopColor="rgb(139, 92, 246)"
+              stopOpacity="0.7"
+            />
+            <stop
+              offset="80%"
+              stopColor="rgb(56, 189, 248)"
+              stopOpacity="0.9"
+            />
+            <stop offset="100%" stopColor="rgb(56, 189, 248)" stopOpacity="1" />
+          </linearGradient>
+          {/* Glow filter */}
+          <filter id="beam-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="0.5" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        {/* Top-left beam - from outside top-left to ~40% of the way */}
+        <motion.line
+          x1="-10"
+          y1="-10"
+          x2="45"
+          y2="45"
+          stroke="url(#beam-tl)"
+          strokeWidth="0.4"
+          filter="url(#beam-glow)"
+          animate={{ opacity: [0.7, 1, 0.7] }}
+          transition={{
+            duration: 3,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: "easeInOut",
+          }}
+        />
+        {/* Top-left beam glow */}
+        <motion.line
+          x1="-10"
+          y1="-10"
+          x2="45"
+          y2="45"
+          stroke="url(#beam-tl)"
+          strokeWidth="1.5"
+          opacity="0.3"
+          filter="url(#beam-glow)"
+          animate={{ opacity: [0.2, 0.4, 0.2] }}
+          transition={{
+            duration: 3,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: "easeInOut",
+          }}
+        />
+
+        {/* Bottom-right beam - from ~60% to outside bottom-right */}
+        <motion.line
+          x1="65"
+          y1="55"
+          x2="110"
+          y2="95"
+          stroke="url(#beam-br)"
+          strokeWidth="0.4"
+          filter="url(#beam-glow)"
+          animate={{ opacity: [0.7, 1, 0.7] }}
+          transition={{
+            duration: 3,
+            delay: 1.5,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: "easeInOut",
+          }}
+        />
+        {/* Bottom-right beam glow */}
+        <motion.line
+          x1="65"
+          y1="55"
+          x2="110"
+          y2="95"
+          stroke="url(#beam-br)"
+          strokeWidth="1.5"
+          opacity="0.3"
+          filter="url(#beam-glow)"
+          animate={{ opacity: [0.2, 0.4, 0.2] }}
+          transition={{
+            duration: 3,
+            delay: 1.5,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: "easeInOut",
+          }}
+        />
+      </svg>
+    </div>
+  );
+}
+
+function FloatingParticles() {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {PARTICLES.map((particle) => (
+        <motion.div
+          key={particle.id}
+          className={`absolute rounded-full ${particle.color}`}
+          style={{
+            width: particle.size,
+            height: particle.size,
+            left: `${particle.x}%`,
+            top: `${particle.y}%`,
+            opacity: particle.opacity,
+            filter: `blur(${particle.size > 4 ? 1 : 0}px)`,
+            boxShadow: `0 0 ${particle.size * 2}px currentColor`,
+          }}
+          animate={{
+            y: [0, -30, 0, 20, 0],
+            x: [0, 15, -10, 5, 0],
+            scale: [1, 1.2, 0.9, 1.1, 1],
+            opacity: [
+              particle.opacity,
+              particle.opacity * 1.5,
+              particle.opacity * 0.7,
+              particle.opacity * 1.2,
+              particle.opacity,
+            ],
+          }}
+          transition={{
+            duration: particle.duration,
+            delay: particle.delay,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// Planet components for corners
+function Planets() {
+  return (
+    <>
+      {/* Bottom-left pink/purple planet */}
+      <div className="pointer-events-none absolute -bottom-32 -left-32 h-80 w-80">
+        <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-pink-600 via-purple-600 to-purple-800 opacity-80 blur-sm" />
+        <div className="absolute inset-4 rounded-full bg-gradient-to-tr from-pink-500 via-purple-500 to-purple-700 opacity-90" />
+      </div>
+
+      {/* Top-right cyan planet */}
+      <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64">
+        <div className="absolute inset-0 rounded-full bg-gradient-to-bl from-cyan-400 via-teal-500 to-cyan-600 opacity-80 blur-sm" />
+        <div className="absolute inset-4 rounded-full bg-gradient-to-bl from-cyan-300 via-teal-400 to-cyan-500 opacity-90" />
+      </div>
+    </>
+  );
+}
+
+// Glowing GitHub Octocat with neon ring effect
+function GlowingOctocat() {
+  return (
+    <div className="relative flex items-center justify-center">
+      {/* Outer ambient glow - purple at top */}
+      <div className="absolute -top-12 h-[200px] w-[300px] rounded-full bg-purple-500/20 blur-3xl" />
+
+      {/* Outer ambient glow - cyan at bottom */}
+      <div className="absolute -bottom-12 h-[200px] w-[300px] rounded-full bg-cyan-400/15 blur-3xl" />
+
+      {/* Main crisp stroke on top */}
+      <GithubOutline
+        className="relative z-10 h-[280px] w-[280px]"
+        style={{
+          filter: `
+            drop-shadow(0 0 2px rgba(192, 132, 252, 0.8))
+            drop-shadow(0 0 3px rgba(168, 85, 247, 0.5))
+          `,
+        }}
+      />
+    </div>
+  );
+}
+
+// Grid overlay background
+function GridOverlay() {
+  return (
+    <div className="pointer-events-none absolute inset-0">
+      {/* Large grid */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:80px_80px]" />
+      {/* Medium grid */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px]" />
+      {/* Small grid */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px]" />
+    </div>
+  );
 }
 
 export function UsernameInput({
@@ -54,234 +308,182 @@ export function UsernameInput({
   );
 
   return (
-    <div className="relative flex h-screen w-full items-center justify-center overflow-hidden">
-      {/* Animated background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950">
-        {/* Animated gradient orbs */}
-        <motion.div
-          className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-purple-600/20 blur-3xl"
-          animate={{
-            x: [0, 50, 0],
-            y: [0, 30, 0],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div
-          className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-pink-600/20 blur-3xl"
-          animate={{
-            x: [0, -50, 0],
-            y: [0, -30, 0],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div
-          className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/10 blur-3xl"
-          animate={{
-            scale: [1, 1.2, 1],
-          }}
-          transition={{
-            duration: 6,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-      </div>
+    <div
+      className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden py-16"
+      style={{
+        backgroundColor: "rgb(2,6,23)",
+        backgroundImage: `
+          radial-gradient(circle at top right, rgba(148,163,253,0.35), transparent 55%),
+          radial-gradient(circle at bottom left, rgba(56,189,248,0.25), transparent 55%)
+        `,
+      }}
+    >
+      {/* Grid overlay */}
+      <GridOverlay />
 
-      {/* Content */}
-      <motion.div
-        className="relative z-10 flex w-full max-w-md flex-col items-center px-6"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        {/* Logo and title */}
-        <motion.div
-          className="mb-8 flex flex-col items-center"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-        >
-          <div className="mb-4 flex items-center gap-3">
-            <Github className="h-10 w-10 text-white" />
-            <Sparkles className="h-6 w-6 text-yellow-400" />
-          </div>
-          <h1
-            className="mb-2 text-center text-5xl font-bold tracking-tight text-white"
-            style={{ fontFamily: "'Bebas Neue', sans-serif" }}
-          >
-            GitHub Wrapped
-          </h1>
-          <p className="text-center text-lg text-white/60">
-            Your 2025 Year in Code
-          </p>
-        </motion.div>
+      {/* Diagonal light beams */}
+      <DiagonalBeam />
 
-        {/* Sign in with GitHub button - for full stats */}
+      {/* Floating particles */}
+      <FloatingParticles />
+
+      {/* Planets */}
+      <Planets />
+
+      {/* Noise texture overlay */}
+      <div className="pointer-events-none absolute inset-0 bg-noise-xl opacity-30" />
+
+      {/* Main content */}
+      <div className="relative z-10 flex w-full max-w-lg flex-col items-center px-6">
+        {/* Hero Section */}
         <motion.div
-          className="mb-6 w-full"
-          initial={{ opacity: 0, y: 20 }}
+          className="flex flex-col items-center"
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35, duration: 0.5 }}
+          transition={{ duration: 0.6 }}
         >
-          {isAuthenticated && authenticatedUsername ? (
-            <motion.button
-              type="button"
-              onClick={() => onSubmit(authenticatedUsername)}
-              disabled={isLoading}
-              className="group relative flex w-full items-center justify-center gap-3 rounded-xl bg-[#24292f] py-4 text-lg font-semibold text-white transition-all hover:bg-[#2d333b]"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Github className="h-5 w-5" />
-              <span>Continue as @{authenticatedUsername}</span>
-              <span className="ml-1 flex items-center gap-1 rounded-full bg-green-500/20 px-2 py-0.5 text-xs text-green-400">
-                <Lock className="h-3 w-3" />
-                Full Stats
-              </span>
-            </motion.button>
-          ) : (
-            <motion.button
-              type="button"
-              onClick={onSignIn}
-              disabled={isLoading}
-              className="group relative flex w-full items-center justify-center gap-3 rounded-xl bg-[#24292f] py-4 text-lg font-semibold text-white transition-all hover:bg-[#2d333b]"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Github className="h-5 w-5" />
-              <span>Sign in with GitHub</span>
-              <span className="ml-1 flex items-center gap-1 rounded-full bg-green-500/20 px-2 py-0.5 text-xs text-green-400">
-                <Lock className="h-3 w-3" />
-                Private repos
-              </span>
-            </motion.button>
-          )}
-          <p className="mt-2 text-center text-xs text-white/40">
-            {isAuthenticated
-              ? "View your complete stats including private repositories"
-              : "Sign in to include private repos & detailed contribution data"}
-          </p>
-        </motion.div>
+          {/* Glowing Octocat - positioned above 2025 */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+            className="mb-[-80px] z-0"
+          >
+            <GlowingOctocat />
+          </motion.div>
 
-        {/* Divider */}
-        <motion.div
-          className="mb-6 flex w-full items-center gap-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4, duration: 0.5 }}
-        >
-          <div className="h-px flex-1 bg-white/20" />
-          <span className="text-sm text-white/40">or enter any username</span>
-          <div className="h-px flex-1 bg-white/20" />
-        </motion.div>
-
-        {/* Input form - for public stats */}
-        <form.AppForm>
-          <motion.form
-            onSubmit={handleSubmit}
-            className="w-full"
+          {/* 2025 large metallic text */}
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.45, duration: 0.5 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className="relative text-[156px] font-bold leading-none bg-gradient-to-b from-white via-gray-300 to-gray-500 bg-clip-text text-transparent"
+            style={{
+              textShadow: "0 4px 30px rgba(0,0,0,0.5)",
+            }}
           >
-            <form.AppField
-              name="username"
-              children={(field: any) => (
-                <field.FormItem className="mb-4">
-                  <div className="relative">
-                    <div
-                      className={cn(
-                        "absolute -inset-0.5 rounded-xl bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 opacity-0 blur transition-opacity duration-300",
-                        isFocused && "opacity-75"
-                      )}
-                    />
-                    <div className="relative flex items-center overflow-hidden rounded-xl bg-white/10 backdrop-blur-sm">
-                      <span className="pl-4 text-white/50">github.com/</span>
-                      <field.FormControl>
-                        <input
-                          type="text"
-                          value={field.state.value}
-                          onChange={(e) => field.handleChange(e.target.value)}
-                          onBlur={() => {
-                            field.handleBlur();
-                            setIsFocused(false);
-                          }}
-                          onFocus={() => setIsFocused(true)}
-                          placeholder="username"
-                          className="flex-1 bg-transparent px-1 py-4 text-lg text-white placeholder-white/30 outline-none"
-                          autoComplete="off"
-                          autoCapitalize="off"
-                          spellCheck={false}
-                        />
-                      </field.FormControl>
-                    </div>
-                  </div>
-                  <field.FormMessage className="mt-2 text-center text-red-400" />
-                </field.FormItem>
-              )}
-            />
+            2025
+          </motion.h1>
 
-            <form.Subscribe
-              selector={(state: {
-                canSubmit: boolean;
-                values: UsernameFormValues;
-              }) => [state.canSubmit, state.values.username] as const}
-              children={([canSubmit, username]: readonly [boolean, string]) => (
-                <motion.button
-                  type="submit"
-                  disabled={isLoading || !canSubmit}
-                  className={cn(
-                    "group relative flex w-full items-center justify-center gap-2 rounded-xl py-4 text-lg font-semibold transition-all",
-                    username
-                      ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600"
-                      : "bg-gradient-to-r from-purple-500/50 to-pink-500/50 text-white/70"
-                  )}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {isLoading ? (
-                    <>
-                      <motion.div
-                        className="h-5 w-5 rounded-full border-2 border-white/30 border-t-white"
-                        animate={{ rotate: 360 }}
-                        transition={{
-                          duration: 1,
-                          repeat: Infinity,
-                          ease: "linear",
-                        }}
-                      />
-                      <span>Loading stats...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>See Public Stats</span>
-                      <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-                    </>
-                  )}
-                </motion.button>
-              )}
-            />
-          </motion.form>
-        </form.AppForm>
+          {/* YOUR YEAR IN CODE subtitle */}
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+            className=" text-xl font-bold uppercase tracking-[0.3em] text-white/70"
+          >
+            Your Year in Code
+          </motion.p>
 
-        {/* Footer hint */}
-        <motion.p
-          className="mt-6 text-center text-sm text-white/40"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          {/* GitHub Wrapped title */}
+          <motion.h2
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
+            className="mt-6 text-5xl md:text-6xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent"
+          >
+            Git Wrapped
+          </motion.h2>
+        </motion.div>
+
+        {/* Login Card */}
+        <motion.div
+          className="mt-14 w-full"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.5 }}
         >
-          Public stats only show public repositories and activity
-        </motion.p>
-      </motion.div>
+          {/* Card with glassmorphism border */}
+          <div className="relative rounded-2xl p-[2px] bg-gradient-to-b from-cyan-500/50 via-teal-500/30 to-cyan-500/50">
+            <div className="rounded-2xl bg-slate-900/90 backdrop-blur-xl p-8">
+              {/* Input form */}
+              <form.AppForm>
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <form.AppField
+                    name="username"
+                    children={(field: any) => (
+                      <field.FormItem>
+                        <div className="relative">
+                          <div
+                            className={cn(
+                              "absolute -inset-0.5 rounded-xl bg-gradient-to-r from-cyan-500 via-teal-500 to-cyan-500 opacity-0 blur transition-opacity duration-300",
+                              isFocused && "opacity-50"
+                            )}
+                          />
+                          <div className="relative flex items-center overflow-hidden rounded-xl border border-cyan-500/50 bg-slate-800/60">
+                            <span className="pl-4 text-white/50 italic">
+                              github.com/
+                            </span>
+                            <field.FormControl>
+                              <input
+                                type="text"
+                                value={field.state.value}
+                                onChange={(e) =>
+                                  field.handleChange(e.target.value)
+                                }
+                                onBlur={() => {
+                                  field.handleBlur();
+                                  setIsFocused(false);
+                                }}
+                                onFocus={() => setIsFocused(true)}
+                                placeholder=""
+                                className="flex-1 bg-transparent px-1 py-3 text-base text-white placeholder-white/30 outline-none"
+                                autoComplete="off"
+                                autoCapitalize="off"
+                                spellCheck={false}
+                              />
+                            </field.FormControl>
+                          </div>
+                        </div>
+                        <field.FormMessage className="mt-2 text-center text-red-400" />
+                      </field.FormItem>
+                    )}
+                  />
+
+                  <form.Subscribe
+                    selector={(state: {
+                      canSubmit: boolean;
+                      values: UsernameFormValues;
+                    }) => [state.canSubmit, state.values.username] as const}
+                    children={([canSubmit, username]: readonly [
+                      boolean,
+                      string
+                    ]) => (
+                      <motion.button
+                        type="submit"
+                        disabled={isLoading || !canSubmit}
+                        className={cn(
+                          "group relative flex w-full items-center justify-center gap-2 rounded-xl py-3 text-base font-semibold transition-all",
+                          "bg-gradient-to-r from-cyan-600 via-teal-600 to-cyan-600 text-white hover:from-cyan-500 hover:via-teal-500 hover:to-cyan-500"
+                        )}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        {isLoading ? (
+                          <>
+                            <motion.div
+                              className="h-5 w-5 rounded-full border-2 border-white/30 border-t-white"
+                              animate={{ rotate: 360 }}
+                              transition={{
+                                duration: 1,
+                                repeat: Infinity,
+                                ease: "linear",
+                              }}
+                            />
+                            <span>Loading stats...</span>
+                          </>
+                        ) : (
+                          <span>Generate github wrapped</span>
+                        )}
+                      </motion.button>
+                    )}
+                  />
+                </form>
+              </form.AppForm>
+            </div>
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 }

@@ -142,20 +142,7 @@ export function ReposCard({ repoStats, direction }: ReposCardProps) {
               textShadow: "0 0 40px rgba(34, 211, 238, 0.5)",
             }}
           >
-            Public
-          </p>
-          <p
-            className="text-base font-bold uppercase tracking-[0.35em] md:text-lg"
-            style={{
-              background:
-                "linear-gradient(180deg, #67e8f9 0%, #22d3ee 50%, #06b6d4 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-              textShadow: "0 0 40px rgba(34, 211, 238, 0.5)",
-            }}
-          >
-            Repositories
+            Repositories contributed to
           </p>
         </motion.div>
 
