@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import { cn, formatNumber } from "~/lib/utils";
 import type { TLanguageStats } from "../lib/github-languages.query";
 import { WrappedCard } from "./wrapped-card";
 
@@ -105,15 +106,14 @@ function RankBadge({ rank }: { rank: number }) {
         damping: 15,
         delay: 0.3 + rank * 0.1,
       }}
-      className={`
-        relative flex h-7 w-7 items-center justify-center rounded-full
-        font-bold text-xs
-        ${
-          isTop
-            ? "bg-gradient-to-br from-amber-400 via-yellow-500 to-orange-500 text-black shadow-[0_0_20px_rgba(251,191,36,0.5)]"
-            : "bg-white/10 text-white/70 border border-white/10"
+      className={cn(
+        "relative flex h-7 w-7 items-center justify-center rounded-full font-bold text-xs",
+        {
+          "bg-gradient-to-br from-amber-400 via-yellow-500 to-orange-500 text-black shadow-[0_0_20px_rgba(251,191,36,0.5)]":
+            isTop,
+          "bg-white/10 text-white/70 border border-white/10": !isTop,
         }
-      `}
+      )}
     >
       {isTop && (
         <motion.div
@@ -152,11 +152,13 @@ function LanguageBar({
         duration: 0.4,
         ease: "easeOut",
       }}
-      className={`
-        group relative flex items-center gap-3 rounded-xl p-3 px-4
-        transition-colors duration-300
-        ${isTop ? "bg-white/[0.08]" : "hover:bg-white/[0.04]"}
-      `}
+      className={cn(
+        "group relative flex items-center gap-3 rounded-xl p-3 px-4 transition-colors duration-300",
+        {
+          "bg-white/[0.08]": isTop,
+          "hover:bg-white/[0.04]": !isTop,
+        }
+      )}
     >
       {/* Rank badge */}
       <RankBadge rank={index + 1} />
@@ -166,9 +168,10 @@ function LanguageBar({
         {/* Name and percentage row */}
         <div className="flex items-center justify-between mb-1.5">
           <motion.span
-            className={`font-semibold tracking-tight ${
-              isTop ? "text-white text-base" : "text-white/80 text-sm"
-            }`}
+            className={cn("font-semibold tracking-tight", {
+              "text-white text-base": isTop,
+              "text-white/80 text-sm": !isTop,
+            })}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 + index * 0.12 }}
@@ -177,14 +180,15 @@ function LanguageBar({
           </motion.span>
 
           <motion.span
-            className={`font-mono text-xs tabular-nums ${
-              isTop ? "text-white/90" : "text-white/50"
-            }`}
+            className={cn("font-mono text-xs tabular-nums", {
+              "text-white/90": isTop,
+              "text-white/50": !isTop,
+            })}
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.8 + index * 0.12, type: "spring" }}
           >
-            {lang.percentage.toFixed(1)}%
+            {formatNumber(Number(lang.percentage.toFixed(1)))}%
           </motion.span>
         </div>
 
@@ -199,23 +203,24 @@ function LanguageBar({
               duration: 0.8,
               ease: [0.32, 0.72, 0, 1],
             }}
-            className="absolute inset-y-0 left-0 rounded-full"
+            className="absolute inset-y-0 left-0 overflow-hidden rounded-full"
             style={{
               background: `linear-gradient(90deg, ${colors.primary}dd, ${colors.primary})`,
               boxShadow: `0 0 20px ${colors.glow}, inset 0 1px 0 rgba(255,255,255,0.2)`,
             }}
           >
-            {/* Shimmer effect */}
+            {/* Shimmer effect - sweeps across the bar once */}
             <motion.div
-              className="absolute inset-0 rounded-full"
+              className="absolute inset-y-0 w-1/3 rounded-full"
               style={{
                 background:
-                  "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
+                  "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)",
               }}
-              animate={{ x: ["-100%", "200%"] }}
+              initial={{ x: "-100%" }}
+              animate={{ x: "400%" }}
               transition={{
                 delay: 1.2 + index * 0.12,
-                duration: 1.5,
+                duration: 1,
                 ease: "easeInOut",
               }}
             />

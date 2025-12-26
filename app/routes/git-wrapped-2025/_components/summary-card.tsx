@@ -1,6 +1,7 @@
 import { Sparkles } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { formatNumber } from "~/lib/utils";
 import type { TLanguageStats } from "../lib/github-languages.query";
 import type { TReturnGithubUserQuery } from "../lib/github-user.query";
 import type {
@@ -221,7 +222,7 @@ export function SummaryCard({
           >
             <div className="text-center">
               <p className="text-3xl font-bold text-white">
-                {repoStats.totalRepos}
+                {formatNumber(repoStats.totalRepos)}
               </p>
               <p className="text-[9px] font-medium uppercase tracking-widest text-white/40">
                 Repos
@@ -229,7 +230,7 @@ export function SummaryCard({
             </div>
             <div className="text-center">
               <p className="text-3xl font-bold text-white">
-                {repoStats.totalStars}
+                {formatNumber(repoStats.totalStars)}
               </p>
               <p className="text-[9px] font-medium uppercase tracking-widest text-white/40">
                 Stars
@@ -237,7 +238,7 @@ export function SummaryCard({
             </div>
             <div className="text-center">
               <p className="text-3xl font-bold text-white">
-                {activityStats.totalContributions}
+                {formatNumber(activityStats.totalContributions)}
               </p>
               <p className="text-[9px] font-medium uppercase tracking-widest text-white/40">
                 Contributions

@@ -1,5 +1,6 @@
 import { Calendar, Flame, Percent, Trophy } from "lucide-react";
 import { motion } from "motion/react";
+import { formatNumber } from "~/lib/utils";
 import type { ActivityStats } from "./use-github-stats";
 import { WrappedCard } from "./wrapped-card";
 
@@ -92,7 +93,7 @@ function StatCard({
               textShadow: `0 0 40px ${glowColor}`,
             }}
           >
-            {value.toLocaleString()}
+            {formatNumber(value)}
             {suffix && (
               <span className="ml-1 text-lg font-medium text-white/60">
                 {suffix}
@@ -229,7 +230,7 @@ export function ActivityCard({ activityStats, direction }: ActivityCardProps) {
                 textShadow: "0 0 30px rgba(139, 92, 246, 0.5)",
               }}
             >
-              {totalContributions.toLocaleString()}
+              {formatNumber(totalContributions)}
             </motion.span>
             <span className="text-sm font-medium text-white/40">
               total contributions
