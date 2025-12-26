@@ -5,7 +5,7 @@ import GithubOutline from "~/components/icons/github-outline";
 import { useAppForm } from "~/components/ui/tanstack-form";
 import { cn } from "~/lib/utils";
 
-const UsernameSchema = z.object({
+const ZUsernameFormValues = z.object({
   username: z
     .string()
     .min(1, "Username is required")
@@ -15,7 +15,7 @@ const UsernameSchema = z.object({
     ),
 });
 
-type UsernameFormValues = z.infer<typeof UsernameSchema>;
+type TUsernameFormValues = z.infer<typeof ZUsernameFormValues>;
 
 // Color palette for particles
 const PARTICLE_COLORS = [
@@ -280,7 +280,7 @@ export function UsernameInput({
   const [isFocused, setIsFocused] = useState(false);
 
   const form = useAppForm({
-    validators: { onChange: UsernameSchema },
+    validators: { onChange: ZUsernameFormValues },
     defaultValues: {
       username: "",
     },
@@ -434,7 +434,7 @@ export function UsernameInput({
                   <form.Subscribe
                     selector={(state: {
                       canSubmit: boolean;
-                      values: UsernameFormValues;
+                      values: TUsernameFormValues;
                     }) => [state.canSubmit, state.values.username] as const}
                     children={([canSubmit, username]: readonly [
                       boolean,

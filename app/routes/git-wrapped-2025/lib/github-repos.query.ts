@@ -35,6 +35,9 @@ export type TReturnGitHubReposQuery = z.infer<typeof ZReturnGitHubReposQuery>;
 
 export const githubReposQuery = ({ username }: { username: string }) =>
   queryOptions({
+    meta: {
+      persist: true,
+    },
     queryKey: ["hydrate:github-repos", username] as const,
     gcTime: 1000 * 60 * 60 * 24, // 24 hour
     staleTime: 1000 * 60 * 60 * 24, // 24 hour

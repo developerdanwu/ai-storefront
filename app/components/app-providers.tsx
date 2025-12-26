@@ -4,7 +4,12 @@ import {
   useConvexMutation,
 } from "@convex-dev/react-query";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
-import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { AuthKitProvider } from "@workos-inc/authkit-react";
@@ -22,6 +27,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { match } from "ts-pattern";
+import { useIsClient } from "usehooks-ts";
 import { useWorkosConvexAuth } from "~/components/auth/auth-provider";
 import { Toaster } from "~/components/ui/sonner";
 import { DialogStoreContextProvider, useDialogStore } from "~/lib/dialog-store";
@@ -110,6 +116,54 @@ function AuthenticatedProvider({ children }: { children: React.ReactNode }) {
 }
 
 function BaseProviders({ children }: { children: React.ReactNode }) {
+  const queryClient = useQueryClient();
+
+  const [cacheChecked, setCacheChecked] = useState(false);
+
+  if (!cacheChecked) {
+    const queries = queryClient.getQueriesData({
+      predicate({ queryKey, meta, state }) {
+        if (meta?.persist) {
+          if (queryKey[0] === "convexAction") {
+            if (
+              queryKey[1] ===
+              githubContributionsQuery({ username: "" }).queryKey[1]
+            ) {
+              return !ZReturnGitHubContributionsQuery.safeParse(state.data)
+                .success;
+            }
+          }
+
+          if (queryKey[0] === githubReposQuery({ username: "" }).queryKey[0]) {
+            return !ZReturnGitHubReposQuery.safeParse(state.data).success;
+          }
+
+          if (
+            queryKey[0] ===
+            githubLanguagesQuery({ repos: [], username: "" }).queryKey[0]
+          ) {
+            return !ZReturnGitHubLanguagesQuery.safeParse(state.data).success;
+          }
+
+          if (queryKey[0] === githubUserQuery({ username: "" }).queryKey[0]) {
+            return !ZReturnGithubUserQuery.safeParse(state.data).success;
+          }
+        }
+
+        return false;
+      },
+    });
+
+    for (const [queryKey] of queries) {
+      queryClient.removeQueries({
+        queryKey,
+      });
+    }
+
+    setCacheChecked(true);
+    return <PageLoadingSpinner />;
+  }
+
   return (
     <>
       <Authenticated>
@@ -125,8 +179,10 @@ function BaseProviders({ children }: { children: React.ReactNode }) {
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
+  const isClient = useIsClient();
   const [[queryClient, persister]] = useState(() => {
     const persister = createAsyncStoragePersister({
+      // window not defined in server
       storage: typeof window !== "undefined" ? window.localStorage : null,
     });
 
@@ -162,7 +218,6 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
     return [queryClient, persister] as const;
   });
 
-  queryClient.setDefaultOptions;
   return (
     <CustomErrorBoundary
       wrapRenderFallback={(props) => (
@@ -188,49 +243,9 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
             persistOptions={{
               persister,
               dehydrateOptions: {
-                shouldDehydrateQuery: ({ queryKey, state }) => {
-                  if (typeof queryKey[0] !== "string") {
-                    return false;
-                  }
-
-                  // selectively cache queries to avoid external rate limiting (always starts with hydrate:)
-                  if (queryKey[0].startsWith("hydrate:")) {
-                    if (
-                      queryKey[0] ===
-                      githubReposQuery({ username: "" }).queryKey[0]
-                    ) {
-                      return ZReturnGitHubReposQuery.safeParse(state.data)
-                        .success;
-                    }
-
-                    if (
-                      queryKey[0] ===
-                      githubLanguagesQuery({ repos: [], username: "" })
-                        .queryKey[0]
-                    ) {
-                      return ZReturnGitHubLanguagesQuery.safeParse(state.data)
-                        .success;
-                    }
-
-                    if (
-                      queryKey[0] ===
-                      githubUserQuery({ username: "" }).queryKey[0]
-                    ) {
-                      return ZReturnGithubUserQuery.safeParse(state.data)
-                        .success;
-                    }
-                  }
-
-                  // selectively cache convex actions to avoid rate limiting
-                  if (queryKey[0] === "convexAction") {
-                    if (
-                      queryKey[1] ===
-                      githubContributionsQuery({ username: "" }).queryKey[1]
-                    ) {
-                      return ZReturnGitHubContributionsQuery.safeParse(
-                        state.data
-                      ).success;
-                    }
+                shouldDehydrateQuery: ({ queryKey, state, meta }) => {
+                  if (meta?.persist) {
+                    return true;
                   }
 
                   return false;
@@ -240,12 +255,16 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
           >
             <ThemeProvider>
               <DialogStoreContextProvider>
-                <BaseProviders>
-                  {children}
-                  <GenericAlertDialog />
-                  <Toaster />
-                  <ReactQueryDevtools initialIsOpen={false} />
-                </BaseProviders>
+                {isClient ? (
+                  <BaseProviders>
+                    {children}
+                    <GenericAlertDialog />
+                    <Toaster />
+                    <ReactQueryDevtools initialIsOpen={false} />
+                  </BaseProviders>
+                ) : (
+                  <PageLoadingSpinner />
+                )}
               </DialogStoreContextProvider>
             </ThemeProvider>
           </PersistQueryClientProvider>

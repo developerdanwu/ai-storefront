@@ -31,6 +31,9 @@ export type TReturnGitHubContributionsQuery = z.infer<
 
 export const githubContributionsQuery = ({ username }: { username: string }) =>
   queryOptions({
+    meta: {
+      persist: true,
+    },
     ...convexAction(api.github.action.getGitHubContributions, { username }),
     gcTime: 1000 * 60 * 60 * 24, // 24 hour
     staleTime: 1000 * 60 * 60 * 24, // 24 hour

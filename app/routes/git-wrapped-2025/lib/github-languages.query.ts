@@ -54,6 +54,9 @@ export const githubLanguagesQuery = ({
   username: string;
 }) =>
   queryOptions({
+    meta: {
+      persist: true,
+    },
     queryKey: ["hydrate:github-languages", username] as const,
     gcTime: 1000 * 60 * 60 * 24, // 24 hour
     staleTime: 1000 * 60 * 60 * 24, // 24 hour
