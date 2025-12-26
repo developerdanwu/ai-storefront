@@ -1,9 +1,4 @@
-import {
-  CheckCircle2,
-  CircleDot,
-  GitCommitHorizontal,
-  GitPullRequest,
-} from "lucide-react";
+import { Calendar, Flame, Percent, Trophy } from "lucide-react";
 import { motion } from "motion/react";
 import type { ActivityStats } from "./use-github-stats";
 import { WrappedCard } from "./wrapped-card";
@@ -18,6 +13,7 @@ interface StatCardProps {
   icon: React.ElementType;
   value: number;
   label: string;
+  suffix?: string;
   color: string;
   glowColor: string;
   gradientFrom: string;
@@ -29,6 +25,7 @@ function StatCard({
   icon: Icon,
   value,
   label,
+  suffix,
   color,
   glowColor,
   gradientFrom,
@@ -96,6 +93,11 @@ function StatCard({
             }}
           >
             {value.toLocaleString()}
+            {suffix && (
+              <span className="ml-1 text-lg font-medium text-white/60">
+                {suffix}
+              </span>
+            )}
           </motion.span>
           <span className="text-sm font-medium text-white/40">{label}</span>
         </div>
@@ -114,48 +116,46 @@ function StatCard({
 }
 
 export function ActivityCard({ activityStats, direction }: ActivityCardProps) {
-  const totalContributions =
-    activityStats.totalCommits +
-    activityStats.totalPullRequests +
-    activityStats.totalIssues +
-    activityStats.totalCodeReviews;
+  const totalContributions = activityStats.totalContributions;
 
   const stats = [
     {
-      icon: GitCommitHorizontal,
-      label: "Commits",
-      value: activityStats.totalCommits,
-      color: "#22d3ee",
-      glowColor: "rgba(34, 211, 238, 0.5)",
-      gradientFrom: "#06b6d4",
-      gradientTo: "#0891b2",
+      icon: Flame,
+      label: "Longest Streak",
+      value: activityStats.longestStreak,
+      suffix: "days",
+      color: "#f97316",
+      glowColor: "rgba(249, 115, 22, 0.5)",
+      gradientFrom: "#f97316",
+      gradientTo: "#ea580c",
     },
     {
-      icon: GitPullRequest,
-      label: "Pull Requests",
-      value: activityStats.totalPullRequests,
-      color: "#a78bfa",
-      glowColor: "rgba(167, 139, 250, 0.5)",
-      gradientFrom: "#8b5cf6",
-      gradientTo: "#7c3aed",
+      icon: Trophy,
+      label: `Best Month (${activityStats.bestMonth.month})`,
+      value: activityStats.bestMonth.count,
+      color: "#fbbf24",
+      glowColor: "rgba(251, 191, 36, 0.5)",
+      gradientFrom: "#f59e0b",
+      gradientTo: "#d97706",
     },
     {
-      icon: CircleDot,
-      label: "Issues",
-      value: activityStats.totalIssues,
+      icon: Calendar,
+      label: "Weekend Warrior",
+      value: activityStats.weekendContributions,
       color: "#4ade80",
       glowColor: "rgba(74, 222, 128, 0.5)",
       gradientFrom: "#22c55e",
       gradientTo: "#16a34a",
     },
     {
-      icon: CheckCircle2,
-      label: "Code Reviews",
-      value: activityStats.totalCodeReviews,
-      color: "#c084fc",
-      glowColor: "rgba(192, 132, 252, 0.5)",
-      gradientFrom: "#a855f7",
-      gradientTo: "#9333ea",
+      icon: Percent,
+      label: `Active Days (${activityStats.activeDays}/${activityStats.totalDays})`,
+      value: activityStats.activeDaysPercentage,
+      suffix: "%",
+      color: "#38bdf8",
+      glowColor: "rgba(56, 189, 248, 0.5)",
+      gradientFrom: "#0ea5e9",
+      gradientTo: "#0284c7",
     },
   ];
 
@@ -202,6 +202,7 @@ export function ActivityCard({ activityStats, direction }: ActivityCardProps) {
               icon={stat.icon}
               value={stat.value}
               label={stat.label}
+              suffix={stat.suffix}
               color={stat.color}
               glowColor={stat.glowColor}
               gradientFrom={stat.gradientFrom}

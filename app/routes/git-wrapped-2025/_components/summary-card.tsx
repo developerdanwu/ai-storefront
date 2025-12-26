@@ -237,10 +237,10 @@ export function SummaryCard({
             </div>
             <div className="text-center">
               <p className="text-3xl font-bold text-white">
-                {activityStats.totalCommits}
+                {activityStats.totalContributions}
               </p>
               <p className="text-[9px] font-medium uppercase tracking-widest text-white/40">
-                Commits
+                Contributions
               </p>
             </div>
           </motion.div>

@@ -194,7 +194,9 @@ export default function GitWrappedProfileRoute() {
 
         {/* Main card area - tap left/right halves to navigate */}
         <div
-          className="relative h-full w-full"
+          className={
+            "sm:pointer-events-none pointer-events-auto relative h-full w-full"
+          }
           onClick={(e) => {
             const rect = e.currentTarget.getBoundingClientRect();
             const clickX = e.clientX - rect.left;

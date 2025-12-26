@@ -10,14 +10,15 @@ import { githubLanguagesQuery } from "../lib/github-languages.query";
 import { githubReposQuery } from "../lib/github-repos.query";
 import { githubUserQuery } from "../lib/github-user.query";
 
-// Updated ActivityStats to use GraphQL data
+// Updated ActivityStats to use contribution calendar data (includes private repos)
 export interface ActivityStats {
-  totalCommits: number;
-  totalPullRequests: number;
-  totalIssues: number;
-  totalCodeReviews: number;
   totalContributions: number;
-  contributedRepos: number;
+  longestStreak: number;
+  bestMonth: { month: string; count: number };
+  weekendContributions: number;
+  activeDaysPercentage: number;
+  activeDays: number;
+  totalDays: number;
 }
 
 export interface RepoStats {
@@ -66,29 +67,92 @@ export function useGitHubStats(username: string) {
     contributionsQuery.error ||
     languagesQuery.error;
 
-  // Compute activity stats from GraphQL contributions data
-  const activityStats: ActivityStats = (() => {
+  // Compute activity stats from contribution calendar (includes private repos)
+  const activityStats: ActivityStats = useMemo(() => {
     const contributions = contributionsQuery.data;
     if (!contributions) {
       return {
-        totalCommits: 0,
-        totalPullRequests: 0,
-        totalIssues: 0,
-        totalCodeReviews: 0,
         totalContributions: 0,
-        contributedRepos: 0,
+        longestStreak: 0,
+        bestMonth: { month: "January", count: 0 },
+        weekendContributions: 0,
+        activeDaysPercentage: 0,
+        activeDays: 0,
+        totalDays: 0,
       };
     }
 
+    const calendar = contributions.contributionCalendar;
+    const allDays = calendar.weeks.flatMap((week) => week.contributionDays);
+
+    // Calculate longest streak
+    let longestStreak = 0;
+    let currentStreak = 0;
+    for (const day of allDays) {
+      if (day.contributionCount > 0) {
+        currentStreak++;
+        longestStreak = Math.max(longestStreak, currentStreak);
+      } else {
+        currentStreak = 0;
+      }
+    }
+
+    // Calculate best month
+    const monthlyContributions: Record<string, number> = {};
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+
+    for (const day of allDays) {
+      const date = new Date(day.date);
+      const monthKey = monthNames[date.getMonth()];
+      monthlyContributions[monthKey] =
+        (monthlyContributions[monthKey] || 0) + day.contributionCount;
+    }
+
+    const bestMonth = Object.entries(monthlyContributions).reduce(
+      (best, [month, count]) => (count > best.count ? { month, count } : best),
+      { month: "January", count: 0 }
+    );
+
+    // Calculate weekend contributions (Saturday = 6, Sunday = 0)
+    const weekendContributions = allDays
+      .filter((day) => {
+        const date = new Date(day.date);
+        const dayOfWeek = date.getDay();
+        return dayOfWeek === 0 || dayOfWeek === 6;
+      })
+      .reduce((sum, day) => sum + day.contributionCount, 0);
+
+    // Calculate active days and percentage
+    const activeDays = allDays.filter(
+      (day) => day.contributionCount > 0
+    ).length;
+    const totalDays = allDays.length;
+    const activeDaysPercentage =
+      totalDays > 0 ? Math.round((activeDays / totalDays) * 100) : 0;
+
     return {
-      totalCommits: contributions.totalCommitContributions,
-      totalPullRequests: contributions.totalPullRequestContributions,
-      totalIssues: contributions.totalIssueContributions,
-      totalCodeReviews: contributions.totalPullRequestReviewContributions,
-      totalContributions: contributions.contributionCalendar.totalContributions,
-      contributedRepos: contributions.totalRepositoriesWithContributedCommits,
+      totalContributions: calendar.totalContributions,
+      longestStreak,
+      bestMonth,
+      weekendContributions,
+      activeDaysPercentage,
+      activeDays,
+      totalDays,
     };
-  })();
+  }, [contributionsQuery.data]);
 
   // Compute repo stats
   const repoStats: RepoStats = useMemo(() => {
