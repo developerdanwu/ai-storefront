@@ -193,38 +193,44 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
                     return false;
                   }
 
-                  if (
-                    queryKey[0] ===
-                    githubReposQuery({ username: "" }).queryKey[0]
-                  ) {
-                    return ZReturnGitHubReposQuery.safeParse(state.data)
-                      .success;
+                  // selectively cache queries to avoid external rate limiting (always starts with hydrate:)
+                  if (queryKey[0].startsWith("hydrate:")) {
+                    if (
+                      queryKey[0] ===
+                      githubReposQuery({ username: "" }).queryKey[0]
+                    ) {
+                      return ZReturnGitHubReposQuery.safeParse(state.data)
+                        .success;
+                    }
+
+                    if (
+                      queryKey[0] ===
+                      githubLanguagesQuery({ repos: [], username: "" })
+                        .queryKey[0]
+                    ) {
+                      return ZReturnGitHubLanguagesQuery.safeParse(state.data)
+                        .success;
+                    }
+
+                    if (
+                      queryKey[0] ===
+                      githubUserQuery({ username: "" }).queryKey[0]
+                    ) {
+                      return ZReturnGithubUserQuery.safeParse(state.data)
+                        .success;
+                    }
                   }
 
-                  if (
-                    queryKey[0] ===
-                    githubLanguagesQuery({ repos: [], username: "" })
-                      .queryKey[0]
-                  ) {
-                    return ZReturnGitHubLanguagesQuery.safeParse(state.data)
-                      .success;
-                  }
-
-                  if (
-                    queryKey[0] ===
-                    githubUserQuery({ username: "" }).queryKey[0]
-                  ) {
-                    return ZReturnGithubUserQuery.safeParse(state.data).success;
-                  }
-
-                  if (
-                    queryKey[0] ===
-                      githubContributionsQuery({ username: "" }).queryKey[0] &&
-                    queryKey[1] ===
+                  // selectively cache convex actions to avoid rate limiting
+                  if (queryKey[0] === "convexAction") {
+                    if (
+                      queryKey[1] ===
                       githubContributionsQuery({ username: "" }).queryKey[1]
-                  ) {
-                    return ZReturnGitHubContributionsQuery.safeParse(state.data)
-                      .success;
+                    ) {
+                      return ZReturnGitHubContributionsQuery.safeParse(
+                        state.data
+                      ).success;
+                    }
                   }
 
                   return false;
