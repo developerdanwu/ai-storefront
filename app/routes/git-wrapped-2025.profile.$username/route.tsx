@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { AnimatePresence } from "motion/react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { Button } from "~/components/ui/button";
 import { ActivityCard } from "../git-wrapped-2025/_components/activity-card";
@@ -11,9 +11,18 @@ import { SlideControls } from "../git-wrapped-2025/_components/slide-controls";
 import { StarsCard } from "../git-wrapped-2025/_components/stars-card";
 import { StoryProgress } from "../git-wrapped-2025/_components/story-progress";
 import { SummaryCard } from "../git-wrapped-2025/_components/summary-card";
+import { useDownloadCard } from "../git-wrapped-2025/_components/use-download-card";
 import { useGitHubStats } from "../git-wrapped-2025/_components/use-github-stats";
 
 const TOTAL_SLIDES = 6;
+const SLIDE_NAMES = [
+  "intro",
+  "repos",
+  "languages",
+  "stars",
+  "activity",
+  "summary",
+] as const;
 
 export default function GitWrappedProfileRoute() {
   const { username } = useParams<{ username: string }>();
@@ -21,6 +30,14 @@ export default function GitWrappedProfileRoute() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const { download, isDownloading } = useDownloadCard(
+    cardRef,
+    username ?? "user",
+    SLIDE_NAMES[currentSlide]
+  );
+
   const {
     user,
     repoStats,
@@ -159,6 +176,12 @@ export default function GitWrappedProfileRoute() {
             activityStats={activityStats}
             contributionCalendar={contributionCalendar}
             direction={direction}
+            onShare={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              download();
+            }}
+            isSharing={isDownloading}
           />
         );
       default:
@@ -210,14 +233,19 @@ export default function GitWrappedProfileRoute() {
           }}
         >
           <AnimatePresence mode="wait" custom={direction}>
-            <div key={currentSlide} className="h-full w-full">
+            <div ref={cardRef} key={currentSlide} className="h-full w-full">
               {renderSlide()}
             </div>
           </AnimatePresence>
         </div>
 
         {/* Persistent slide controls */}
-        <SlideControls isPaused={isPaused} onTogglePause={togglePause} />
+        <SlideControls
+          isPaused={isPaused}
+          onTogglePause={togglePause}
+          onDownload={download}
+          isDownloading={isDownloading}
+        />
       </div>
 
       {/* Navigation arrow - right (outside the box) */}

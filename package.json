@@ -66,6 +66,7 @@
     "clsx": "^2.1.1",
     "convex": "^1.25.0",
     "convex-helpers": "^0.1.99",
+    "html-to-image": "^1.11.13",
     "isbot": "^4.1.0",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.525.0",

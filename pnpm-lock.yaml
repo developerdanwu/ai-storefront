@@ -149,6 +149,9 @@ importers:
       convex-helpers:
         specifier: ^0.1.99
         version: 0.1.99(convex@1.25.2(react@18.3.1))(hono@4.8.4)(react@18.3.1)(typescript@5.8.3)(zod@3.25.74)
+      html-to-image:
+        specifier: ^1.11.13
+        version: 1.11.13
       isbot:
         specifier: ^4.1.0
         version: 4.4.0
@@ -5386,6 +5389,9 @@ packages:
 
   html-entities@2.6.0:
     resolution: {integrity: sha512-kig+rMn/QOVRvr7c86gQ8lWXq+Hkv6CbAH1hLu+RG338StTpE8Z0b44SDVaqVu7HGKf27frdmUYEs9hTUX/cLQ==}
+
+  html-to-image@1.11.13:
+    resolution: {integrity: sha512-cuOPoI7WApyhBElTTb9oqsawRvZ0rHhaHwghRLlTuffoD1B2aDemlCruLeZrUIIdvG7gs9xeELEPm6PhuASqrg==}
 
   html-to-text@9.0.5:
     resolution: {integrity: sha512-qY60FjREgVZL03vJU6IfMV4GDjGBIoOyvuFdpBDIX9yTlDw0TjxVBQp+P8NvpdIXNJvfWBTNul7fsAQJq2FNpg==}
@@ -13641,6 +13647,8 @@ snapshots:
       lru-cache: 7.18.3
 
   html-entities@2.6.0: {}
+
+  html-to-image@1.11.13: {}
 
   html-to-text@9.0.5:
     dependencies:

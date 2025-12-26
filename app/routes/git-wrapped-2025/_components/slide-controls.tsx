@@ -1,4 +1,13 @@
-import { Music, Pause, Play, Share2, Volume2, VolumeX } from "lucide-react";
+import {
+  Download,
+  Loader2,
+  Music,
+  Pause,
+  Play,
+  Share2,
+  Volume2,
+  VolumeX,
+} from "lucide-react";
 import { motion } from "motion/react";
 import {
   useCallback,
@@ -28,6 +37,8 @@ const TRACKS = {
 interface SlideControlsProps {
   isPaused: boolean;
   onTogglePause: () => void;
+  onDownload?: () => void;
+  isDownloading?: boolean;
 }
 
 function useAudio() {
@@ -123,7 +134,12 @@ function useAudio() {
   };
 }
 
-export function SlideControls({ isPaused, onTogglePause }: SlideControlsProps) {
+export function SlideControls({
+  isPaused,
+  onTogglePause,
+  onDownload,
+  isDownloading,
+}: SlideControlsProps) {
   const {
     isPlaying: isMusicPlaying,
     currentTrack,
@@ -168,6 +184,23 @@ export function SlideControls({ isPaused, onTogglePause }: SlideControlsProps) {
           <Pause className="h-4 w-4" />
         )}
       </button>
+
+      {/* Download button */}
+      {onDownload && (
+        <button
+          type="button"
+          onClick={onDownload}
+          disabled={isDownloading}
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white/90 backdrop-blur-md transition-all hover:bg-black/60 hover:text-white active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-label="Download image"
+        >
+          {isDownloading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Download className="h-4 w-4" />
+          )}
+        </button>
+      )}
 
       {/* Share button */}
       <button

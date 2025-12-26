@@ -22,6 +22,8 @@ interface SummaryCardProps {
   activityStats: ActivityStats;
   contributionCalendar: ContributionCalendar | undefined;
   direction: number;
+  onShare?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  isSharing?: boolean;
 }
 
 // Get contribution level for color intensity
@@ -48,6 +50,8 @@ export function SummaryCard({
   user,
   repoStats,
   languageStats,
+  onShare,
+  isSharing,
   activityStats,
   contributionCalendar,
   direction,
@@ -315,10 +319,16 @@ export function SummaryCard({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
-          className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-lg border border-cyan-500/30 bg-gradient-to-r from-[#0d1f2d] to-[#0a1628] px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.15em] text-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.15)] transition-all hover:border-cyan-400/40 hover:shadow-[0_0_30px_rgba(6,182,212,0.25)]"
+          onClick={onShare}
+          disabled={isSharing}
+          className="pointer-events-auto group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-lg border border-cyan-500/30 bg-gradient-to-r from-[#0d1f2d] to-[#0a1628] px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.15em] text-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.15)] transition-all hover:border-cyan-400/40 hover:shadow-[0_0_30px_rgba(6,182,212,0.25)] disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <span>Share Your Wrapped</span>
-          <Sparkles className="h-3 w-3 text-cyan-400" />
+          <span>{isSharing ? "Generating..." : "Share Your Wrapped"}</span>
+          <Sparkles
+            className={`h-3 w-3 text-cyan-400 ${
+              isSharing ? "animate-spin" : ""
+            }`}
+          />
 
           {/* Shine effect on hover */}
           <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent transition-transform duration-500 group-hover:translate-x-full" />
