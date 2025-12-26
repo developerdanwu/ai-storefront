@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { AnimatePresence } from "motion/react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { Button } from "~/components/ui/button";
 import { ActivityCard } from "../git-wrapped-2025/_components/activity-card";
@@ -21,7 +21,6 @@ export default function GitWrappedProfileRoute() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const pauseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const {
     user,
     repoStats,
@@ -32,17 +31,6 @@ export default function GitWrappedProfileRoute() {
     isError,
     error,
   } = useGitHubStats(username ?? "");
-  console.log("ISLOADING", isLoading);
-  // Reset timer - briefly pause then resume
-  const resetTimer = useCallback(() => {
-    setIsPaused(true);
-    if (pauseTimeoutRef.current) {
-      clearTimeout(pauseTimeoutRef.current);
-    }
-    pauseTimeoutRef.current = setTimeout(() => {
-      setIsPaused(false);
-    }, 100);
-  }, []);
 
   // Toggle pause state manually
   const togglePause = useCallback(() => {
@@ -54,26 +42,25 @@ export default function GitWrappedProfileRoute() {
       if (index < 0 || index >= TOTAL_SLIDES) return;
       setDirection(index > currentSlide ? 1 : -1);
       setCurrentSlide(index);
-      resetTimer();
+      //   resetTimer();
     },
-    [currentSlide, resetTimer]
+    [currentSlide]
   );
 
   const nextSlide = useCallback(() => {
     if (currentSlide < TOTAL_SLIDES - 1) {
       setDirection(1);
       setCurrentSlide((prev) => prev + 1);
-      resetTimer();
+      //   resetTimer();
     }
-  }, [currentSlide, resetTimer]);
+  }, [currentSlide]);
 
   const prevSlide = useCallback(() => {
     if (currentSlide > 0) {
       setDirection(-1);
       setCurrentSlide((prev) => prev - 1);
-      resetTimer();
     }
-  }, [currentSlide, resetTimer]);
+  }, [currentSlide]);
 
   // Auto-advance when progress completes
   const handleProgressComplete = useCallback(() => {
@@ -100,14 +87,6 @@ export default function GitWrappedProfileRoute() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isLoading, nextSlide, prevSlide]);
-
-  useEffect(() => {
-    return () => {
-      if (pauseTimeoutRef.current) {
-        clearTimeout(pauseTimeoutRef.current);
-      }
-    };
-  }, []);
 
   // Mobile frame wrapper component
   const MobileFrame = ({ children }: { children: React.ReactNode }) => (

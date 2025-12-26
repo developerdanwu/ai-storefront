@@ -3,6 +3,7 @@ import type {
   ContributionCalendar,
   ContributionsCollection,
 } from "convex/github/action";
+import { useMemo } from "react";
 import { githubContributionsQuery } from "~/routes/git-wrapped-2025/lib/github-contributions.query";
 import type { TGitHubRepoCleansed } from "~/routes/git-wrapped-2025/lib/github-languages.query";
 import { githubLanguagesQuery } from "../lib/github-languages.query";
@@ -90,7 +91,7 @@ export function useGitHubStats(username: string) {
   })();
 
   // Compute repo stats
-  const repoStats: RepoStats = (() => {
+  const repoStats: RepoStats = useMemo(() => {
     if (!reposQuery.data) {
       return {
         totalRepos: 0,
@@ -124,7 +125,7 @@ export function useGitHubStats(username: string) {
       mostStarredRepo,
       mostActiveRepo,
     };
-  })();
+  }, [reposQuery.data]);
 
   return {
     user: userQuery.data,
