@@ -1,10 +1,10 @@
 import { motion } from "motion/react";
 import GithubOutline from "~/components/icons/github-outline";
-import type { GitHubUser } from "./use-github-stats";
+import type { TReturnGithubUserQuery } from "../lib/github-user.query";
 import { WrappedCard } from "./wrapped-card";
 
 interface IntroCardProps {
-  user: GitHubUser | undefined;
+  user: TReturnGithubUserQuery | undefined;
   direction: number;
 }
 

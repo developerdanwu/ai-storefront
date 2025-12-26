@@ -27,6 +27,10 @@ import { Toaster } from "~/components/ui/sonner";
 import { DialogStoreContextProvider, useDialogStore } from "~/lib/dialog-store";
 import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
 import {
+  githubContributionsQuery,
+  ZReturnGitHubContributionsQuery,
+} from "~/routes/git-wrapped-2025/lib/github-contributions.query";
+import {
   githubLanguagesQuery,
   ZReturnGitHubLanguagesQuery,
 } from "~/routes/git-wrapped-2025/lib/github-languages.query";
@@ -36,7 +40,7 @@ import {
 } from "~/routes/git-wrapped-2025/lib/github-repos.query";
 import {
   githubUserQuery,
-  ZGitHubUser,
+  ZReturnGithubUserQuery,
 } from "~/routes/git-wrapped-2025/lib/github-user.query";
 import { CustomErrorBoundary } from "./custom-error-boundary";
 import { GenericAlertDialog } from "./dialogs/generic-alert-dialog";
@@ -210,7 +214,17 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
                     queryKey[0] ===
                     githubUserQuery({ username: "" }).queryKey[0]
                   ) {
-                    return ZGitHubUser.safeParse(state.data).success;
+                    return ZReturnGithubUserQuery.safeParse(state.data).success;
+                  }
+
+                  if (
+                    queryKey[0] ===
+                      githubContributionsQuery({ username: "" }).queryKey[0] &&
+                    queryKey[1] ===
+                      githubContributionsQuery({ username: "" }).queryKey[1]
+                  ) {
+                    return ZReturnGitHubContributionsQuery.safeParse(state.data)
+                      .success;
                   }
 
                   return false;

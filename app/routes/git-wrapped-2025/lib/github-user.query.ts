@@ -2,7 +2,7 @@ import { queryOptions } from "@tanstack/react-query";
 import { z } from "zod";
 import { fetchGitHubData } from "./github-data-fetcher";
 // Types for GitHub API responses
-export const ZGitHubUser = z.object({
+export const ZReturnGithubUserQuery = z.object({
   login: z.string(),
   avatar_url: z.string(),
   name: z.string().nullable(),
@@ -13,7 +13,7 @@ export const ZGitHubUser = z.object({
   created_at: z.string(),
 });
 
-export type TGitHubUser = z.infer<typeof ZGitHubUser>;
+export type TReturnGithubUserQuery = z.infer<typeof ZReturnGithubUserQuery>;
 
 export const githubUserQuery = ({ username }: { username: string }) =>
   queryOptions({
@@ -21,5 +21,5 @@ export const githubUserQuery = ({ username }: { username: string }) =>
     gcTime: 1000 * 60 * 60 * 24, // 24 hour
     staleTime: 1000 * 60 * 60 * 24, // 24 hour
     queryFn: ({ queryKey }) =>
-      fetchGitHubData<TGitHubUser>(`/users/${queryKey[1]}`),
+      fetchGitHubData<TReturnGithubUserQuery>(`/users/${queryKey[1]}`),
   });

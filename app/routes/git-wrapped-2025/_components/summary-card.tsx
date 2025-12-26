@@ -1,11 +1,11 @@
 import { Sparkles } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { TLanguageStats } from "../lib/github-languages.query";
+import type { TReturnGithubUserQuery } from "../lib/github-user.query";
 import type {
   ActivityStats,
   ContributionCalendar,
-  GitHubUser,
-  LanguageStats,
   RepoStats,
 } from "./use-github-stats";
 import { WrappedCard } from "./wrapped-card";
@@ -15,9 +15,9 @@ const GRAPH_NATIVE_WIDTH = 53 * 8 + 52 * 2; // 528px
 const GRAPH_NATIVE_HEIGHT = 7 * 8 + 6 * 2; // 68px
 
 interface SummaryCardProps {
-  user: GitHubUser | undefined;
+  user: TReturnGithubUserQuery | undefined;
   repoStats: RepoStats;
-  languageStats: LanguageStats[];
+  languageStats: TLanguageStats[];
   activityStats: ActivityStats;
   contributionCalendar: ContributionCalendar | undefined;
   direction: number;

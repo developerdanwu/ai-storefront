@@ -1,10 +1,9 @@
-import { convexAction } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
-import { api } from "convex/_generated/api";
 import type {
   ContributionCalendar,
   ContributionsCollection,
 } from "convex/github/action";
+import { githubContributionsQuery } from "~/routes/git-wrapped-2025/lib/github-contributions.query";
 import type { TGitHubRepoCleansed } from "~/routes/git-wrapped-2025/lib/github-languages.query";
 import { githubLanguagesQuery } from "../lib/github-languages.query";
 import { githubReposQuery } from "../lib/github-repos.query";
@@ -45,7 +44,7 @@ export function useGitHubStats(username: string) {
   });
 
   const contributionsQuery = useQuery({
-    ...convexAction(api.github.action.getGitHubContributions, { username }),
+    ...githubContributionsQuery({ username }),
   });
 
   const isLoading =
