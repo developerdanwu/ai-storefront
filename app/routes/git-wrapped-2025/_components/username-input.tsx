@@ -245,7 +245,7 @@ function GlowingOctocat() {
 
       {/* Main crisp stroke on top */}
       <GithubOutline
-        className="relative z-10 h-[280px] w-[280px]"
+        className="relative z-10 h-[240px] xs:h-[280px] w-[240px] xs:w-[280px]"
         style={{
           filter: `
             drop-shadow(0 0 2px rgba(192, 132, 252, 0.8))
@@ -338,7 +338,7 @@ export function UsernameInput({
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.6 }}
-            className="mb-[-80px] z-0"
+            className="mb-[-60px] xs:mb-[-80px] z-0"
           >
             <GlowingOctocat />
           </motion.div>
@@ -348,7 +348,7 @@ export function UsernameInput({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="relative text-[156px] font-bold leading-none bg-gradient-to-b from-white via-gray-300 to-gray-500 bg-clip-text text-transparent"
+            className="relative text-[130px] xs:text-[156px] font-bold leading-none bg-gradient-to-b from-white via-gray-300 to-gray-500 bg-clip-text text-transparent"
             style={{
               textShadow: "0 4px 30px rgba(0,0,0,0.5)",
             }}
@@ -361,7 +361,7 @@ export function UsernameInput({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.5 }}
-            className=" text-xl font-bold uppercase tracking-[0.3em] text-white/70"
+            className=" text-lg xs:text-xl font-bold uppercase tracking-[0.3em] text-white/70"
           >
             Your Year in Code
           </motion.p>
