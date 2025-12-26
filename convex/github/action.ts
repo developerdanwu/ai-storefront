@@ -1,9 +1,17 @@
+import { ActionCache } from "@convex-dev/action-cache";
 import { v } from "convex/values";
 import { ResultAsync } from "neverthrow";
-import { internal } from "../_generated/api";
+import { components, internal } from "../_generated/api";
 import { action } from "../_generated/server";
 import * as Errors from "../errors";
-import { authedAction } from "../procedures";
+
+export const _cachedGetGitHubContributions: ActionCache<any> = new ActionCache(
+  components.actionCache,
+  {
+    action: internal.github.nodeAction._getGitHubContributions,
+    ttl: 1000 * 60 * 60 * 24, // 24 hour
+  }
+);
 
 // Validators for contribution data
 const contributionDayValidator = v.object({
@@ -28,38 +36,6 @@ const contributionsCollectionValidator = v.object({
   totalPullRequestReviewContributions: v.number(),
   totalRepositoriesWithContributedCommits: v.number(),
   contributionCalendar: contributionCalendarValidator,
-});
-
-// Public action to get the authenticated user's GitHub username
-export const getGitHubUsername = authedAction({
-  args: {},
-  returns: v.union(v.string(), v.null()),
-  handler: async (ctx): Promise<string | null> => {
-    // Get the user's WorkOS external ID
-    const workosUserId = ctx.user.externalId;
-
-    if (!workosUserId) {
-      return null;
-    }
-
-    // Call the internal action to get GitHub username
-    return await ResultAsync.fromPromise(
-      ctx.runAction(internal.github.nodeAction._getGitHubUsername, {
-        workosUserId,
-      }),
-      (e) =>
-        Errors.githubApiFailed({
-          message: "Failed to get GitHub username",
-          error: e,
-        })
-    ).match(
-      (result) => result,
-      (error) => {
-        console.error("Error getting GitHub username:", error);
-        return null;
-      }
-    );
-  },
 });
 
 // Types for contribution data
@@ -99,7 +75,7 @@ export const getGitHubContributions = action({
     { username }
   ): Promise<ContributionsCollection | null> => {
     return await ResultAsync.fromPromise(
-      ctx.runAction(internal.github.nodeAction._getGitHubContributions, {
+      _cachedGetGitHubContributions.fetch(ctx, {
         username,
       }),
       (e) =>

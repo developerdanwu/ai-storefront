@@ -3,13 +3,10 @@ import {
   ConvexQueryClient,
   useConvexMutation,
 } from "@convex-dev/react-query";
-import {
-  QueryClient,
-  QueryClientProvider,
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query";
+import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
+import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { AuthKitProvider } from "@workos-inc/authkit-react";
 import { api } from "convex/_generated/api";
 import type { BackendErrors } from "convex/errors";
@@ -21,7 +18,7 @@ import {
   Unauthenticated,
 } from "convex/react";
 import { ConvexError } from "convex/values";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { match } from "ts-pattern";
@@ -29,6 +26,18 @@ import { useWorkosConvexAuth } from "~/components/auth/auth-provider";
 import { Toaster } from "~/components/ui/sonner";
 import { DialogStoreContextProvider, useDialogStore } from "~/lib/dialog-store";
 import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
+import {
+  githubLanguagesQuery,
+  ZReturnGitHubLanguagesQuery,
+} from "~/routes/git-wrapped-2025/lib/github-languages.query";
+import {
+  githubReposQuery,
+  ZReturnGitHubReposQuery,
+} from "~/routes/git-wrapped-2025/lib/github-repos.query";
+import {
+  githubUserQuery,
+  ZGitHubUser,
+} from "~/routes/git-wrapped-2025/lib/github-user.query";
 import { CustomErrorBoundary } from "./custom-error-boundary";
 import { GenericAlertDialog } from "./dialogs/generic-alert-dialog";
 import { ThemeProvider } from "./theme-provider";
@@ -36,34 +45,6 @@ import { PageLoadingSpinner } from "./ui/page-loading-spinner";
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL);
 const convexQueryClient = new ConvexQueryClient(convex);
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      throwOnError: true,
-      queryKeyHashFn: convexQueryClient.hashFn(),
-      queryFn: convexQueryClient.queryFn(),
-    },
-    mutations: {
-      retry: (failureCount, error) => {
-        if (error instanceof ConvexError) {
-          return match(error.data as BackendErrors)
-            .with(
-              {
-                _tag: "NotAuthenticated",
-              },
-              () => {
-                console.log("not authenticated, retrying");
-                return failureCount < 1;
-              }
-            )
-            .otherwise(() => false);
-        }
-
-        return false;
-      },
-    },
-  },
-});
 
 function AuthenticatedProvider({ children }: { children: React.ReactNode }) {
   const [anonymousUserId, setAnonymousUserId] = useAnonymousUserId();
@@ -140,7 +121,44 @@ function BaseProviders({ children }: { children: React.ReactNode }) {
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
+  const [[queryClient, persister]] = useState(() => {
+    const persister = createAsyncStoragePersister({
+      storage: typeof window !== "undefined" ? window.localStorage : null,
+    });
 
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          throwOnError: true,
+          queryKeyHashFn: convexQueryClient.hashFn(),
+          queryFn: convexQueryClient.queryFn(),
+        },
+        mutations: {
+          retry: (failureCount, error) => {
+            if (error instanceof ConvexError) {
+              return match(error.data as BackendErrors)
+                .with(
+                  {
+                    _tag: "NotAuthenticated",
+                  },
+                  () => {
+                    console.log("not authenticated, retrying");
+                    return failureCount < 1;
+                  }
+                )
+                .otherwise(() => false);
+            }
+
+            return false;
+          },
+        },
+      },
+    });
+
+    return [queryClient, persister] as const;
+  });
+
+  queryClient.setDefaultOptions;
   return (
     <CustomErrorBoundary
       wrapRenderFallback={(props) => (
@@ -161,7 +179,45 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
         devMode={true}
       >
         <ConvexProviderWithAuth client={convex} useAuth={useWorkosConvexAuth}>
-          <QueryClientProvider client={queryClient}>
+          <PersistQueryClientProvider
+            client={queryClient}
+            persistOptions={{
+              persister,
+              dehydrateOptions: {
+                shouldDehydrateQuery: ({ queryKey, state }) => {
+                  if (typeof queryKey[0] !== "string") {
+                    return false;
+                  }
+
+                  if (
+                    queryKey[0] ===
+                    githubReposQuery({ username: "" }).queryKey[0]
+                  ) {
+                    return ZReturnGitHubReposQuery.safeParse(state.data)
+                      .success;
+                  }
+
+                  if (
+                    queryKey[0] ===
+                    githubLanguagesQuery({ repos: [], username: "" })
+                      .queryKey[0]
+                  ) {
+                    return ZReturnGitHubLanguagesQuery.safeParse(state.data)
+                      .success;
+                  }
+
+                  if (
+                    queryKey[0] ===
+                    githubUserQuery({ username: "" }).queryKey[0]
+                  ) {
+                    return ZGitHubUser.safeParse(state.data).success;
+                  }
+
+                  return false;
+                },
+              },
+            }}
+          >
             <ThemeProvider>
               <DialogStoreContextProvider>
                 <BaseProviders>
@@ -172,7 +228,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
                 </BaseProviders>
               </DialogStoreContextProvider>
             </ThemeProvider>
-          </QueryClientProvider>
+          </PersistQueryClientProvider>
         </ConvexProviderWithAuth>
       </AuthKitProvider>
     </CustomErrorBoundary>

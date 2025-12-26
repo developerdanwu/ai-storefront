@@ -1,7 +1,6 @@
 "use node";
 
-import { WorkOS } from "@workos-inc/node";
-import { v } from "convex/values";
+import { Infer, v } from "convex/values";
 import { internalAction } from "../_generated/server";
 
 // Types for GitHub GraphQL API response
@@ -63,53 +62,9 @@ const contributionsCollectionValidator = v.object({
   contributionCalendar: contributionCalendarValidator,
 });
 
-// Get the GitHub username from WorkOS identity
-export const _getGitHubUsername = internalAction({
-  args: {
-    workosUserId: v.string(),
-  },
-  returns: v.union(v.string(), v.null()),
-  handler: async (ctx, { workosUserId }) => {
-    const workos = new WorkOS(process.env.WORKOS_API_KEY);
-
-    try {
-      // Get user's identities to find GitHub OAuth connection
-      const identities = await workos.userManagement.getUserIdentities(
-        workosUserId
-      );
-
-      const githubIdentity = identities.find(
-        (i) => i.type === "OAuth" && i.provider === "GitHubOAuth"
-      );
-
-      if (!githubIdentity) {
-        return null;
-      }
-
-      // The idpId for GitHub OAuth is the GitHub user ID
-      // We can use the GitHub API to get the username from the ID
-      const response = await fetch(
-        `https://api.github.com/user/${githubIdentity.idpId}`,
-        {
-          headers: {
-            Accept: "application/vnd.github.v3+json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        console.error("Failed to fetch GitHub user:", response.status);
-        return null;
-      }
-
-      const userData = (await response.json()) as { login: string };
-      return userData.login;
-    } catch (error) {
-      console.error("Error fetching GitHub identity:", error);
-      return null;
-    }
-  },
-});
+export type T_getGitHubContributions = Infer<
+  typeof contributionsCollectionValidator
+>;
 
 // GraphQL query for user contributions
 const CONTRIBUTIONS_QUERY = `
