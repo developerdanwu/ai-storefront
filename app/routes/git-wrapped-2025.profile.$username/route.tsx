@@ -11,8 +11,8 @@ import { SlideControls } from "../git-wrapped-2025/_components/slide-controls";
 import { StarsCard } from "../git-wrapped-2025/_components/stars-card";
 import { StoryProgress } from "../git-wrapped-2025/_components/story-progress";
 import { SummaryCard } from "../git-wrapped-2025/_components/summary-card";
-import { useDownloadCard } from "../git-wrapped-2025/_components/use-download-card";
 import { useGitHubStats } from "../git-wrapped-2025/_components/use-github-stats";
+import { useDownloadCard } from "../git-wrapped-2025/lib/use-download-card";
 
 const TOTAL_SLIDES = 6;
 const SLIDE_NAMES = [
