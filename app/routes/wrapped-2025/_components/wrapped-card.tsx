@@ -49,7 +49,7 @@ export function WrappedCard({
         scale: { duration: 0.2 },
       }}
       className={cn(
-        "absolute inset-0 flex flex-col items-center justify-center p-8 md:p-12",
+        "h-full w-full relative inset-0 flex flex-col items-center justify-center p-8 md:p-12",
         !customBackground && "bg-gradient-to-br",
         !customBackground && gradient,
         "overflow-hidden",
@@ -66,9 +66,8 @@ export function WrappedCard({
       )}
 
       {/* Content */}
-      <div className="relative z-10 flex h-full w-full max-w-lg flex-col items-center justify-center text-center text-white">
-        {children}
-      </div>
+      {children}
+      <div className="noise-bg absolute w-full h-full" />
     </motion.div>
   );
 }

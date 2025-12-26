@@ -1,7 +1,7 @@
 import { useAuth } from "@workos-inc/authkit-react";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { AnimatePresence } from "motion/react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { ActivityCard } from "./_components/activity-card";
 import { IntroCard } from "./_components/intro-card";
@@ -29,13 +29,6 @@ export default function WrappedRoute() {
 
   // Get GitHub username for authenticated users
   const { username: githubUsername, fetchUsername } = useGitHubUsername();
-
-  // Fetch GitHub username when user is authenticated
-  useEffect(() => {
-    if (authUser && !authLoading) {
-      fetchUsername();
-    }
-  }, [authUser, authLoading, fetchUsername]);
 
   const {
     user,
@@ -107,31 +100,31 @@ export default function WrappedRoute() {
   }, [currentSlide]);
 
   // Keyboard navigation (only when viewing slides)
-  useEffect(() => {
-    if (!hasStarted || isLoading) return;
+  // useEffect(() => {
+  //   if (!hasStarted || isLoading) return;
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight" || e.key === " ") {
-        e.preventDefault();
-        nextSlide();
-      } else if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        prevSlide();
-      }
-    };
+  //   const handleKeyDown = (e: KeyboardEvent) => {
+  //     if (e.key === "ArrowRight" || e.key === " ") {
+  //       e.preventDefault();
+  //       nextSlide();
+  //     } else if (e.key === "ArrowLeft") {
+  //       e.preventDefault();
+  //       prevSlide();
+  //     }
+  //   };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [hasStarted, isLoading, nextSlide, prevSlide]);
+  //   window.addEventListener("keydown", handleKeyDown);
+  //   return () => window.removeEventListener("keydown", handleKeyDown);
+  // }, [hasStarted, isLoading, nextSlide, prevSlide]);
 
   // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (pauseTimeoutRef.current) {
-        clearTimeout(pauseTimeoutRef.current);
-      }
-    };
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     if (pauseTimeoutRef.current) {
+  //       clearTimeout(pauseTimeoutRef.current);
+  //     }
+  //   };
+  // }, []);
 
   // Show username input page if not started
   if (!hasStarted) {
@@ -269,7 +262,12 @@ export default function WrappedRoute() {
           }}
         >
           <AnimatePresence mode="wait" custom={direction}>
-            <div key={currentSlide}>{renderSlide()}</div>
+            <LanguagesCard
+              languageStats={languageStats}
+              direction={direction}
+            />
+            {/* <IntroCard user={user} direction={direction} />; */}
+            {/* <div key={currentSlide}>{renderSlide()}</div> */}
           </AnimatePresence>
         </div>
       </div>

@@ -1,5 +1,4 @@
 import { motion } from "motion/react";
-import { GithubIcon } from "~/components/icons/github";
 import type { LanguageStats } from "./use-github-stats";
 import { WrappedCard } from "./wrapped-card";
 
@@ -8,32 +7,75 @@ interface LanguagesCardProps {
   direction: number;
 }
 
-// Animated floating particles with warm tones
-function FloatingParticles() {
-  const particles = Array.from({ length: 20 }, (_, i) => ({
+// Language color mapping for visual variety
+const languageColors: Record<string, { primary: string; glow: string }> = {
+  TypeScript: { primary: "#3178c6", glow: "rgba(49, 120, 198, 0.6)" },
+  JavaScript: { primary: "#f7df1e", glow: "rgba(247, 223, 30, 0.5)" },
+  Python: { primary: "#3776ab", glow: "rgba(55, 118, 171, 0.6)" },
+  Rust: { primary: "#dea584", glow: "rgba(222, 165, 132, 0.5)" },
+  Go: { primary: "#00add8", glow: "rgba(0, 173, 216, 0.6)" },
+  Ruby: { primary: "#cc342d", glow: "rgba(204, 52, 45, 0.5)" },
+  Java: { primary: "#ed8b00", glow: "rgba(237, 139, 0, 0.5)" },
+  Swift: { primary: "#fa7343", glow: "rgba(250, 115, 67, 0.5)" },
+  Kotlin: { primary: "#7f52ff", glow: "rgba(127, 82, 255, 0.5)" },
+  C: { primary: "#555555", glow: "rgba(85, 85, 85, 0.5)" },
+  "C++": { primary: "#f34b7d", glow: "rgba(243, 75, 125, 0.5)" },
+  "C#": { primary: "#178600", glow: "rgba(23, 134, 0, 0.5)" },
+  PHP: { primary: "#777bb4", glow: "rgba(119, 123, 180, 0.5)" },
+  Shell: { primary: "#89e051", glow: "rgba(137, 224, 81, 0.5)" },
+  HTML: { primary: "#e34c26", glow: "rgba(227, 76, 38, 0.5)" },
+  CSS: { primary: "#563d7c", glow: "rgba(86, 61, 124, 0.5)" },
+  Vue: { primary: "#41b883", glow: "rgba(65, 184, 131, 0.5)" },
+  Svelte: { primary: "#ff3e00", glow: "rgba(255, 62, 0, 0.5)" },
+};
+
+const defaultColor = { primary: "#10b981", glow: "rgba(16, 185, 129, 0.5)" };
+
+// Animated code symbols floating in background
+function FloatingCodeSymbols() {
+  const symbols = [
+    "{ }",
+    "< />",
+    "=>",
+    "( )",
+    "[ ]",
+    "//",
+    "&&",
+    "||",
+    "!=",
+    "===",
+    "++",
+    "fn",
+    "let",
+    "const",
+    "async",
+  ];
+
+  const particles = Array.from({ length: 12 }, (_, i) => ({
     id: i,
-    size: Math.random() * 2 + 1,
-    x: Math.random() * 100,
+    symbol: symbols[i % symbols.length],
+    x: 5 + Math.random() * 90,
     y: Math.random() * 100,
-    duration: Math.random() * 8 + 12,
-    delay: Math.random() * 4,
+    duration: 15 + Math.random() * 10,
+    delay: Math.random() * 5,
+    size: 10 + Math.random() * 8,
   }));
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
       {particles.map((particle) => (
-        <motion.div
+        <motion.span
           key={particle.id}
-          className="absolute rounded-full bg-orange-400/20"
+          className="absolute font-mono text-white/[0.07] select-none"
           style={{
-            width: particle.size,
-            height: particle.size,
             left: `${particle.x}%`,
             top: `${particle.y}%`,
+            fontSize: particle.size,
           }}
           animate={{
-            y: [0, -20, 0],
-            opacity: [0.1, 0.4, 0.1],
+            y: [0, -30, 0],
+            opacity: [0.03, 0.1, 0.03],
+            rotate: [-5, 5, -5],
           }}
           transition={{
             duration: particle.duration,
@@ -41,104 +83,158 @@ function FloatingParticles() {
             repeat: Number.POSITIVE_INFINITY,
             ease: "easeInOut",
           }}
-        />
+        >
+          {particle.symbol}
+        </motion.span>
       ))}
     </div>
   );
 }
 
-// Glowing GitHub Octocat with fire/warm colors
-function GlowingOctocat() {
+// Rank badge component
+function RankBadge({ rank }: { rank: number }) {
+  const isTop = rank === 1;
+
   return (
-    <div className="relative flex items-center justify-center">
-      {/* Outer glow ring with fire gradient */}
-      <motion.div
-        className="absolute h-28 w-28 rounded-full md:h-32 md:w-32"
-        style={{
-          background:
-            "conic-gradient(from 0deg, #f97316, #eab308, #f59e0b, #ef4444, #f97316)",
-          filter: "blur(2px)",
-        }}
-        animate={{
-          rotate: 360,
-        }}
-        transition={{
-          duration: 6,
-          repeat: Number.POSITIVE_INFINITY,
-          ease: "linear",
-        }}
-      />
-
-      {/* Inner dark circle to create ring effect */}
-      <div className="absolute h-24 w-24 rounded-full bg-[#0d1117] md:h-28 md:w-28" />
-
-      {/* Glow effect behind icon */}
-      <motion.div
-        className="absolute h-20 w-20 rounded-full bg-orange-500/30 blur-xl md:h-24 md:w-24"
-        animate={{
-          scale: [1, 1.3, 1],
-          opacity: [0.3, 0.6, 0.3],
-        }}
-        transition={{
-          duration: 2.5,
-          repeat: Number.POSITIVE_INFINITY,
-          ease: "easeInOut",
-        }}
-      />
-
-      {/* GitHub Octocat icon with warm glow */}
-      <motion.div
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{
-          type: "spring",
-          stiffness: 200,
-          damping: 20,
-          delay: 0.2,
-        }}
-        className="relative z-10"
-      >
-        <GithubIcon
-          className="h-14 w-14 md:h-16 md:w-16"
-          style={{
-            color: "#fb923c",
-            filter:
-              "drop-shadow(0 0 15px rgba(251, 146, 60, 0.9)) drop-shadow(0 0 30px rgba(249, 115, 22, 0.6)) drop-shadow(0 0 45px rgba(234, 179, 8, 0.4))",
-          }}
+    <motion.div
+      initial={{ scale: 0, rotate: -180 }}
+      animate={{ scale: 1, rotate: 0 }}
+      transition={{
+        type: "spring",
+        stiffness: 200,
+        damping: 15,
+        delay: 0.3 + rank * 0.1,
+      }}
+      className={`
+        relative flex h-7 w-7 items-center justify-center rounded-full
+        font-bold text-xs
+        ${
+          isTop
+            ? "bg-gradient-to-br from-amber-400 via-yellow-500 to-orange-500 text-black shadow-[0_0_20px_rgba(251,191,36,0.5)]"
+            : "bg-white/10 text-white/70 border border-white/10"
+        }
+      `}
+    >
+      {isTop && (
+        <motion.div
+          className="absolute inset-0 rounded-full bg-gradient-to-br from-amber-400 via-yellow-500 to-orange-500"
+          animate={{ opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+          style={{ filter: "blur(8px)" }}
         />
-      </motion.div>
-    </div>
+      )}
+      <span className="relative z-10">{rank}</span>
+    </motion.div>
   );
 }
 
-// Fire text effect component
-function FireText({
-  children,
-  className,
-  delay = 0,
+// Individual language bar with rich animations
+function LanguageBar({
+  lang,
+  index,
+  maxPercentage,
+  isTop,
 }: {
-  children: React.ReactNode;
-  className?: string;
-  delay?: number;
+  lang: LanguageStats;
+  index: number;
+  maxPercentage: number;
+  isTop: boolean;
 }) {
+  const colors = languageColors[lang.name] || defaultColor;
+  const barWidth = (lang.percentage / maxPercentage) * 100;
+
   return (
-    <motion.span
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.4 }}
-      className={className}
-      style={{
-        background:
-          "linear-gradient(180deg, #fbbf24 0%, #f97316 50%, #ea580c 100%)",
-        WebkitBackgroundClip: "text",
-        WebkitTextFillColor: "transparent",
-        backgroundClip: "text",
-        filter:
-          "drop-shadow(0 0 8px rgba(251, 191, 36, 0.8)) drop-shadow(0 0 16px rgba(249, 115, 22, 0.5))",
+    <motion.div
+      initial={{ opacity: 0, x: -30 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{
+        delay: 0.5 + index * 0.12,
+        duration: 0.4,
+        ease: "easeOut",
       }}
+      className={`
+        group relative flex items-center gap-3 rounded-xl p-3 px-4
+        transition-colors duration-300
+        ${isTop ? "bg-white/[0.08]" : "hover:bg-white/[0.04]"}
+      `}
     >
-      {children}
-    </motion.span>
+      {/* Rank badge */}
+      <RankBadge rank={index + 1} />
+
+      {/* Language info and bar */}
+      <div className="flex-1 min-w-0">
+        {/* Name and percentage row */}
+        <div className="flex items-center justify-between mb-1.5">
+          <motion.span
+            className={`font-semibold tracking-tight ${
+              isTop ? "text-white text-base" : "text-white/80 text-sm"
+            }`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 + index * 0.12 }}
+          >
+            {lang.name}
+          </motion.span>
+
+          <motion.span
+            className={`font-mono text-xs tabular-nums ${
+              isTop ? "text-white/90" : "text-white/50"
+            }`}
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.8 + index * 0.12, type: "spring" }}
+          >
+            {lang.percentage.toFixed(1)}%
+          </motion.span>
+        </div>
+
+        {/* Progress bar */}
+        <div className="relative h-3 overflow-hidden rounded-full bg-white/[0.08]">
+          {/* Animated fill */}
+          <motion.div
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: `${barWidth}%`, opacity: 1 }}
+            transition={{
+              delay: 0.7 + index * 0.12,
+              duration: 0.8,
+              ease: [0.32, 0.72, 0, 1],
+            }}
+            className="absolute inset-y-0 left-0 rounded-full"
+            style={{
+              background: `linear-gradient(90deg, ${colors.primary}dd, ${colors.primary})`,
+              boxShadow: `0 0 20px ${colors.glow}, inset 0 1px 0 rgba(255,255,255,0.2)`,
+            }}
+          >
+            {/* Shimmer effect */}
+            <motion.div
+              className="absolute inset-0 rounded-full"
+              style={{
+                background:
+                  "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
+              }}
+              animate={{ x: ["-100%", "200%"] }}
+              transition={{
+                delay: 1.2 + index * 0.12,
+                duration: 1.5,
+                ease: "easeInOut",
+              }}
+            />
+          </motion.div>
+
+          {/* Glow pulse for top language */}
+          {isTop && (
+            <motion.div
+              className="absolute inset-0 rounded-full"
+              style={{
+                background: `linear-gradient(90deg, ${colors.primary}40, transparent)`,
+              }}
+              animate={{ opacity: [0.3, 0.6, 0.3] }}
+              transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+            />
+          )}
+        </div>
+      </div>
+    </motion.div>
   );
 }
 
@@ -148,120 +244,102 @@ export function LanguagesCard({
 }: LanguagesCardProps) {
   const topLanguage = languageStats[0];
   const maxPercentage = Math.max(...languageStats.map((l) => l.percentage));
+  const topColor = languageColors[topLanguage?.name] || defaultColor;
 
   return (
     <WrappedCard
       direction={direction}
       customBackground
-      className="bg-[#0d1117]"
+      className="    rounded-[28px]
+    bg-[rgb(2,6,23)]
+    bg-[radial-gradient(circle_at_top_left,rgb(148,163,253,0.35),transparent_55%),radial-gradient(circle_at_center_right,rgb(56,189,248,0.25),transparent_55%)]"
     >
-      {/* Background atmosphere */}
-      <FloatingParticles />
+      {/* Dynamic gradient background based on top language */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: `
+            radial-gradient(ellipse 80% 50% at 50% -20%, ${topColor.primary}25, transparent 70%),
+            radial-gradient(ellipse 60% 40% at 100% 50%, ${topColor.primary}15, transparent 60%),
+            radial-gradient(ellipse 50% 30% at 0% 80%, rgba(99, 102, 241, 0.1), transparent 50%)
+          `,
+        }}
+      />
 
-      {/* Radial gradient emanating from center-top */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-1/4 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-radial from-orange-900/20 via-transparent to-transparent" />
-      </div>
+      {/* Floating code symbols */}
+      <FloatingCodeSymbols />
 
-      {/* Content layout */}
-      <div className="relative z-10 flex h-full w-full flex-col items-center justify-between py-8 text-center md:py-12">
-        {/* Top section - Glowing Octocat */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.1, duration: 0.5 }}
-        >
-          <GlowingOctocat />
-        </motion.div>
-
-        {/* Middle section - Language title */}
-        <div className="flex flex-col items-center gap-1 py-4">
-          <FireText
-            delay={0.3}
-            className="text-sm font-bold uppercase tracking-[0.2em] md:text-base"
+      {/* Content layout - centered vertically */}
+      <div className="relative z-10 flex h-full w-full flex-col justify-center py-8">
+        {/* Header section */}
+        <div className="flex flex-col items-center gap-2 mb-8">
+          <motion.span
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-xs font-medium uppercase tracking-[0.3em] text-white/40"
           >
-            Your #1
-          </FireText>
+            Your #1 Language
+          </motion.span>
 
           {topLanguage && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4, type: "spring", stiffness: 150 }}
+              initial={{ opacity: 0, scale: 0.5, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{
+                delay: 0.2,
+                type: "spring",
+                stiffness: 150,
+                damping: 15,
+              }}
+              className="relative"
             >
+              {/* Glow behind text */}
+              <div
+                className="absolute inset-0 blur-2xl opacity-60"
+                style={{ background: topColor.primary }}
+              />
+
               <span
-                className="block text-4xl font-black uppercase tracking-tight md:text-5xl"
+                className="relative block text-6xl font-black tracking-tight"
                 style={{
-                  background:
-                    "linear-gradient(180deg, #fef3c7 0%, #fbbf24 30%, #f97316 70%, #ea580c 100%)",
+                  background: `linear-gradient(135deg, ${topColor.primary}, white, ${topColor.primary})`,
+                  backgroundSize: "200% 200%",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
-                  filter:
-                    "drop-shadow(0 0 20px rgba(251, 191, 36, 0.9)) drop-shadow(0 0 40px rgba(249, 115, 22, 0.6)) drop-shadow(0 2px 4px rgba(0,0,0,0.5))",
+                  filter: `drop-shadow(0 0 30px ${topColor.glow})`,
                 }}
               >
                 {topLanguage.name}
               </span>
             </motion.div>
           )}
-
-          <FireText
-            delay={0.5}
-            className="text-lg font-bold uppercase tracking-[0.15em] md:text-xl"
-          >
-            Language
-          </FireText>
         </div>
 
-        {/* Bottom section - Language progress bars */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="w-full max-w-xs space-y-2.5"
-        >
-          {/* Header */}
-          <div className="mb-3 text-left text-xs font-semibold uppercase tracking-wider text-white/50">
-            Language
-          </div>
-
-          {languageStats.map((lang, index) => (
-            <motion.div
+        {/* Language bars section - more spacing */}
+        <div className="flex flex-col gap-3 px-2">
+          {languageStats.slice(0, 5).map((lang, index) => (
+            <LanguageBar
               key={lang.name}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.7 + index * 0.08 }}
-              className="flex items-center gap-3"
-            >
-              {/* Language name */}
-              <span className="w-24 text-left text-sm font-medium text-white/90">
-                {lang.name}
-              </span>
-
-              {/* Progress bar */}
-              <div className="flex-1">
-                <div className="h-3 overflow-hidden rounded-sm bg-white/5">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{
-                      width: `${(lang.percentage / maxPercentage) * 100}%`,
-                    }}
-                    transition={{
-                      delay: 0.9 + index * 0.1,
-                      duration: 0.6,
-                      ease: "easeOut",
-                    }}
-                    className="h-full rounded-sm"
-                    style={{
-                      background: `linear-gradient(90deg, #06b6d4 0%, #10b981 100%)`,
-                      boxShadow: "0 0 10px rgba(6, 182, 212, 0.4)",
-                    }}
-                  />
-                </div>
-              </div>
-            </motion.div>
+              lang={lang}
+              index={index}
+              maxPercentage={maxPercentage}
+              isTop={index === 0}
+            />
           ))}
+        </div>
+
+        {/* Footer stat - positioned at bottom */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5 }}
+          className="absolute bottom-6 left-0 right-0 text-center"
+        >
+          <span className="text-xs text-white/30">
+            across {languageStats.length} languages
+          </span>
         </motion.div>
       </div>
     </WrappedCard>
