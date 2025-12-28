@@ -10,7 +10,6 @@ export const ZReturnGitHubContributionsQuery = z
     totalPullRequestContributions: z.number(),
     totalPullRequestReviewContributions: z.number(),
     totalRepositoriesWithContributedCommits: z.number(),
-    contributionYears: z.array(z.number()),
     contributionCalendar: z.object({
       totalContributions: z.number(),
       weeks: z.array(

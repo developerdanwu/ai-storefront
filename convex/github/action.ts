@@ -1,5 +1,5 @@
 import { ActionCache } from "@convex-dev/action-cache";
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import { ResultAsync } from "neverthrow";
 import { components, internal } from "../_generated/api";
 import { action } from "../_generated/server";
@@ -93,7 +93,7 @@ export const getGitHubContributions = action({
       (result) => result,
       (error) => {
         console.error("Error getting GitHub contributions:", error);
-        return null;
+        throw new ConvexError(error);
       }
     );
   },

@@ -172,11 +172,6 @@ body {
 }
 
 @layer utilities {
-  .bg-gradient-radial {
-    background: radial-gradient(var(--tw-gradient-stops));
-
-  }
-
   .bg-noise-xl {
     background-image: url("/noise-xl.svg"); 
     mix-blend-mode: multiply;

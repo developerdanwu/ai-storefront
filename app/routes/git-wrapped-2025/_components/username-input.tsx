@@ -2,6 +2,7 @@ import { motion } from "motion/react";
 import { useCallback, useState } from "react";
 import { z } from "zod";
 import GithubOutline from "~/components/icons/github-outline";
+import { Input } from "~/components/ui/input";
 import { useAppForm } from "~/components/ui/tanstack-form";
 import { cn } from "~/lib/utils";
 
@@ -300,7 +301,7 @@ export function UsernameInput({
 
   return (
     <div
-      className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden py-16"
+      className="relative flex w-full flex-col items-center justify-center min-h-dvh overflow-hidden py-16"
       style={{
         backgroundColor: "rgb(2,6,23)",
         backgroundImage: `
@@ -392,7 +393,7 @@ export function UsernameInput({
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <form.AppField
                     name="username"
-                    children={(field: any) => (
+                    children={(field) => (
                       <field.FormItem>
                         <div className="relative">
                           <div
@@ -402,31 +403,18 @@ export function UsernameInput({
                             )}
                           />
                           <div className="relative flex items-center overflow-hidden rounded-xl border border-cyan-500/50 bg-slate-800/60">
-                            <span className="pl-4 text-white/50 italic">
-                              github.com/
-                            </span>
                             <field.FormControl>
-                              <input
-                                type="text"
-                                value={field.state.value}
+                              <Input
+                                size={24}
                                 onChange={(e) =>
                                   field.handleChange(e.target.value)
                                 }
-                                onBlur={() => {
-                                  field.handleBlur();
-                                  setIsFocused(false);
-                                }}
-                                onFocus={() => setIsFocused(true)}
-                                placeholder=""
-                                className="flex-1 bg-transparent px-1 py-3 text-base text-white placeholder-white/30 outline-none"
-                                autoComplete="off"
-                                autoCapitalize="off"
-                                spellCheck={false}
+                                placeholder="Enter your github username"
                               />
                             </field.FormControl>
                           </div>
                         </div>
-                        <field.FormMessage className="mt-2 text-center text-red-400" />
+                        <field.FormMessage className=" text-red-400" />
                       </field.FormItem>
                     )}
                   />

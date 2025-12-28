@@ -1,7 +1,8 @@
 "use node";
 
-import { Infer, v } from "convex/values";
+import { ConvexError, Infer, v } from "convex/values";
 import { internalAction } from "../_generated/server";
+import * as Errors from "../errors";
 
 type TContributionsCollection = Infer<typeof VReturn_GetGithubContributions>;
 
@@ -15,7 +16,6 @@ interface GitHubGraphQLResponse {
 }
 
 const VReturn_GetGithubContributions = v.object({
-  contributionYears: v.array(v.number()),
   totalCommitContributions: v.number(),
   totalIssueContributions: v.number(),
   totalPullRequestContributions: v.number(),
@@ -52,7 +52,6 @@ const CONTRIBUTIONS_QUERY = `
         totalPullRequestContributions
         totalPullRequestReviewContributions
         totalRepositoriesWithContributedCommits
-        constributionYears
         contributionCalendar {
           totalContributions
           weeks {
@@ -78,12 +77,17 @@ export const _getGitHubContributions = internalAction({
     to: v.string(),
   },
   returns: v.union(VReturn_GetGithubContributions, v.null()),
-  handler: async (ctx, { username, from, to }) => {
+  handler: async (_, { username, from, to }) => {
     const githubPat = process.env.GITHUB_PAT;
 
     if (!githubPat) {
       console.error("GITHUB_PAT environment variable is not set");
-      return null;
+      throw new ConvexError(
+        Errors.githubApiFailed({
+          message: "GITHUB_PAT environment variable is not set",
+          error: "GITHUB_PAT environment variable is not set",
+        })
+      );
     }
 
     try {
@@ -101,25 +105,45 @@ export const _getGitHubContributions = internalAction({
 
       if (!response.ok) {
         console.error("GitHub GraphQL API error:", response.status);
-        return null;
+        throw new ConvexError(
+          Errors.githubApiFailed({
+            message: "GitHub GraphQL API error",
+            error: response.status,
+          })
+        );
       }
 
       const result = (await response.json()) as GitHubGraphQLResponse;
 
       if (result.errors) {
         console.error("GitHub GraphQL errors:", result.errors);
-        return null;
+        throw new ConvexError(
+          Errors.githubApiFailed({
+            message: "GitHub GraphQL errors",
+            error: result.errors,
+          })
+        );
       }
 
       if (!result.data?.user) {
         console.error("GitHub user not found:", username);
-        return null;
+        throw new ConvexError(
+          Errors.githubApiFailed({
+            message: "GitHub user not found",
+            error: "GitHub user not found",
+          })
+        );
       }
 
       return result.data.user.contributionsCollection;
     } catch (error) {
       console.error("Error fetching GitHub contributions:", error);
-      return null;
+      throw new ConvexError(
+        Errors.githubApiFailed({
+          message: "Error fetching GitHub contributions",
+          error: error,
+        })
+      );
     }
   },
 });

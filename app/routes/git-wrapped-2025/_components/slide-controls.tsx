@@ -17,6 +17,7 @@ import {
   useSyncExternalStore,
 } from "react";
 import { toast } from "sonner";
+import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -172,10 +173,10 @@ export function SlideControls({
       onClick={(e) => e.stopPropagation()}
     >
       {/* Pause/Play button */}
-      <button
-        type="button"
+      <Button
         onClick={onTogglePause}
-        className="flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white/90 backdrop-blur-md transition-all hover:bg-black/60 hover:text-white active:scale-95"
+        variant={"ghost"}
+        size="icon"
         aria-label={isPaused ? "Resume slideshow" : "Pause slideshow"}
       >
         {isPaused ? (
@@ -183,15 +184,15 @@ export function SlideControls({
         ) : (
           <Pause className="h-4 w-4" />
         )}
-      </button>
+      </Button>
 
       {/* Download button */}
       {onDownload && (
-        <button
-          type="button"
+        <Button
           onClick={onDownload}
           disabled={isDownloading}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white/90 backdrop-blur-md transition-all hover:bg-black/60 hover:text-white active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+          variant={"ghost"}
+          size="icon"
           aria-label="Download image"
         >
           {isDownloading ? (
@@ -199,24 +200,22 @@ export function SlideControls({
           ) : (
             <Download className="h-4 w-4" />
           )}
-        </button>
+        </Button>
       )}
 
       {/* Share button */}
-      <button
-        type="button"
+      <Button
         onClick={handleShare}
-        className="flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white/90 backdrop-blur-md transition-all hover:bg-black/60 hover:text-white active:scale-95"
+        variant={"ghost"}
+        size="icon"
         aria-label="Share"
       >
-        <Share2 className="h-4 w-4" />
-      </button>
-
-      {/* Music toggle button */}
-      <button
-        type="button"
+        <Share2 />
+      </Button>
+      <Button
         onClick={toggleMusic}
-        className="flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white/90 backdrop-blur-md transition-all hover:bg-black/60 hover:text-white active:scale-95"
+        variant={"ghost"}
+        size="icon"
         aria-label={isMusicPlaying ? "Mute music" : "Play music"}
       >
         {isMusicPlaying ? (
@@ -224,7 +223,7 @@ export function SlideControls({
         ) : (
           <VolumeX className="h-4 w-4" />
         )}
-      </button>
+      </Button>
 
       {/* Music track selector dropdown */}
       <DropdownMenu>

@@ -190,7 +190,7 @@ export default function GitWrappedProfileRoute() {
   };
 
   return (
-    <div className="flex h-screen w-full items-center justify-center bg-neutral-950">
+    <div className="flex h-dvh w-full items-center justify-center bg-neutral-950">
       {/* Navigation arrow - left (outside the box) */}
       <Button
         variant="ghost"
