@@ -123,33 +123,35 @@ export default function GitWrappedSummaryRoute() {
           <h1 className="text-center text-lg font-bold text-white">
             {username}'s Git Wrapped 2025
           </h1>
-          <p className="text-center text-xs text-white/60">
-            Long-press or right click to save image
+          <p className="text-center text-xs text-white/60 sm:hidden">
+            Tap edges to navigate · Long-press center to save
+          </p>
+          <p className="text-center text-xs text-white/60 hidden sm:block">
+            Right click to save image
           </p>
         </div>
 
-        {/* Tap zones for navigation - tap left/right halves */}
-        <div
-          className="absolute inset-0 z-10 sm:pointer-events-none"
-          onClick={(e) => {
-            const rect = e.currentTarget.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const halfWidth = rect.width / 2;
-
-            if (clickX < halfWidth) {
-              prevSlide();
-            } else {
-              nextSlide();
-            }
-          }}
+        {/* Left/right edge tap zones for navigation - leaves center for long-press save */}
+        <button
+          type="button"
+          className="absolute left-0 top-0 bottom-0 w-1/4 z-10 sm:hidden"
+          onClick={prevSlide}
+          aria-label="Previous slide"
+        />
+        <button
+          type="button"
+          className="absolute right-0 top-0 bottom-0 w-1/4 z-10 sm:hidden"
+          onClick={nextSlide}
+          aria-label="Next slide"
         />
 
-        {/* Current image */}
+        {/* Current image - center is accessible for long-press save on mobile */}
         {currentImage && (
           <img
             src={currentImage.imageUrl}
             alt={`${username}'s ${currentImage.name} slide`}
             className="h-full w-full object-cover"
+            style={{ WebkitTouchCallout: "default" }}
           />
         )}
 
