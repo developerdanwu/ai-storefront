@@ -68,6 +68,12 @@ export function WrappedCard({
         {/* Small grid */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px]" />
       </div>
+      {/* Footer URL */}
+      <div className="absolute bottom-3 left-0 right-0 z-20 text-center">
+        <span className="text-sm font-medium tracking-wide text-white/40">
+          developerdanwu/git-wrapped-2025
+        </span>
+      </div>
     </motion.div>
   );
 }

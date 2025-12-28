@@ -127,14 +127,35 @@ export function useDownloadCard(
         height: RENDER_HEIGHT,
       });
 
-      // Trigger download
-      const link = document.createElement("a");
-      link.download = `git-wrapped-2025-${username}-${slideName}.png`;
-      link.href = dataUrl;
-      link.click();
+      const filename = `git-wrapped-2025-${username}-${slideName}.png`;
 
-      toast.success("Image downloaded!", { id: toastId });
+      // Convert data URL to blob for sharing
+      const response = await fetch(dataUrl);
+      const blob = await response.blob();
+      const file = new File([blob], filename, { type: "image/png" });
+
+      // Check if Web Share API is available and can share files (typically mobile)
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: "Git Wrapped 2025",
+          text: `My Git Wrapped 2025 - ${slideName}`,
+        });
+        toast.success("Ready to save!", { id: toastId });
+      } else {
+        // Fallback to traditional download for desktop
+        const link = document.createElement("a");
+        link.download = filename;
+        link.href = dataUrl;
+        link.click();
+        toast.success("Image downloaded!", { id: toastId });
+      }
     } catch (error) {
+      // User cancelled share dialog - not an error
+      if (error instanceof Error && error.name === "AbortError") {
+        toast.dismiss(toastId);
+        return;
+      }
       console.error("Failed to generate image:", error);
       toast.error("Failed to generate image", { id: toastId });
     } finally {

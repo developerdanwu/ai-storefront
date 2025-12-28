@@ -12,7 +12,6 @@ import { StarsCard } from "../git-wrapped-2025/_components/stars-card";
 import { StoryProgress } from "../git-wrapped-2025/_components/story-progress";
 import { SummaryCard } from "../git-wrapped-2025/_components/summary-card";
 import { useGitHubStats } from "../git-wrapped-2025/_components/use-github-stats";
-import { useDownloadCard } from "../git-wrapped-2025/lib/use-download-card";
 
 const TOTAL_SLIDES = 6;
 const SLIDE_NAMES = [
@@ -31,12 +30,6 @@ export default function GitWrappedProfileRoute() {
   const [direction, setDirection] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
-
-  const { download, isDownloading } = useDownloadCard(
-    cardRef,
-    username ?? "user",
-    SLIDE_NAMES[currentSlide]
-  );
 
   const {
     user,
@@ -179,9 +172,7 @@ export default function GitWrappedProfileRoute() {
             onShare={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              download();
             }}
-            isSharing={isDownloading}
           />
         );
       default:
@@ -238,14 +229,7 @@ export default function GitWrappedProfileRoute() {
             </div>
           </AnimatePresence>
         </div>
-
-        {/* Persistent slide controls */}
-        <SlideControls
-          isPaused={isPaused}
-          onTogglePause={togglePause}
-          onDownload={download}
-          isDownloading={isDownloading}
-        />
+        <SlideControls isPaused={isPaused} onTogglePause={togglePause} />
       </div>
 
       {/* Navigation arrow - right (outside the box) */}
