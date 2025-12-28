@@ -32,22 +32,6 @@ import { useWorkosConvexAuth } from "~/components/auth/auth-provider";
 import { Toaster } from "~/components/ui/sonner";
 import { DialogStoreContextProvider, useDialogStore } from "~/lib/dialog-store";
 import { useAnonymousUserId } from "~/lib/hooks/useAnonymousUserId";
-import {
-  githubContributionsQuery,
-  ZReturnGitHubContributionsQuery,
-} from "~/routes/git-wrapped-2025/lib/github-contributions.query";
-import {
-  githubLanguagesQuery,
-  ZReturnGitHubLanguagesQuery,
-} from "~/routes/git-wrapped-2025/lib/github-languages.query";
-import {
-  githubReposQuery,
-  ZReturnGitHubReposQuery,
-} from "~/routes/git-wrapped-2025/lib/github-repos.query";
-import {
-  githubUserQuery,
-  ZReturnGithubUserQuery,
-} from "~/routes/git-wrapped-2025/lib/github-user.query";
 import { CustomErrorBoundary } from "./custom-error-boundary";
 import { GenericAlertDialog } from "./dialogs/generic-alert-dialog";
 import { ThemeProvider } from "./theme-provider";
@@ -118,51 +102,51 @@ function AuthenticatedProvider({ children }: { children: React.ReactNode }) {
 function BaseProviders({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
 
-  const [cacheChecked, setCacheChecked] = useState(false);
+  const [cacheChecked, setCacheChecked] = useState(true);
 
   // check for schema changes in cache, if changed, bust the cache
-  if (!cacheChecked) {
-    const queries = queryClient.getQueriesData({
-      predicate({ queryKey, meta, state }) {
-        if (meta?.persist) {
-          if (queryKey[0] === "convexAction") {
-            if (
-              queryKey[1] ===
-              githubContributionsQuery({ username: "" }).queryKey[1]
-            ) {
-              return !ZReturnGitHubContributionsQuery.safeParse(state.data)
-                .success;
-            }
-          }
+  // if (!cacheChecked) {
+  //   const queries = queryClient.getQueriesData({
+  //     predicate({ queryKey, meta, state }) {
+  //       if (meta?.persist) {
+  //         if (queryKey[0] === "convexAction") {
+  //           if (
+  //             queryKey[1] ===
+  //             githubContributionsQuery({ username: "" }).queryKey[1]
+  //           ) {
+  //             return !ZReturnGitHubContributionsQuery.safeParse(state.data)
+  //               .success;
+  //           }
+  //         }
 
-          if (queryKey[0] === githubReposQuery({ username: "" }).queryKey[0]) {
-            return !ZReturnGitHubReposQuery.safeParse(state.data).success;
-          }
+  //         if (queryKey[0] === githubReposQuery({ username: "" }).queryKey[0]) {
+  //           return !ZReturnGitHubReposQuery.safeParse(state.data).success;
+  //         }
 
-          if (
-            queryKey[0] ===
-            githubLanguagesQuery({ repos: [], username: "" }).queryKey[0]
-          ) {
-            return !ZReturnGitHubLanguagesQuery.safeParse(state.data).success;
-          }
+  //         if (
+  //           queryKey[0] ===
+  //           githubLanguagesQuery({ repos: [], username: "" }).queryKey[0]
+  //         ) {
+  //           return !ZReturnGitHubLanguagesQuery.safeParse(state.data).success;
+  //         }
 
-          if (queryKey[0] === githubUserQuery({ username: "" }).queryKey[0]) {
-            return !ZReturnGithubUserQuery.safeParse(state.data).success;
-          }
-        }
+  //         if (queryKey[0] === githubUserQuery({ username: "" }).queryKey[0]) {
+  //           return !ZReturnGithubUserQuery.safeParse(state.data).success;
+  //         }
+  //       }
 
-        return false;
-      },
-    });
-    for (const [queryKey] of queries) {
-      queryClient.removeQueries({
-        queryKey,
-      });
-    }
+  //       return false;
+  //     },
+  //   });
+  //   for (const [queryKey] of queries) {
+  //     queryClient.removeQueries({
+  //       queryKey,
+  //     });
+  //   }
 
-    setCacheChecked(true);
-    return <PageLoadingSpinner />;
-  }
+  //   setCacheChecked(true);
+  //   return <PageLoadingSpinner />;
+  // }
 
   return (
     <>
