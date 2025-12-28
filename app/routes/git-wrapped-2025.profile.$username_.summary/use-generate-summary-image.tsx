@@ -61,9 +61,6 @@ export function useGenerateSummaryImage({ username }: { username: string }) {
       root = createRoot(container);
 
       try {
-        await new Promise((resolve) => {
-          setTimeout(resolve, 5000);
-        });
         root!.render(
           <div style={{ width: RENDER_WIDTH, height: RENDER_HEIGHT }}>
             <SummaryCard

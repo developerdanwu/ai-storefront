@@ -169,9 +169,8 @@ export default function GitWrappedProfileRoute() {
             activityStats={activityStats}
             contributionCalendar={contributionCalendar}
             direction={direction}
-            onShare={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
+            onShare={async () => {
+              await navigate(`/git-wrapped-2025/profile/${username}/summary`);
             }}
           />
         );

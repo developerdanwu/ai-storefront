@@ -90,7 +90,7 @@ export default function GitWrappedSummaryRoute() {
           onClick={() => navigate(`/git-wrapped-2025/profile/${username}`)}
           className="mt-2 rounded-lg bg-white/10 px-6 py-2 text-white transition-colors hover:bg-white/20"
         >
-          View full presentation
+          View interactive statistics
         </button>
       </div>
     </Container>
