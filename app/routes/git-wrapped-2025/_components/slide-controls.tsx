@@ -18,6 +18,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
 
 type MusicTrack = "techno" | "lofi";
 
@@ -162,49 +167,74 @@ export function SlideControls({
       onClick={(e) => e.stopPropagation()}
     >
       {/* Pause/Play button */}
-      <Button
-        onClick={onTogglePause}
-        variant={"ghost"}
-        size="icon"
-        aria-label={isPaused ? "Resume slideshow" : "Pause slideshow"}
-      >
-        {isPaused ? (
-          <Play className="h-4 w-4 fill-current" />
-        ) : (
-          <Pause className="h-4 w-4" />
-        )}
-      </Button>
-      <Button
-        onClick={handleShare}
-        variant={"ghost"}
-        size="icon"
-        aria-label="Share"
-      >
-        <Share2 />
-      </Button>
-      <Button
-        onClick={toggleMusic}
-        variant={"ghost"}
-        size="icon"
-        aria-label={isMusicPlaying ? "Mute music" : "Play music"}
-      >
-        {isMusicPlaying ? (
-          <Volume2 className="h-4 w-4" />
-        ) : (
-          <VolumeX className="h-4 w-4" />
-        )}
-      </Button>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            onClick={onTogglePause}
+            variant={"ghost"}
+            size="icon"
+            aria-label={isPaused ? "Resume slideshow" : "Pause slideshow"}
+          >
+            {isPaused ? (
+              <Play className="h-4 w-4 fill-current" />
+            ) : (
+              <Pause className="h-4 w-4" />
+            )}
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          {isPaused ? "Resume slideshow" : "Pause slideshow"}
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            onClick={handleShare}
+            variant={"ghost"}
+            size="icon"
+            aria-label="Share"
+          >
+            <Share2 />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Share</TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            onClick={toggleMusic}
+            variant={"ghost"}
+            size="icon"
+            aria-label={isMusicPlaying ? "Mute music" : "Play music"}
+          >
+            {isMusicPlaying ? (
+              <Volume2 className="h-4 w-4" />
+            ) : (
+              <VolumeX className="h-4 w-4" />
+            )}
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          {isMusicPlaying ? "Mute music" : "Play music"}
+        </TooltipContent>
+      </Tooltip>
 
       {/* Music track selector dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button
-            type="button"
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white/90 backdrop-blur-md transition-all hover:bg-black/60 hover:text-white active:scale-95"
-            aria-label="Select music track"
-          >
-            <Music className="h-4 w-4" />
-          </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={"ghost"}
+                size="icon"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white/90 backdrop-blur-md transition-all hover:bg-black/60 hover:text-white active:scale-95"
+                aria-label="Select music track"
+              >
+                <Music className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent> Select music track </TooltipContent>
+          </Tooltip>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" side="top" sideOffset={8}>
           <DropdownMenuLabel>Music</DropdownMenuLabel>

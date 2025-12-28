@@ -10,19 +10,6 @@ export const RENDER_HEIGHT = 780;
 // Output at 2x for high quality
 const PIXEL_RATIO = 2;
 
-interface UseGenerateCardImageV2Result {
-  imageDataUrl: string | null;
-  isGenerating: boolean;
-  error: Error | null;
-  regenerate: () => void;
-}
-
-/**
- * Hook that generates an image data URL by rendering a React component
- * into a detached DOM element using createRoot, capturing it, then unmounting.
- *
- * No hidden card component needed in the component tree!
- */
 export function useGenerateSummaryImage({ username }: { username: string }) {
   const {
     user,
