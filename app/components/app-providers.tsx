@@ -154,7 +154,6 @@ function BaseProviders({ children }: { children: React.ReactNode }) {
         return false;
       },
     });
-
     for (const [queryKey] of queries) {
       queryClient.removeQueries({
         queryKey,

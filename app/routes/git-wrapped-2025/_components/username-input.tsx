@@ -395,25 +395,13 @@ export function UsernameInput({
                     name="username"
                     children={(field) => (
                       <field.FormItem>
-                        <div className="relative">
-                          <div
-                            className={cn(
-                              "absolute -inset-0.5 rounded-xl bg-gradient-to-r from-cyan-500 via-teal-500 to-cyan-500 opacity-0 blur transition-opacity duration-300",
-                              isFocused && "opacity-50"
-                            )}
+                        <field.FormControl>
+                          <Input
+                            size={24}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                            placeholder="Enter your github username"
                           />
-                          <div className="relative flex items-center overflow-hidden rounded-xl border border-cyan-500/50 bg-slate-800/60">
-                            <field.FormControl>
-                              <Input
-                                size={24}
-                                onChange={(e) =>
-                                  field.handleChange(e.target.value)
-                                }
-                                placeholder="Enter your github username"
-                              />
-                            </field.FormControl>
-                          </div>
-                        </div>
+                        </field.FormControl>
                         <field.FormMessage className=" text-red-400" />
                       </field.FormItem>
                     )}

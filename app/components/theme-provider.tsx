@@ -7,6 +7,7 @@ type ThemeProviderProps = {
   children: React.ReactNode;
   defaultTheme?: Theme;
   storageKey?: string;
+  forceTheme?: Theme;
 };
 
 type ThemeProviderState = {
@@ -24,6 +25,7 @@ const initialState: ThemeProviderState = {
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 
 export function ThemeProvider({
+  forceTheme,
   children,
   defaultTheme = "system",
   storageKey = "vite-ui-theme",
@@ -53,6 +55,11 @@ export function ThemeProvider({
     const root = window.document.documentElement;
 
     root.classList.remove("light", "dark");
+
+    if (forceTheme) {
+      root.classList.add(forceTheme);
+      return;
+    }
 
     if (theme === "system") {
       const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")

@@ -222,19 +222,9 @@ export function SlideControls({
       {/* Music track selector dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant={"ghost"}
-                size="icon"
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white/90 backdrop-blur-md transition-all hover:bg-black/60 hover:text-white active:scale-95"
-                aria-label="Select music track"
-              >
-                <Music className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent> Select music track </TooltipContent>
-          </Tooltip>
+          <Button variant={"ghost"} size="icon" aria-label="Select music track">
+            <Music className="h-4 w-4" />
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" side="top" sideOffset={8}>
           <DropdownMenuLabel>Music</DropdownMenuLabel>
